@@ -37,18 +37,25 @@ public class Crossword extends Grid {
 	/** West direction. */
 	private static final int DIRECTION_W = 8;
 
+	/** Default width and height. */
+	private static final int DEFAULT_SIZE = 15;
+
+	/** Properties list. */
+	private static final HashMap<String, Object> PROPERTIES = new HashMap<>();
+
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see biz.computerkraft.crossword.gui.PuzzleProperties#getProperties()
 	 */
 	@Override
-	public final Map<String, Class<?>> getProperties() {
-		HashMap<String, Class<?>> properties = new HashMap<>();
-		properties.put(PROPERTY_HEIGHT, Integer.class);
-		properties.put(PROPERTY_WIDTH, Integer.class);
-		properties.put(PROPERTY_SYMMETRY, Symmetry.class);
-		return properties;
+	public final Map<String, Object> getProperties() {
+		if (PROPERTIES.size() == 0) {
+			PROPERTIES.put(PROPERTY_HEIGHT, new Integer(DEFAULT_SIZE));
+			PROPERTIES.put(PROPERTY_WIDTH, new Integer(DEFAULT_SIZE));
+			PROPERTIES.put(PROPERTY_SYMMETRY, Symmetry.EIGHTWAY);
+		}
+		return PROPERTIES;
 	}
 
 	/*
@@ -132,5 +139,15 @@ public class Crossword extends Grid {
 			reverse |= DIRECTION_W;
 		}
 		return reverse;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see biz.computerkraft.crossword.gui.PuzzleProperties#getName()
+	 */
+	@Override
+	public final String getName() {
+		return getClass().getSimpleName();
 	}
 }

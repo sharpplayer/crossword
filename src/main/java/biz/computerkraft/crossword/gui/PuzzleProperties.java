@@ -17,7 +17,7 @@ public interface PuzzleProperties {
 	 * 
 	 * @return property map
 	 */
-	Map<String, Class<?>> getProperties();
+	Map<String, Object> getProperties();
 
 	/**
 	 * 
@@ -28,4 +28,10 @@ public interface PuzzleProperties {
 	 */
 	void setProperties(Map<String, Object> properties);
 
+	/**
+	 * Gets puzzle name.
+	 * 
+	 * @return puzzle name
+	 */
+	String getName();
 }
