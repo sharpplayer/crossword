@@ -22,12 +22,12 @@ def eclipseHome = System.getenv("ECLIPSE_HOME") ?: "C:/Program Files/eclipse"
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-repositories {
-	mavenCentral()
-}
+repositories { mavenCentral() }
 
 dependencies {
-	compile()
+	compile(
+			'mysql:mysql-connector-java:5.1.13'
+			)
 
 
 	testCompile(
