@@ -6,6 +6,8 @@ import java.util.Map;
 import biz.computerkraft.crossword.grid.Cell;
 import biz.computerkraft.crossword.grid.Grid;
 import biz.computerkraft.crossword.grid.Symmetry;
+import biz.computerkraft.crossword.gui.CellRenderer;
+import biz.computerkraft.crossword.gui.renderer.CrosswordCellRenderer;
 
 /**
  * 
@@ -26,22 +28,28 @@ public class Crossword extends Grid {
 	private static final String PROPERTY_SYMMETRY = "Symmetry";
 
 	/** North direction. */
-	private static final int DIRECTION_N = 1;
+	public static final int DIRECTION_N = 1;
 
 	/** South direction. */
-	private static final int DIRECTION_S = 2;
+	public static final int DIRECTION_S = 2;
 
 	/** East direction. */
-	private static final int DIRECTION_E = 4;
+	public static final int DIRECTION_E = 4;
 
 	/** West direction. */
-	private static final int DIRECTION_W = 8;
+	public static final int DIRECTION_W = 8;
 
 	/** Default width and height. */
 	private static final int DEFAULT_SIZE = 15;
 
 	/** Properties list. */
 	private static final HashMap<String, Object> PROPERTIES = new HashMap<>();
+
+	/** Actual width set. */
+	private int cellWidth;
+
+	/** Actual height set. */
+	private int cellHeight;
 
 	/*
 	 * (non-Javadoc)
@@ -88,7 +96,7 @@ public class Crossword extends Grid {
 		Map<String, Cell> grid = new HashMap<>();
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < height; y++) {
-				grid.put(x + ":" + y, new Cell());
+				grid.put(x + ":" + y, new Cell(x / (double) width, y / (double) height));
 			}
 		}
 
@@ -113,6 +121,11 @@ public class Crossword extends Grid {
 				}
 			}
 		}
+
+		setCells(grid.values());
+
+		cellWidth = width;
+		cellHeight = height;
 	}
 
 	/**
@@ -149,5 +162,35 @@ public class Crossword extends Grid {
 	@Override
 	public final String getName() {
 		return getClass().getSimpleName();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see biz.computerkraft.crossword.gui.PuzzleProperties#getRendererClass()
+	 */
+	@Override
+	public final Class<? extends CellRenderer> getRendererClass() {
+		return CrosswordCellRenderer.class;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see biz.computerkraft.crossword.gui.PuzzleProperties#getCellWidth()
+	 */
+	@Override
+	public final int getCellWidth() {
+		return cellWidth;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see biz.computerkraft.crossword.gui.PuzzleProperties#getCellHeight()
+	 */
+	@Override
+	public final int getCellHeight() {
+		return cellHeight;
 	}
 }

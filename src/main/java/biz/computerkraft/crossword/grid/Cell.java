@@ -28,6 +28,25 @@ public class Cell {
 	/** Cell marker. */
 	private String marker = "";
 
+	/** Anchor x position. */
+	private double anchorX;
+
+	/** Anchor y position. */
+	private double anchorY;
+
+	/**
+	 * Cell constructor.
+	 * 
+	 * @param anchorXPc
+	 *            percentage of width to anchor cell in puzzle
+	 * @param anchorYPc
+	 *            percentage of height to anchor cell in puzzle
+	 */
+	public Cell(final double anchorXPc, final double anchorYPc) {
+		anchorX = anchorXPc;
+		anchorY = anchorYPc;
+	}
+
 	/**
 	 * 
 	 * Gets adjacent cell in given direction.
@@ -159,5 +178,25 @@ public class Cell {
 	 */
 	public final void setMarker(final String newMarker) {
 		marker = newMarker;
+	}
+
+	/**
+	 * 
+	 * Gets the cell location x as percentage of width.
+	 * 
+	 * @return the anchor percentage X
+	 */
+	public final double getAnchorX() {
+		return anchorX;
+	}
+
+	/**
+	 * 
+	 * Gets the cell location y as percentage of height.
+	 * 
+	 * @return the anchor percentage Y
+	 */
+	public final double getAnchorY() {
+		return anchorY;
 	}
 }

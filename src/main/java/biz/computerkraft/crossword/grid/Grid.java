@@ -1,6 +1,7 @@
 package biz.computerkraft.crossword.grid;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import biz.computerkraft.crossword.gui.PuzzleProperties;
@@ -13,6 +14,9 @@ import biz.computerkraft.crossword.gui.PuzzleProperties;
  *
  */
 public abstract class Grid implements PuzzleProperties {
+
+	/** Cells list. */
+	private Collection<Cell> cells;
 
 	/**
 	 * 
@@ -39,4 +43,24 @@ public abstract class Grid implements PuzzleProperties {
 		return word;
 	}
 
+	/**
+	 * 
+	 * Sets grid cells.
+	 * 
+	 * @param newCells
+	 *            new cells
+	 */
+	protected final void setCells(final Collection<Cell> newCells) {
+		cells = newCells;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see biz.computerkraft.crossword.gui.PuzzleProperties#getCells()
+	 */
+	@Override
+	public final Collection<Cell> getCells() {
+		return cells;
+	}
 }

@@ -1,6 +1,9 @@
 package biz.computerkraft.crossword.gui;
 
+import java.util.Collection;
 import java.util.Map;
+
+import biz.computerkraft.crossword.grid.Cell;
 
 /**
  * 
@@ -34,4 +37,36 @@ public interface PuzzleProperties {
 	 * @return puzzle name
 	 */
 	String getName();
+
+	/**
+	 * 
+	 * Get list of cells.
+	 * 
+	 * @return list cells
+	 */
+	Collection<Cell> getCells();
+
+	/**
+	 * 
+	 * Get width in cells.
+	 * 
+	 * @return cell width
+	 */
+	int getCellWidth();
+
+	/**
+	 * 
+	 * Get height in cells.
+	 * 
+	 * @return cell width
+	 */
+	int getCellHeight();
+
+	/**
+	 * 
+	 * Gets the cell renderer class.
+	 * 
+	 * @return cell renderer
+	 */
+	Class<? extends CellRenderer> getRendererClass();
 }
