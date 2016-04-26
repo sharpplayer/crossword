@@ -3,6 +3,8 @@ package biz.computerkraft.crossword.gui;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.geom.Point2D;
+import java.util.List;
 
 import javax.swing.JDialog;
 import javax.swing.JList;
@@ -21,7 +23,7 @@ import biz.computerkraft.crossword.grid.Cell;
  * @author Raymond Francis
  *
  */
-public class GridDialog extends JDialog {
+public class GridDialog extends JDialog implements CellUpdateListener {
 
 	/** Serial id. */
 	private static final long serialVersionUID = -1887552377378707619L;
@@ -45,13 +47,19 @@ public class GridDialog extends JDialog {
 	private DBConnection connection = new DBConnection();
 
 	/** Panel for crossword. */
-	private CrosswordPanel crosswordGrid = new CrosswordPanel();
+	private CrosswordPanel crosswordGrid = new CrosswordPanel(this);
 
 	/** Word list model. */
 	private WordListModel wordlListModel = new WordListModel();
 
 	/** Crossword viewer. */
 	private JScrollPane crosswordViewer;
+
+	/** Selected cell. */
+	private Cell selected = null;
+
+	/** Puzzle. */
+	private PuzzleProperties puzzle;
 
 	/**
 	 * Constructor.
@@ -68,20 +76,20 @@ public class GridDialog extends JDialog {
 		JList<Word> wordList = new JList<>(wordlListModel);
 		wordGrid.add(new JScrollPane(wordList));
 		wordList.setFont(new Font("Courier New", Font.BOLD, DEFAULT_FONT_SIZE));
-		wordlListModel.setWordList(connection.getWords("A   ", 1));
 		SpringUtilities.makeCompactGrid(wordGrid, 1, 1, MARGIN, MARGIN, MARGIN, MARGIN);
 	}
 
 	/**
 	 * Activates puzzle.
 	 * 
-	 * @param puzzle
+	 * @param newPuzzle
 	 *            puzzle to set up
 	 * @param properties
 	 *            puzzle properties
 	 */
-	public final void activatePuzzle(final PuzzleProperties puzzle, final PropertyDialog properties) {
+	public final void activatePuzzle(final PuzzleProperties newPuzzle, final PropertyDialog properties) {
 		propertyDialog = properties;
+		puzzle = newPuzzle;
 		crosswordGrid.reset(
 				new Dimension(puzzle.getCellWidth() * DEFAULT_CELL_SIZE, puzzle.getCellHeight() * DEFAULT_CELL_SIZE));
 		crosswordViewer.setPreferredSize(new Dimension(puzzle.getCellWidth() * DEFAULT_CELL_SIZE + SCROLLPANE_BORDER,
@@ -100,5 +108,28 @@ public class GridDialog extends JDialog {
 		} catch (InstantiationException | IllegalAccessException e) {
 			e.printStackTrace();
 		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see biz.computerkraft.crossword.gui.CellUpdateListener#selectCell(biz.
+	 * computerkraft.crossword.grid.Cell, java.awt.geom.Point2D)
+	 */
+	@Override
+	public final void selectCell(final Cell cell, final Point2D offset) {
+		selected = cell;
+		crosswordGrid.setDirectSelection(cell);
+		List<Cell> indirectSelection = puzzle.getIndirectSelection(cell, offset);
+		crosswordGrid.setIndirectSelection(indirectSelection);
+		String word = "";
+		for (Cell indirectCell : indirectSelection) {
+			if (indirectCell.getContents().isEmpty()) {
+				word += " ";
+			} else {
+				word += indirectCell.getContents();
+			}
+		}
+		wordlListModel.setWordList(connection.getWords(word, 1));
 	}
 }

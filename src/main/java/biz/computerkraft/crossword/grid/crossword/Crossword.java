@@ -1,6 +1,8 @@
 package biz.computerkraft.crossword.grid.crossword;
 
+import java.awt.geom.Point2D;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import biz.computerkraft.crossword.grid.Cell;
@@ -41,6 +43,9 @@ public class Crossword extends Grid {
 
 	/** Default width and height. */
 	private static final int DEFAULT_SIZE = 15;
+
+	/** Cell centre. */
+	private static final double CELL_CENTRE = 0.5;
 
 	/** Properties list. */
 	private static final HashMap<String, Object> PROPERTIES = new HashMap<>();
@@ -192,5 +197,33 @@ public class Crossword extends Grid {
 	@Override
 	public final int getCellHeight() {
 		return cellHeight;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * biz.computerkraft.crossword.gui.PuzzleProperties#getIndirectSelection(biz
+	 * .computerkraft.crossword.grid.Cell, java.awt.geom.Point2D)
+	 */
+	@Override
+	public final List<Cell> getIndirectSelection(final Cell cell, final Point2D selectionSpot) {
+		int forward = DIRECTION_E;
+		if (Math.abs(selectionSpot.getX() - CELL_CENTRE) < Math.abs(selectionSpot.getY() - CELL_CENTRE)) {
+			forward = DIRECTION_S;
+		}
+		int backward = getReverseDirection(forward);
+		List<Cell> selection = getWordWithCell(cell, backward, forward);
+		if (selection.size() == 1) {
+			if (forward == DIRECTION_E) {
+				forward = DIRECTION_S;
+			} else {
+				forward = DIRECTION_E;
+			}
+			backward = getReverseDirection(forward);
+			selection = getWordWithCell(cell, backward, forward);
+		}
+
+		return selection;
 	}
 }

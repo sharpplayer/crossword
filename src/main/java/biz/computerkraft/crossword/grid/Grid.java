@@ -40,6 +40,7 @@ public abstract class Grid implements PuzzleProperties {
 			word.add(startCell);
 			startCell = startCell.getAdjacent(forward).get();
 		}
+		word.add(startCell);
 		return word;
 	}
 

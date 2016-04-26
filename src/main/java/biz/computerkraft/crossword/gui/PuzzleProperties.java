@@ -1,6 +1,8 @@
 package biz.computerkraft.crossword.gui;
 
+import java.awt.geom.Point2D;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import biz.computerkraft.crossword.grid.Cell;
@@ -69,4 +71,16 @@ public interface PuzzleProperties {
 	 * @return cell renderer
 	 */
 	Class<? extends CellRenderer> getRendererClass();
+
+	/**
+	 * 
+	 * Gets the indirectly selected cells.
+	 * 
+	 * @param cell
+	 *            focus cell
+	 * @param offset
+	 *            offset to get direction of selection
+	 * @return list of indirectly selected cells
+	 */
+	List<Cell> getIndirectSelection(Cell cell, Point2D offset);
 }
