@@ -40,6 +40,9 @@ public class GridDialog extends JDialog implements CellUpdateListener {
 	/** Default scrollpane border. */
 	private static final int SCROLLPANE_BORDER = 3;
 
+	/** Cell centre. */
+	private static final double CELL_CENTRE = 0.5;
+
 	/** Properties dialog. */
 	private PropertyDialog propertyDialog;
 
@@ -55,11 +58,11 @@ public class GridDialog extends JDialog implements CellUpdateListener {
 	/** Crossword viewer. */
 	private JScrollPane crosswordViewer;
 
-	/** Selected cell. */
-	private Cell selected = null;
-
 	/** Puzzle. */
 	private PuzzleProperties puzzle;
+
+	/** Last offset for getting direction of indirect selections. */
+	private Point2D lastOffset = new Point2D.Double(CELL_CENTRE, 0.0);
 
 	/**
 	 * Constructor.
@@ -118,12 +121,32 @@ public class GridDialog extends JDialog implements CellUpdateListener {
 	 */
 	@Override
 	public final void selectCell(final Cell cell, final Point2D offset) {
-		selected = cell;
+		lastOffset = offset;
 		crosswordGrid.setDirectSelection(cell);
 		List<Cell> indirectSelection = puzzle.getIndirectSelection(cell, offset);
 		crosswordGrid.setIndirectSelection(indirectSelection);
+		updateWordList();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * biz.computerkraft.crossword.gui.CellUpdateListener#addCellContent(biz.
+	 * computerkraft.crossword.grid.Cell, java.lang.String)
+	 */
+	@Override
+	public final void addCellContent(final Cell cell, final String content) {
+		puzzle.addCellContent(cell, content);
+		updateWordList();
+	}
+
+	/**
+	 * Updates word list.
+	 */
+	private void updateWordList() {
 		String word = "";
-		for (Cell indirectCell : indirectSelection) {
+		for (Cell indirectCell : crosswordGrid.getFirstIndirectSelection()) {
 			if (indirectCell.getContents().isEmpty()) {
 				word += " ";
 			} else {
@@ -131,5 +154,69 @@ public class GridDialog extends JDialog implements CellUpdateListener {
 			}
 		}
 		wordlListModel.setWordList(connection.getWords(word, 1));
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * biz.computerkraft.crossword.gui.CellUpdateListener#clearCellContent(biz.
+	 * computerkraft.crossword.grid.Cell)
+	 */
+	@Override
+	public final void clearCellContent(final Cell cell) {
+		puzzle.clearCellContent(cell);
+		updateWordList();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * biz.computerkraft.crossword.gui.CellUpdateListener#selectCellLeft(biz.
+	 * computerkraft.crossword.grid.Cell)
+	 */
+	@Override
+	public final void selectCellLeft(final Cell cell) {
+		Cell newCell = puzzle.getCellLeft(cell);
+		selectCell(newCell, lastOffset);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see biz.computerkraft.crossword.gui.CellUpdateListener#selectCellUp(biz.
+	 * computerkraft.crossword.grid.Cell)
+	 */
+	@Override
+	public final void selectCellUp(final Cell cell) {
+		Cell newCell = puzzle.getCellUp(cell);
+		selectCell(newCell, lastOffset);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * biz.computerkraft.crossword.gui.CellUpdateListener#selectCellRight(biz.
+	 * computerkraft.crossword.grid.Cell)
+	 */
+	@Override
+	public final void selectCellRight(final Cell cell) {
+		Cell newCell = puzzle.getCellRight(cell);
+		selectCell(newCell, lastOffset);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * biz.computerkraft.crossword.gui.CellUpdateListener#selectCellDown(biz.
+	 * computerkraft.crossword.grid.Cell)
+	 */
+	@Override
+	public final void selectCellDown(final Cell cell) {
+		Cell newCell = puzzle.getCellDown(cell);
+		selectCell(newCell, lastOffset);
 	}
 }

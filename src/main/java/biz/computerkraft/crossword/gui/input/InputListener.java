@@ -20,4 +20,55 @@ public interface InputListener {
 	 */
 	void selectCellAt(double x, double y);
 
+	/**
+	 * 
+	 * New cell content to add.
+	 * 
+	 * @param content
+	 *            content to add to cell
+	 */
+	void addCellContent(String content);
+
+	/**
+	 * 
+	 * Deletes cell content.
+	 * 
+	 */
+	void deleteCellContent();
+
+	/**
+	 * 
+	 * Backspace cell content.
+	 * 
+	 */
+	void backspaceCellContent();
+
+	/**
+	 * 
+	 * Move selection left a cell.
+	 * 
+	 */
+	void moveLeft();
+
+	/**
+	 * 
+	 * Move selection up a cell.
+	 * 
+	 */
+	void moveUp();
+
+	/**
+	 * 
+	 * Move selection right a cell.
+	 * 
+	 */
+	void moveRight();
+
+	/**
+	 * 
+	 * Move selection down a cell.
+	 * 
+	 */
+	void moveDown();
+
 }

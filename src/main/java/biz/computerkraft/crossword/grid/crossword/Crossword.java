@@ -4,6 +4,7 @@ import java.awt.geom.Point2D;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import biz.computerkraft.crossword.grid.Cell;
 import biz.computerkraft.crossword.grid.Grid;
@@ -225,5 +226,92 @@ public class Crossword extends Grid {
 		}
 
 		return selection;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see biz.computerkraft.crossword.gui.PuzzleProperties#addCellContent(biz.
+	 * computerkraft.crossword.grid.Cell, java.lang.String)
+	 */
+	@Override
+	public final void addCellContent(final Cell cell, final String content) {
+		cell.setContents(content.toUpperCase());
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * biz.computerkraft.crossword.gui.PuzzleProperties#clearCellContent(biz.
+	 * computerkraft.crossword.grid.Cell)
+	 */
+	@Override
+	public final void clearCellContent(final Cell cell) {
+		cell.setContents("");
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see biz.computerkraft.crossword.gui.PuzzleProperties#getCellLeft(biz.
+	 * computerkraft.crossword.grid.Cell)
+	 */
+	@Override
+	public final Cell getCellLeft(final Cell cell) {
+		return getCell(cell, DIRECTION_W);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see biz.computerkraft.crossword.gui.PuzzleProperties#getCellDown(biz.
+	 * computerkraft.crossword.grid.Cell)
+	 */
+	@Override
+	public final Cell getCellDown(final Cell cell) {
+		return getCell(cell, DIRECTION_S);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see biz.computerkraft.crossword.gui.PuzzleProperties#getCellRight(biz.
+	 * computerkraft.crossword.grid.Cell)
+	 */
+	@Override
+	public final Cell getCellRight(final Cell cell) {
+		return getCell(cell, DIRECTION_E);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see biz.computerkraft.crossword.gui.PuzzleProperties#getCellUp(biz.
+	 * computerkraft.crossword.grid.Cell)
+	 */
+	@Override
+	public final Cell getCellUp(final Cell cell) {
+		return getCell(cell, DIRECTION_N);
+	}
+
+	/**
+	 * 
+	 * Get adjacent cell in given direction.
+	 * 
+	 * @param cell
+	 *            cell to move from
+	 * @param direction
+	 *            direction to move
+	 * @return new cell
+	 */
+	private Cell getCell(final Cell cell, final int direction) {
+		Optional<Cell> optionalCell = cell.getAdjacent(direction);
+		if (optionalCell.isPresent()) {
+			return optionalCell.get();
+		} else {
+			return cell;
+		}
+
 	}
 }

@@ -13,6 +13,7 @@ import java.util.List;
 import javax.swing.JPanel;
 
 import biz.computerkraft.crossword.grid.Cell;
+import biz.computerkraft.crossword.gui.input.CrosswordKeyListener;
 import biz.computerkraft.crossword.gui.input.CrosswordMouseAdapter;
 import biz.computerkraft.crossword.gui.input.InputListener;
 
@@ -41,7 +42,7 @@ public class CrosswordPanel extends JPanel implements InputListener {
 	private final List<Cell> directSelections = new ArrayList<>();
 
 	/** Indirect selections. */
-	private final List<Cell> indirectSelections = new ArrayList<>();
+	private final List<List<Cell>> indirectSelections = new ArrayList<>();
 
 	/** Cell update listener. */
 	private final CellUpdateListener listener;
@@ -53,8 +54,9 @@ public class CrosswordPanel extends JPanel implements InputListener {
 	 *            new cell update listener
 	 */
 	public CrosswordPanel(final CellUpdateListener newListener) {
-		CrosswordMouseAdapter mouseAdapter = new CrosswordMouseAdapter(this);
-		addMouseListener(mouseAdapter);
+		setFocusable(true);
+		addMouseListener(new CrosswordMouseAdapter(this));
+		addKeyListener(new CrosswordKeyListener(this));
 		listener = newListener;
 	}
 
@@ -126,6 +128,7 @@ public class CrosswordPanel extends JPanel implements InputListener {
 	 */
 	@Override
 	public final void selectCellAt(final double x, final double y) {
+		requestFocusInWindow();
 		Point2D point = new Point2D.Double(x, y);
 		for (CellRenderer renderer : renderers) {
 			Shape shape = renderer.getCellShape();
@@ -150,10 +153,15 @@ public class CrosswordPanel extends JPanel implements InputListener {
 	private Selection getCellSelection(final Cell cell) {
 		if (directSelections.contains(cell)) {
 			return Selection.DIRECT;
-		} else if (indirectSelections.contains(cell)) {
-			return Selection.INDIRECT;
+		} else {
+			for (List<Cell> indirectSelection : indirectSelections) {
+				if (indirectSelection.contains(cell)) {
+					return Selection.INDIRECT;
+				}
+			}
 		}
 		return Selection.NONE;
+
 	}
 
 	/**
@@ -171,6 +179,70 @@ public class CrosswordPanel extends JPanel implements InputListener {
 
 	/**
 	 * 
+	 * Sets the direct selection one on from current cell.
+	 * 
+	 */
+	private void setDirectSelectionNext() {
+		List<Cell> newDirectSelection = new ArrayList<>();
+		for (Cell cell : directSelections) {
+			boolean select = false;
+			for (List<Cell> cells : indirectSelections) {
+				if (cells.contains(cell)) {
+					for (Cell selectCell : cells) {
+						if (select) {
+							newDirectSelection.add(selectCell);
+							break;
+						} else if (selectCell.equals(cell)) {
+							select = true;
+						}
+
+					}
+				}
+			}
+		}
+		directSelections.clear();
+		directSelections.addAll(newDirectSelection);
+		repaint();
+	}
+
+	/**
+	 * 
+	 * Sets the direct selection one back from current cell.
+	 * 
+	 */
+	private void setDirectSelectionPrevious() {
+		List<Cell> newDirectSelection = new ArrayList<>();
+		for (Cell cell : directSelections) {
+			for (List<Cell> cells : indirectSelections) {
+				if (cells.contains(cell)) {
+					Cell select = cell;
+					for (Cell selectCell : cells) {
+						if (selectCell.equals(cell)) {
+							break;
+						}
+						select = selectCell;
+					}
+					newDirectSelection.add(select);
+				}
+			}
+		}
+		directSelections.clear();
+		directSelections.addAll(newDirectSelection);
+		repaint();
+	}
+
+	/**
+	 *
+	 * Gets the first indirect selection.
+	 * 
+	 * @return indirect selection
+	 */
+	public final List<Cell> getFirstIndirectSelection() {
+		return indirectSelections.get(0);
+	}
+
+	/**
+	 * 
 	 * Sets the indirect selection.
 	 * 
 	 * @param selection
@@ -178,7 +250,118 @@ public class CrosswordPanel extends JPanel implements InputListener {
 	 */
 	public final void setIndirectSelection(final List<Cell> selection) {
 		indirectSelections.clear();
-		indirectSelections.addAll(selection);
+		indirectSelections.add(selection);
+		repaint();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * biz.computerkraft.crossword.gui.input.InputListener#addCellContent(java.
+	 * lang.String)
+	 */
+	@Override
+	public final void addCellContent(final String content) {
+		for (Cell cell : directSelections) {
+			listener.addCellContent(cell, content);
+		}
+		setDirectSelectionNext();
+		repaint();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * biz.computerkraft.crossword.gui.input.InputListener#deleteCellContent()
+	 */
+	@Override
+	public final void deleteCellContent() {
+		for (Cell cell : directSelections) {
+			listener.clearCellContent(cell);
+		}
+		repaint();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * biz.computerkraft.crossword.gui.input.InputListener#backspaceCellContent(
+	 * )
+	 */
+	@Override
+	public final void backspaceCellContent() {
+		setDirectSelectionPrevious();
+		for (Cell cell : directSelections) {
+			listener.clearCellContent(cell);
+		}
+		repaint();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see biz.computerkraft.crossword.gui.input.InputListener#moveLeft()
+	 */
+	@Override
+	public final void moveLeft() {
+		List<Cell> currentSelection = new ArrayList<>();
+		currentSelection.addAll(directSelections);
+		indirectSelections.clear();
+		for (Cell cell : currentSelection) {
+			listener.selectCellLeft(cell);
+		}
+		repaint();
+
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see biz.computerkraft.crossword.gui.input.InputListener#moveUp()
+	 */
+	@Override
+	public final void moveUp() {
+		List<Cell> currentSelection = new ArrayList<>();
+		currentSelection.addAll(directSelections);
+		indirectSelections.clear();
+		for (Cell cell : currentSelection) {
+			listener.selectCellUp(cell);
+		}
+		repaint();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see biz.computerkraft.crossword.gui.input.InputListener#moveRight()
+	 */
+	@Override
+	public final void moveRight() {
+		List<Cell> currentSelection = new ArrayList<>();
+		currentSelection.addAll(directSelections);
+		indirectSelections.clear();
+		for (Cell cell : currentSelection) {
+			listener.selectCellRight(cell);
+		}
+		repaint();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see biz.computerkraft.crossword.gui.input.InputListener#moveDown()
+	 */
+	@Override
+	public final void moveDown() {
+		List<Cell> currentSelection = new ArrayList<>();
+		currentSelection.addAll(directSelections);
+		indirectSelections.clear();
+		for (Cell cell : currentSelection) {
+			listener.selectCellDown(cell);
+		}
 		repaint();
 	}
 }

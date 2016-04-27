@@ -23,4 +23,60 @@ public interface CellUpdateListener {
 	 *            point in cell of selection
 	 */
 	void selectCell(Cell cell, Point2D point);
+
+	/**
+	 * 
+	 * Event raised when cell to left needs to be selected.
+	 * 
+	 * @param cell
+	 *            currently selected cell.
+	 */
+	void selectCellLeft(Cell cell);
+
+	/**
+	 * 
+	 * Event raised when cell up needs to be selected.
+	 * 
+	 * @param cell
+	 *            currently selected cell.
+	 */
+	void selectCellUp(Cell cell);
+
+	/**
+	 * 
+	 * Event raised when cell to right needs to be selected.
+	 * 
+	 * @param cell
+	 *            currently selected cell.
+	 */
+	void selectCellRight(Cell cell);
+
+	/**
+	 * 
+	 * Event raised when cell down needs to be selected.
+	 * 
+	 * @param cell
+	 *            currently selected cell.
+	 */
+	void selectCellDown(Cell cell);
+
+	/**
+	 * 
+	 * Event raised when cell content to be added to cell.
+	 * 
+	 * @param cell
+	 *            selected cell.
+	 * @param content
+	 *            content to add to cell
+	 */
+	void addCellContent(Cell cell, String content);
+
+	/**
+	 * 
+	 * Resets cell content.
+	 * 
+	 * @param cell
+	 *            selected cell.
+	 */
+	void clearCellContent(Cell cell);
 }

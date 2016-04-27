@@ -1,9 +1,12 @@
 package biz.computerkraft.crossword.gui.renderer;
 
 import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.Shape;
+import java.awt.geom.Rectangle2D;
 
 import biz.computerkraft.crossword.grid.Cell;
 import biz.computerkraft.crossword.grid.crossword.Crossword;
@@ -24,6 +27,12 @@ public class CrosswordCellRenderer implements CellRenderer {
 
 	/** Shape rendered. */
 	private Shape cellShape;
+
+	/** Default font size. */
+	private static final int DEFAULT_FONT_SIZE = 40;
+
+	/** Font for crossword. */
+	private static final Font DEFAULT_FONT = new Font("Arial", Font.BOLD, DEFAULT_FONT_SIZE);
 
 	/*
 	 * (non-Javadoc)
@@ -83,6 +92,15 @@ public class CrosswordCellRenderer implements CellRenderer {
 			graphics.draw(cellShape);
 		}
 
+		if (!cell.getContents().isEmpty()) {
+			Rectangle2D bounds = cellShape.getBounds2D();
+			graphics.setColor(Color.BLACK);
+			graphics.setFont(DEFAULT_FONT);
+			FontMetrics metrics = graphics.getFontMetrics(DEFAULT_FONT);
+			double fontX = bounds.getX() + (bounds.getWidth() - metrics.stringWidth(cell.getContents())) / 2;
+			double fontY = bounds.getY() + ((bounds.getHeight() - metrics.getHeight()) / 2) + metrics.getAscent();
+			graphics.drawString(cell.getContents(), (int) fontX, (int) fontY);
+		}
 	}
 
 	/*

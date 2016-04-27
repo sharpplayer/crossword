@@ -83,4 +83,65 @@ public interface PuzzleProperties {
 	 * @return list of indirectly selected cells
 	 */
 	List<Cell> getIndirectSelection(Cell cell, Point2D offset);
+
+	/**
+	 * 
+	 * Adds content to cell.
+	 * 
+	 * @param cell
+	 *            cell to add content to
+	 * @param content
+	 *            content to add
+	 */
+	void addCellContent(Cell cell, String content);
+
+	/**
+	 * 
+	 * Clear content from cell.
+	 * 
+	 * @param cell
+	 *            cell to clear content of
+	 */
+	void clearCellContent(Cell cell);
+
+	/**
+	 * 
+	 * Returns cell to left of determined cell.
+	 * 
+	 * @param cell
+	 *            cell to base on
+	 * @return cell to left
+	 */
+	Cell getCellLeft(Cell cell);
+
+	/**
+	 * 
+	 * Returns cell to right of determined cell.
+	 * 
+	 * @param cell
+	 *            cell to base on
+	 * @return cell to right
+	 */
+	Cell getCellRight(Cell cell);
+
+	/**
+	 * 
+	 * Returns cell above determined cell.
+	 * 
+	 * @param cell
+	 *            cell to base on
+	 * @return cell above
+	 */
+	Cell getCellUp(Cell cell);
+
+	/**
+	 * 
+	 * Returns cell below determined cell.
+	 * 
+	 * @param cell
+	 *            cell to base on
+	 * @return cell below
+	 */
+	Cell getCellDown(Cell cell);
+
 }
