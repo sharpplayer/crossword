@@ -219,4 +219,28 @@ public class GridDialog extends JDialog implements CellUpdateListener {
 		Cell newCell = puzzle.getCellDown(cell);
 		selectCell(newCell, lastOffset);
 	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * biz.computerkraft.crossword.gui.CellUpdateListener#cellMenuAction(biz.
+	 * computerkraft.crossword.grid.Cell, java.lang.String)
+	 */
+	@Override
+	public final void cellMenuAction(final Cell cell, final String action) {
+		puzzle.cellMenuAction(cell, action);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * biz.computerkraft.crossword.gui.CellUpdateListener#populateCellMenu(biz.
+	 * computerkraft.crossword.grid.Cell, java.util.List)
+	 */
+	@Override
+	public final void populateCellMenu(final Cell cell, final List<String> actions) {
+		puzzle.populateCellMenu(cell, actions);
+	}
 }

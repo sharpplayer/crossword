@@ -1,7 +1,11 @@
 package biz.computerkraft.crossword.grid;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
@@ -15,6 +19,9 @@ public class Cell {
 
 	/** Adjacent cells. */
 	private Map<Integer, Cell> adjacents = new HashMap<>();
+
+	/** Symmetric cells. */
+	private List<Cell> symmetrics = new ArrayList<>();
 
 	/** Blocked directions. */
 	private Map<Integer, Boolean> blocks = new HashMap<>();
@@ -105,7 +112,23 @@ public class Cell {
 	 *            the block to set
 	 */
 	public final void setBlock(final int direction, final boolean block) {
-		blocks.put(direction, block);
+		boolean oldBlock = false;
+		if (blocks.containsKey(direction)) {
+			oldBlock = blocks.get(direction);
+		}
+		if (oldBlock != block) {
+			blocks.put(direction, block);
+			Optional<Cell> adjacent = getAdjacent(direction);
+			if (adjacent.isPresent()) {
+				Cell adjacentCell = adjacent.get();
+				for (Entry<Integer, Cell> adjacentEntry : adjacentCell.adjacents.entrySet()) {
+					if (adjacentEntry.getValue().equals(this)) {
+						adjacentCell.setBlock(adjacentEntry.getKey(), block);
+						break;
+					}
+				}
+			}
+		}
 	}
 
 	/**
@@ -198,5 +221,38 @@ public class Cell {
 	 */
 	public final double getAnchorY() {
 		return anchorY;
+	}
+
+	/**
+	 * 
+	 * Get symmetric cell group.
+	 * 
+	 * @return cells in symmetric group
+	 */
+	public final List<Cell> getSymmetrics() {
+		return symmetrics;
+	}
+
+	/**
+	 * 
+	 * Get adjacents group.
+	 * 
+	 * @return adjacent cells
+	 */
+	public final Collection<Cell> getAdjacents() {
+		return adjacents.values();
+	}
+
+	/**
+	 * 
+	 * Adds a symmetric cell.
+	 * 
+	 * @param symmetric
+	 *            cell to add to symmetry group
+	 */
+	public final void addSymmetric(final Cell symmetric) {
+		if (!symmetrics.contains(symmetric)) {
+			symmetrics.add(symmetric);
+		}
 	}
 }

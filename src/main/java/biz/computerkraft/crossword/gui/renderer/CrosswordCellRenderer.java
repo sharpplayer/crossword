@@ -82,8 +82,8 @@ public class CrosswordCellRenderer implements CellRenderer {
 			graphics.setColor(Color.YELLOW);
 		}
 
-		cellShape = new Rectangle((int) (x * width), (int) (y * height), (int) (widthPc * width),
-				(int) (heightPc * height));
+		cellShape = new Rectangle((int) (x * width), (int) (y * height), (int) (widthPc * width) + 1,
+				(int) (heightPc * height) + 1);
 
 		graphics.fill(cellShape);
 

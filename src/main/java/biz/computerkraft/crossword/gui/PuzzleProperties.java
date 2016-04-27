@@ -143,5 +143,28 @@ public interface PuzzleProperties {
 	 * @return cell below
 	 */
 	Cell getCellDown(Cell cell);
+	
+	/**
+	 * 
+	 * Performs an action on a cell.
+	 * 
+	 * @param cell
+	 *            selected cell.
+	 * @param action
+	 *            action to perform
+	 */
+	void cellMenuAction(Cell cell, String action);
+
+	/**
+	 * 
+	 * Retrieves an action list for a cell.
+	 * 
+	 * @param cell
+	 *            selected cell.
+	 * @param actions
+	 *            actions to perform
+	 */
+	void populateCellMenu(Cell cell, List<String> actions);
+
 
 }

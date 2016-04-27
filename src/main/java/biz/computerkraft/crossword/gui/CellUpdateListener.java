@@ -1,6 +1,7 @@
 package biz.computerkraft.crossword.gui;
 
 import java.awt.geom.Point2D;
+import java.util.List;
 
 import biz.computerkraft.crossword.grid.Cell;
 
@@ -79,4 +80,26 @@ public interface CellUpdateListener {
 	 *            selected cell.
 	 */
 	void clearCellContent(Cell cell);
+
+	/**
+	 * 
+	 * Performs an action on a cell.
+	 * 
+	 * @param cell
+	 *            selected cell.
+	 * @param action
+	 *            action to perform
+	 */
+	void cellMenuAction(Cell cell, String action);
+
+	/**
+	 * 
+	 * Retrieves an action list for a cell.
+	 * 
+	 * @param cell
+	 *            selected cell.
+	 * @param actions
+	 *            actions to perform
+	 */
+	void populateCellMenu(Cell cell, List<String> actions);
 }

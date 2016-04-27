@@ -33,7 +33,7 @@ public class CrosswordMouseAdapter extends MouseAdapter {
 	 */
 	@Override
 	public final void mouseReleased(final MouseEvent e) {
-		listener.selectCellAt(e.getX(), e.getY());
+		listener.selectCellAt(e.getX(), e.getY(), e.isPopupTrigger());
 	}
 
 }

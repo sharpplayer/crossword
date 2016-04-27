@@ -2,6 +2,7 @@ package biz.computerkraft.crossword.gui;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Shape;
@@ -10,9 +11,12 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 
 import biz.computerkraft.crossword.grid.Cell;
+import biz.computerkraft.crossword.gui.input.CrosswordCellAction;
 import biz.computerkraft.crossword.gui.input.CrosswordKeyListener;
 import biz.computerkraft.crossword.gui.input.CrosswordMouseAdapter;
 import biz.computerkraft.crossword.gui.input.InputListener;
@@ -46,6 +50,9 @@ public class CrosswordPanel extends JPanel implements InputListener {
 
 	/** Cell update listener. */
 	private final CellUpdateListener listener;
+
+	/** Popup menu. */
+	private final JPopupMenu popup = new JPopupMenu();
 
 	/**
 	 * Constructor.
@@ -124,10 +131,10 @@ public class CrosswordPanel extends JPanel implements InputListener {
 	 * 
 	 * @see
 	 * biz.computerkraft.crossword.gui.input.InputListener#selectCellAt(double,
-	 * double)
+	 * double, boolean)
 	 */
 	@Override
-	public final void selectCellAt(final double x, final double y) {
+	public final void selectCellAt(final double x, final double y, final boolean withPopup) {
 		requestFocusInWindow();
 		Point2D point = new Point2D.Double(x, y);
 		for (CellRenderer renderer : renderers) {
@@ -137,6 +144,19 @@ public class CrosswordPanel extends JPanel implements InputListener {
 				Point2D selectionOffset = new Point2D.Double((x - bounds.getX()) / bounds.getWidth(),
 						(y - bounds.getY()) / bounds.getHeight());
 				listener.selectCell(renderer.getCell(), selectionOffset);
+				if (withPopup) {
+					popup.removeAll();
+					List<String> actions = new ArrayList<>();
+					listener.populateCellMenu(renderer.getCell(), actions);
+					for (String action : actions) {
+						JMenuItem item = new JMenuItem(action);
+						item.setAction(new CrosswordCellAction(renderer.getCell(), action, listener));
+						item.setFont(new Font("Arial", Font.BOLD, 40));
+						popup.add(item);
+					}
+					popup.show(this, (int) x, (int) y);
+					repaint();
+				}
 				break;
 			}
 		}

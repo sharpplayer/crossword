@@ -17,8 +17,10 @@ public interface InputListener {
 	 *            x position to select at
 	 * @param y
 	 *            y position to select at
+	 * @param withPopup
+	 *            show popup
 	 */
-	void selectCellAt(double x, double y);
+	void selectCellAt(double x, double y, boolean withPopup);
 
 	/**
 	 * 

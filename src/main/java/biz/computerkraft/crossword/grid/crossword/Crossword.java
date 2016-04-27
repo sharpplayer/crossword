@@ -30,6 +30,12 @@ public class Crossword extends Grid {
 	/** Height property. */
 	private static final String PROPERTY_SYMMETRY = "Symmetry";
 
+	/** Fill action. */
+	private static final String ACTION_FILL = "Fill";
+
+	/** Unfill action. */
+	private static final String ACTION_UNFILL = "Unfill";
+
 	/** North direction. */
 	public static final int DIRECTION_N = 1;
 
@@ -124,6 +130,30 @@ public class Crossword extends Grid {
 				}
 				if (west != null) {
 					cell.setAdjacent(DIRECTION_W, west);
+				}
+
+				cell.addSymmetric(cell);
+				if (symmetry == Symmetry.X || symmetry == Symmetry.XY || symmetry == Symmetry.EIGHTWAY) {
+					cell.addSymmetric(grid.get((width - x - 1) + ":" + y));
+				}
+				if (symmetry == Symmetry.Y || symmetry == Symmetry.XY || symmetry == Symmetry.EIGHTWAY) {
+					cell.addSymmetric(grid.get(x + ":" + (height - y - 1)));
+				}
+				if (symmetry == Symmetry.ROTATE90 || symmetry == Symmetry.ROTATE180 || symmetry == Symmetry.XY
+						|| symmetry == Symmetry.EIGHTWAY) {
+					cell.addSymmetric(grid.get((width - x - 1) + ":" + (height - y - 1)));
+				}
+				if (symmetry == Symmetry.EIGHTWAY) {
+					cell.addSymmetric(grid.get(y + ":" + x));
+				}
+				if (symmetry == Symmetry.ROTATE90 || symmetry == Symmetry.EIGHTWAY) {
+					cell.addSymmetric(grid.get(y + ":" + (height - x - 1)));
+				}
+				if (symmetry == Symmetry.ROTATE90 || symmetry == Symmetry.ROTATE180 || symmetry == Symmetry.EIGHTWAY) {
+					cell.addSymmetric(grid.get((width - y - 1) + ":" + x));
+				}
+				if (symmetry == Symmetry.EIGHTWAY) {
+					cell.addSymmetric(grid.get((width - y - 1) + ":" + (height - x - 1)));
 				}
 			}
 		}
@@ -308,10 +338,101 @@ public class Crossword extends Grid {
 	private Cell getCell(final Cell cell, final int direction) {
 		Optional<Cell> optionalCell = cell.getAdjacent(direction);
 		if (optionalCell.isPresent()) {
-			return optionalCell.get();
+			if (isCellFilled(optionalCell.get())) {
+				return cell;
+			} else {
+				return optionalCell.get();
+			}
 		} else {
 			return cell;
 		}
 
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see biz.computerkraft.crossword.gui.PuzzleProperties#cellMenuAction(biz.
+	 * computerkraft.crossword.grid.Cell, java.lang.String)
+	 */
+	@Override
+	public final void cellMenuAction(final Cell cell, final String action) {
+		if (action.equals(ACTION_FILL)) {
+			for (Cell symmetric : cell.getSymmetrics()) {
+				symmetric.setBlock(DIRECTION_E, true);
+				symmetric.setBlock(DIRECTION_W, true);
+				symmetric.setBlock(DIRECTION_N, true);
+				symmetric.setBlock(DIRECTION_S, true);
+			}
+		} else if (action.equals(ACTION_UNFILL)) {
+			for (Cell symmetric : cell.getSymmetrics()) {
+				unfill(symmetric, DIRECTION_E);
+				unfill(symmetric, DIRECTION_W);
+				unfill(symmetric, DIRECTION_N);
+				unfill(symmetric, DIRECTION_S);
+			}
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * biz.computerkraft.crossword.gui.PuzzleProperties#populateCellMenu(biz.
+	 * computerkraft.crossword.grid.Cell, java.util.List)
+	 */
+	@Override
+	public final void populateCellMenu(final Cell cell, final List<String> actions) {
+
+		if (isCellFilled(cell)) {
+			for (Cell adjacent : cell.getAdjacents()) {
+				if (!isCellFilled(adjacent)) {
+					actions.add(ACTION_UNFILL);
+					break;
+				}
+			}
+		} else {
+			boolean fillable = true;
+			for (Cell symmetricCell : cell.getSymmetrics()) {
+				if (!symmetricCell.getContents().isEmpty()) {
+					fillable = false;
+					break;
+				}
+			}
+			if (fillable) {
+				actions.add(ACTION_FILL);
+			}
+		}
+	}
+
+	/**
+	 * 
+	 * Gets full blocked status of cell.
+	 * 
+	 * @param cell
+	 *            cell to test for filled status
+	 * 
+	 * @return blocked status
+	 */
+	private boolean isCellFilled(final Cell cell) {
+		return cell.isBlocked(DIRECTION_E) && cell.isBlocked(DIRECTION_N) && cell.isBlocked(DIRECTION_S)
+				&& cell.isBlocked(DIRECTION_W);
+	}
+
+	/**
+	 * 
+	 * Unblocks an adjacent of cell.
+	 * 
+	 * @param cell
+	 *            cell to unfill
+	 * @param direction
+	 *            direction to check unfill
+	 */
+	private void unfill(final Cell cell, final int direction) {
+
+		Optional<Cell> adjacent = cell.getAdjacent(direction);
+		if (adjacent.isPresent()) {
+			cell.setBlock(direction, isCellFilled(adjacent.get()));
+		}
 	}
 }
