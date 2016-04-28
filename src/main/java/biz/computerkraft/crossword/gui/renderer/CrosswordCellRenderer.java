@@ -1,5 +1,6 @@
 package biz.computerkraft.crossword.gui.renderer;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -31,8 +32,17 @@ public class CrosswordCellRenderer implements CellRenderer {
 	/** Default font size. */
 	private static final int DEFAULT_FONT_SIZE = 40;
 
+	/** Marker font size. */
+	private static final int MARKER_FONT_SIZE = 10;
+
+	/** Default font size. */
+	private static final int CELL_BORDER = 6;
+
 	/** Font for crossword. */
 	private static final Font DEFAULT_FONT = new Font("Arial", Font.BOLD, DEFAULT_FONT_SIZE);
+
+	/** Marker font for crossword. */
+	private static final Font MARKER_FONT = new Font("Arial", Font.BOLD, MARKER_FONT_SIZE);
 
 	/*
 	 * (non-Javadoc)
@@ -72,6 +82,9 @@ public class CrosswordCellRenderer implements CellRenderer {
 			heightPc = cell.getAdjacent(Crossword.DIRECTION_S).get().getAnchorY() - y;
 		}
 
+		cellShape = new Rectangle((int) Math.round(x * width), (int) Math.round(y * height),
+				(int) Math.round(widthPc * width), (int) Math.round(heightPc * height));
+
 		if (fill) {
 			graphics.setColor(Color.BLACK);
 		} else if (selection == Selection.NONE) {
@@ -82,15 +95,28 @@ public class CrosswordCellRenderer implements CellRenderer {
 			graphics.setColor(Color.YELLOW);
 		}
 
-		cellShape = new Rectangle((int) (x * width), (int) (y * height), (int) (widthPc * width) + 1,
-				(int) (heightPc * height) + 1);
-
 		graphics.fill(cellShape);
 
+		Shape borderShape = cellShape;
 		if (!fill) {
+			graphics.setStroke(new BasicStroke(1));
 			graphics.setColor(Color.BLACK);
-			graphics.draw(cellShape);
+		} else {
+			borderShape = new Rectangle((int) Math.round(x * width + CELL_BORDER / 2 + 1),
+					(int) Math.round(y * height + CELL_BORDER / 2 + 1),
+					(int) Math.round(widthPc * width) - 1 - CELL_BORDER,
+					(int) Math.round(heightPc * height) - 1 - CELL_BORDER);
+			graphics.setStroke(new BasicStroke(CELL_BORDER));
+			if (selection == Selection.NONE) {
+				graphics.setColor(Color.BLACK);
+			} else if (selection == Selection.DIRECT) {
+				graphics.setColor(Color.ORANGE);
+			} else if (selection == Selection.INDIRECT) {
+				graphics.setColor(Color.YELLOW);
+			}
 		}
+
+		graphics.draw(borderShape);
 
 		if (!cell.getContents().isEmpty()) {
 			Rectangle2D bounds = cellShape.getBounds2D();
@@ -101,6 +127,16 @@ public class CrosswordCellRenderer implements CellRenderer {
 			double fontY = bounds.getY() + ((bounds.getHeight() - metrics.getHeight()) / 2) + metrics.getAscent();
 			graphics.drawString(cell.getContents(), (int) fontX, (int) fontY);
 		}
+
+		if (!cell.getMarker().isEmpty()) {
+			Rectangle2D bounds = cellShape.getBounds2D();
+			graphics.setColor(Color.BLACK);
+			graphics.setFont(MARKER_FONT);
+			FontMetrics metrics = graphics.getFontMetrics(MARKER_FONT);
+			graphics.drawString(cell.getMarker(), (int) (bounds.getX() + 3),
+					(int) (bounds.getY() + 3 + metrics.getAscent()));
+		}
+
 	}
 
 	/*

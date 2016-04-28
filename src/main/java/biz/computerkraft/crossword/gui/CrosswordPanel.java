@@ -150,12 +150,11 @@ public class CrosswordPanel extends JPanel implements InputListener {
 					listener.populateCellMenu(renderer.getCell(), actions);
 					for (String action : actions) {
 						JMenuItem item = new JMenuItem(action);
-						item.setAction(new CrosswordCellAction(renderer.getCell(), action, listener));
+						item.setAction(new CrosswordCellAction(renderer.getCell(), action, listener, this));
 						item.setFont(new Font("Arial", Font.BOLD, 40));
 						popup.add(item);
 					}
 					popup.show(this, (int) x, (int) y);
-					repaint();
 				}
 				break;
 			}

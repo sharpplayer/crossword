@@ -230,6 +230,7 @@ public class GridDialog extends JDialog implements CellUpdateListener {
 	@Override
 	public final void cellMenuAction(final Cell cell, final String action) {
 		puzzle.cellMenuAction(cell, action);
+		selectCell(cell, lastOffset);
 	}
 
 	/*

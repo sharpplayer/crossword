@@ -3,6 +3,7 @@ package biz.computerkraft.crossword.gui.input;
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
+import javax.swing.JComponent;
 
 import biz.computerkraft.crossword.grid.Cell;
 import biz.computerkraft.crossword.gui.CellUpdateListener;
@@ -25,6 +26,9 @@ public class CrosswordCellAction extends AbstractAction {
 	/** Callback. */
 	private final CellUpdateListener listener;
 
+	/** Component to repaint on completed action. */
+	private final JComponent component;
+
 	/**
 	 * 
 	 * Action constructor.
@@ -35,11 +39,15 @@ public class CrosswordCellAction extends AbstractAction {
 	 *            action to perform
 	 * @param newListener
 	 *            listener to invoke on action
+	 * @param crosswordPanel
+	 *            panel to repaint on action
 	 */
-	public CrosswordCellAction(final Cell cell, final String action, final CellUpdateListener newListener) {
+	public CrosswordCellAction(final Cell cell, final String action, final CellUpdateListener newListener,
+			final JComponent crosswordPanel) {
 		actionCell = cell;
 		putValue(NAME, action);
 		listener = newListener;
+		component = crosswordPanel;
 	}
 
 	/*
@@ -51,6 +59,7 @@ public class CrosswordCellAction extends AbstractAction {
 	@Override
 	public final void actionPerformed(final ActionEvent e) {
 		listener.cellMenuAction(actionCell, e.getActionCommand());
+		component.repaint();
 	}
 
 }

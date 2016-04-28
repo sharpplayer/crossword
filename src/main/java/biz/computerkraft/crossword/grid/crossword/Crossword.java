@@ -1,6 +1,7 @@
 package biz.computerkraft.crossword.grid.crossword;
 
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -106,9 +107,12 @@ public class Crossword extends Grid {
 	 */
 	private void initialise(final int width, final int height, final Symmetry symmetry) {
 		Map<String, Cell> grid = new HashMap<>();
-		for (int x = 0; x < width; x++) {
-			for (int y = 0; y < height; y++) {
-				grid.put(x + ":" + y, new Cell(x / (double) width, y / (double) height));
+		List<Cell> orderedGrid = new ArrayList<>();
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				Cell newCell = new Cell(x / (double) width, y / (double) height);
+				grid.put(x + ":" + y, newCell);
+				orderedGrid.add(newCell);
 			}
 		}
 
@@ -158,7 +162,9 @@ public class Crossword extends Grid {
 			}
 		}
 
-		setCells(grid.values());
+		setCells(orderedGrid);
+
+		setMarkers();
 
 		cellWidth = width;
 		cellHeight = height;
@@ -239,22 +245,27 @@ public class Crossword extends Grid {
 	 */
 	@Override
 	public final List<Cell> getIndirectSelection(final Cell cell, final Point2D selectionSpot) {
-		int forward = DIRECTION_E;
-		if (Math.abs(selectionSpot.getX() - CELL_CENTRE) < Math.abs(selectionSpot.getY() - CELL_CENTRE)) {
-			forward = DIRECTION_S;
-		}
-		int backward = getReverseDirection(forward);
-		List<Cell> selection = getWordWithCell(cell, backward, forward);
-		if (selection.size() == 1) {
-			if (forward == DIRECTION_E) {
-				forward = DIRECTION_S;
-			} else {
-				forward = DIRECTION_E;
-			}
-			backward = getReverseDirection(forward);
-			selection = getWordWithCell(cell, backward, forward);
-		}
+		List<Cell> selection;
+		if (isCellFilled(cell)) {
+			selection = new ArrayList<>();
+		} else {
+			int forward = DIRECTION_E;
 
+			if (Math.abs(selectionSpot.getX() - CELL_CENTRE) < Math.abs(selectionSpot.getY() - CELL_CENTRE)) {
+				forward = DIRECTION_S;
+			}
+			int backward = getReverseDirection(forward);
+			selection = getWordWithCell(cell, backward, forward);
+			if (selection.size() == 1) {
+				if (forward == DIRECTION_E) {
+					forward = DIRECTION_S;
+				} else {
+					forward = DIRECTION_E;
+				}
+				backward = getReverseDirection(forward);
+				selection = getWordWithCell(cell, backward, forward);
+			}
+		}
 		return selection;
 	}
 
@@ -338,11 +349,7 @@ public class Crossword extends Grid {
 	private Cell getCell(final Cell cell, final int direction) {
 		Optional<Cell> optionalCell = cell.getAdjacent(direction);
 		if (optionalCell.isPresent()) {
-			if (isCellFilled(optionalCell.get())) {
-				return cell;
-			} else {
-				return optionalCell.get();
-			}
+			return optionalCell.get();
 		} else {
 			return cell;
 		}
@@ -364,6 +371,7 @@ public class Crossword extends Grid {
 				symmetric.setBlock(DIRECTION_N, true);
 				symmetric.setBlock(DIRECTION_S, true);
 			}
+			setMarkers();
 		} else if (action.equals(ACTION_UNFILL)) {
 			for (Cell symmetric : cell.getSymmetrics()) {
 				unfill(symmetric, DIRECTION_E);
@@ -371,6 +379,7 @@ public class Crossword extends Grid {
 				unfill(symmetric, DIRECTION_N);
 				unfill(symmetric, DIRECTION_S);
 			}
+			setMarkers();
 		}
 	}
 
@@ -433,6 +442,22 @@ public class Crossword extends Grid {
 		Optional<Cell> adjacent = cell.getAdjacent(direction);
 		if (adjacent.isPresent()) {
 			cell.setBlock(direction, isCellFilled(adjacent.get()));
+		}
+	}
+
+	/**
+	 * Sets the markers on the cells.
+	 */
+	private void setMarkers() {
+		int marker = 1;
+		for (Cell cell : getCells()) {
+			if (!isCellFilled(cell) && ((cell.isBlocked(DIRECTION_W) && !cell.isBlocked(DIRECTION_E))
+					|| (cell.isBlocked(DIRECTION_N) && !cell.isBlocked(DIRECTION_S)))) {
+				cell.setMarker(Integer.toString(marker));
+				marker++;
+			} else {
+				cell.setMarker("");
+			}
 		}
 	}
 }
