@@ -135,15 +135,13 @@ public class Crossword extends Grid {
 			}
 		}
 
-		setCellGroups(grid, width, height);
-
-		setCells(orderedGrid);
-
-		setMarkers();
-
 		cellWidth = width;
 		cellHeight = height;
 		symmetry = newSymmetry;
+
+		setCellGroups(grid, width, height);
+		setCells(orderedGrid);
+		setMarkers();
 	}
 
 	/**

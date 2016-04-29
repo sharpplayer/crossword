@@ -6,6 +6,8 @@ import java.awt.Container;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -185,9 +187,27 @@ public class PropertyDialog extends JDialog {
 			@Override
 			public void actionPerformed(final ActionEvent e) {
 				setVisible(false);
+				if (!masterFrame.isVisible()) {
+					System.exit(0);
+				}
 			}
 		});
 		panel.add(button);
+
+		addWindowListener(new WindowAdapter() {
+			/*
+			 * (non-Javadoc)
+			 * 
+			 * @see java.awt.event.WindowAdapter#windowClosing(java.awt.event.
+			 * WindowEvent)
+			 */
+			@Override
+			public void windowClosing(final WindowEvent e) {
+				if (!masterFrame.isVisible()) {
+					System.exit(0);
+				}
+			}
+		});
 
 		SpringUtilities.makeCompactGrid(container, ROWS, COLUMNS, MARGIN, MARGIN, MARGIN, MARGIN);
 		pack();

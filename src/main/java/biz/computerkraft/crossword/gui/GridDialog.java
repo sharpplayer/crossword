@@ -5,6 +5,8 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.geom.Point2D;
 import java.io.File;
 import java.util.HashMap;
@@ -176,7 +178,21 @@ public class GridDialog extends JFrame implements CellUpdateListener {
 
 		setJMenuBar(menu);
 
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		addWindowListener(new WindowAdapter() {
+			/*
+			 * (non-Javadoc)
+			 * 
+			 * @see java.awt.event.WindowAdapter#windowClosing(java.awt.event.
+			 * WindowEvent)
+			 */
+			@Override
+			public void windowClosing(final WindowEvent e) {
+				if (dirtyCheck()) {
+					System.exit(0);
+				}
+			}
+		});
 
 		Container pane = getContentPane();
 		pane.setLayout(new SpringLayout());
