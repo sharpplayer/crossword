@@ -31,6 +31,7 @@ import biz.computerkraft.crossword.db.DBConnection;
 import biz.computerkraft.crossword.db.Word;
 import biz.computerkraft.crossword.grid.Cell;
 import biz.computerkraft.crossword.grid.Symmetry;
+import biz.computerkraft.crossword.gui.input.WordListMouseAdapter;
 
 /**
  * 
@@ -201,6 +202,8 @@ public class GridDialog extends JFrame implements CellUpdateListener {
 
 		pane.add(wordTabs);
 		JList<Word> wordList = new JList<>(wordlListModel);
+		wordList.addMouseListener(new WordListMouseAdapter(this));
+		// wordList.addListSelectionListener(new WordListSelectionListener());
 		wordList.setFont(new Font("Courier New", Font.BOLD, DEFAULT_FONT_SIZE));
 		wordTabs.addTab("Words", new JScrollPane(wordList));
 
@@ -279,6 +282,7 @@ public class GridDialog extends JFrame implements CellUpdateListener {
 	@Override
 	public final void addCellContent(final Cell cell, final String content) {
 		puzzle.addCellContent(cell, content);
+		updateClues();
 		dirty = true;
 		updateWordList();
 	}
@@ -309,6 +313,7 @@ public class GridDialog extends JFrame implements CellUpdateListener {
 	public final void clearCellContent(final Cell cell) {
 		puzzle.clearCellContent(cell);
 		dirty = true;
+		updateClues();
 		updateWordList();
 	}
 
@@ -373,10 +378,7 @@ public class GridDialog extends JFrame implements CellUpdateListener {
 	@Override
 	public final void cellMenuAction(final Cell cell, final String action) {
 		dirty |= puzzle.cellMenuAction(cell, action);
-		List<ClueItem> clues = puzzle.getClues();
-		for (ClueModel model : clueModels.values()) {
-			model.setClues(clues);
-		}
+		updateClues();
 		selectCell(cell, lastOffset);
 	}
 
@@ -435,6 +437,35 @@ public class GridDialog extends JFrame implements CellUpdateListener {
 			e1.printStackTrace();
 		}
 		return false;
+
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see biz.computerkraft.crossword.gui.CellUpdateListener#setWord(biz.
+	 * computerkraft.crossword.db.Word)
+	 */
+	@Override
+	public final void setWord(final Word word) {
+		int letter = 0;
+		for (Cell cell : crosswordGrid.getFirstIndirectSelection()) {
+			puzzle.addCellContent(cell, word.getWord().substring(letter, letter + 1));
+			letter++;
+		}
+		updateWordList();
+		updateClues();
+		crosswordGrid.repaint();
+	}
+
+	/**
+	 * Updates clue lists.
+	 */
+	private void updateClues() {
+		List<ClueItem> clues = puzzle.getClues();
+		for (ClueModel model : clueModels.values()) {
+			model.setClues(clues);
+		}
 
 	}
 }

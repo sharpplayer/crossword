@@ -3,6 +3,7 @@ package biz.computerkraft.crossword.gui;
 import java.awt.geom.Point2D;
 import java.util.List;
 
+import biz.computerkraft.crossword.db.Word;
 import biz.computerkraft.crossword.grid.Cell;
 
 /**
@@ -102,4 +103,13 @@ public interface CellUpdateListener {
 	 *            actions to perform
 	 */
 	void populateCellMenu(Cell cell, List<String> actions);
+
+	/**
+	 * 
+	 * Sets current selection to word.
+	 * 
+	 * @param word
+	 *            word to set.
+	 */
+	void setWord(Word word);
 }
