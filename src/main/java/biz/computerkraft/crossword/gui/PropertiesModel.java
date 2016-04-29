@@ -34,7 +34,7 @@ public class PropertiesModel extends AbstractTableModel {
 	 * @param properties
 	 *            new properties to display.
 	 */
-	public final void setProperties(final PuzzleProperties properties) {
+	public final void setProperties(final Puzzle properties) {
 		Set<Entry<String, Object>> entrySet = properties.getProperties().entrySet();
 		propertyMap = new ArrayList<>(entrySet);
 		Collections.sort(propertyMap, new Comparator<Entry<String, Object>>() {

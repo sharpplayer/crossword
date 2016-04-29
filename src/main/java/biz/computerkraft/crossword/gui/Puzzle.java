@@ -14,7 +14,7 @@ import biz.computerkraft.crossword.grid.Cell;
  * @author Raymond Francis
  *
  */
-public interface PuzzleProperties {
+public interface Puzzle {
 
 	/**
 	 * 
@@ -143,7 +143,7 @@ public interface PuzzleProperties {
 	 * @return cell below
 	 */
 	Cell getCellDown(Cell cell);
-	
+
 	/**
 	 * 
 	 * Performs an action on a cell.
@@ -152,8 +152,9 @@ public interface PuzzleProperties {
 	 *            selected cell.
 	 * @param action
 	 *            action to perform
+	 * @return true if crossword becomes dirty
 	 */
-	void cellMenuAction(Cell cell, String action);
+	boolean cellMenuAction(Cell cell, String action);
 
 	/**
 	 * 
@@ -166,5 +167,24 @@ public interface PuzzleProperties {
 	 */
 	void populateCellMenu(Cell cell, List<String> actions);
 
+	/**
+	 * 
+	 * Get clue categories.
+	 * 
+	 * @return clue categories
+	 */
+	List<String> getClueCategories();
 
+	/**
+	 * 
+	 * Get clue items.
+	 * 
+	 * @return clue items
+	 */
+	List<ClueItem> getClues();
+
+	/**
+	 * Call made after loading to tidy up.
+	 */
+	void postLoadTidyup();
 }

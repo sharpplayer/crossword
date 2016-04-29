@@ -2,7 +2,6 @@ package biz.computerkraft.crossword.gui;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Shape;
@@ -151,7 +150,7 @@ public class CrosswordPanel extends JPanel implements InputListener {
 					for (String action : actions) {
 						JMenuItem item = new JMenuItem(action);
 						item.setAction(new CrosswordCellAction(renderer.getCell(), action, listener, this));
-						item.setFont(new Font("Arial", Font.BOLD, 40));
+						item.setFont(GridDialog.DEFAULT_MENU_FONT);
 						popup.add(item);
 					}
 					popup.show(this, (int) x, (int) y);

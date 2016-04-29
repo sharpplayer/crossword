@@ -8,6 +8,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+
 /**
  * 
  * Puzzle cell.
@@ -15,6 +19,7 @@ import java.util.Optional;
  * @author Raymond Francis
  *
  */
+@XmlRootElement(name = "cell")
 public class Cell {
 
 	/** Adjacent cells. */
@@ -30,7 +35,7 @@ public class Cell {
 	private String contents = "";
 
 	/** Clues for direction. */
-	private Map<Integer, String> clues = new HashMap<>();
+	private Map<Integer, Clue> clues = new HashMap<>();
 
 	/** Cell marker. */
 	private String marker = "";
@@ -40,6 +45,12 @@ public class Cell {
 
 	/** Anchor y position. */
 	private double anchorY;
+
+	/**
+	 * Constructor for JAXB.
+	 */
+	public Cell() {
+	}
 
 	/**
 	 * Cell constructor.
@@ -137,6 +148,7 @@ public class Cell {
 	 * 
 	 * @return the contents
 	 */
+	@XmlElement(name = "contents")
 	public final String getContents() {
 		return contents;
 	}
@@ -161,7 +173,7 @@ public class Cell {
 	 * 
 	 * @return the clue in given direction
 	 */
-	public final Optional<String> getClue(final int direction) {
+	public final Optional<Clue> getClue(final int direction) {
 		if (clues.containsKey(direction)) {
 			return Optional.of(clues.get(direction));
 		} else {
@@ -178,8 +190,19 @@ public class Cell {
 	 * @param clue
 	 *            the clue to set
 	 */
-	public final void setClue(final int direction, final String clue) {
+	public final void setClue(final int direction, final Clue clue) {
 		this.clues.put(direction, clue);
+	}
+
+	/**
+	 * 
+	 * Clears clue in given direction.
+	 * 
+	 * @param direction
+	 *            clue direction
+	 */
+	public final void clearClue(final int direction) {
+		this.clues.remove(direction);
 	}
 
 	/**
@@ -188,6 +211,7 @@ public class Cell {
 	 * 
 	 * @return the marker
 	 */
+	@XmlElement(name = "marker")
 	public final String getMarker() {
 		return marker;
 	}
@@ -209,6 +233,7 @@ public class Cell {
 	 * 
 	 * @return the anchor percentage X
 	 */
+	@XmlElement(name = "anchorX")
 	public final double getAnchorX() {
 		return anchorX;
 	}
@@ -219,6 +244,7 @@ public class Cell {
 	 * 
 	 * @return the anchor percentage Y
 	 */
+	@XmlElement(name = "anchorY")
 	public final double getAnchorY() {
 		return anchorY;
 	}
@@ -229,6 +255,7 @@ public class Cell {
 	 * 
 	 * @return cells in symmetric group
 	 */
+
 	public final List<Cell> getSymmetrics() {
 		return symmetrics;
 	}
@@ -239,6 +266,7 @@ public class Cell {
 	 * 
 	 * @return adjacent cells
 	 */
+	@XmlTransient
 	public final Collection<Cell> getAdjacents() {
 		return adjacents.values();
 	}
@@ -255,4 +283,25 @@ public class Cell {
 			symmetrics.add(symmetric);
 		}
 	}
+
+	/**
+	 * XML serialisation of clues.
+	 * 
+	 * @return clues to serialise
+	 */
+	@XmlElement(name = "clues")
+	public final Map<Integer, Clue> getClues() {
+		return clues;
+	}
+
+	/**
+	 * XML serialisation of blocks.
+	 * 
+	 * @return blocks to serialise
+	 */
+	@XmlElement(name = "blocks")
+	public final Map<Integer, Boolean> getBlocks() {
+		return blocks;
+	}
+
 }

@@ -35,8 +35,11 @@ public class CrosswordCellRenderer implements CellRenderer {
 	/** Marker font size. */
 	private static final int MARKER_FONT_SIZE = 10;
 
-	/** Default font size. */
+	/** Default selected filled cell border. */
 	private static final int CELL_BORDER = 6;
+
+	/** Default marker border. */
+	private static final int MARKER_BORDER = 3;
 
 	/** Font for crossword. */
 	private static final Font DEFAULT_FONT = new Font("Arial", Font.BOLD, DEFAULT_FONT_SIZE);
@@ -133,8 +136,8 @@ public class CrosswordCellRenderer implements CellRenderer {
 			graphics.setColor(Color.BLACK);
 			graphics.setFont(MARKER_FONT);
 			FontMetrics metrics = graphics.getFontMetrics(MARKER_FONT);
-			graphics.drawString(cell.getMarker(), (int) (bounds.getX() + 3),
-					(int) (bounds.getY() + 3 + metrics.getAscent()));
+			graphics.drawString(cell.getMarker(), (int) (bounds.getX() + MARKER_BORDER),
+					(int) (bounds.getY() + MARKER_BORDER + metrics.getAscent()));
 		}
 
 	}

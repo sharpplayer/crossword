@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import biz.computerkraft.crossword.gui.PuzzleProperties;
+import javax.xml.bind.annotation.XmlElement;
+
+import biz.computerkraft.crossword.gui.Puzzle;
 
 /**
  * 
@@ -13,7 +15,7 @@ import biz.computerkraft.crossword.gui.PuzzleProperties;
  * @author Raymond Francis
  *
  */
-public abstract class Grid implements PuzzleProperties {
+public abstract class Grid implements Puzzle {
 
 	/** Cells list. */
 	private Collection<Cell> cells;
@@ -51,6 +53,7 @@ public abstract class Grid implements PuzzleProperties {
 	 * @param newCells
 	 *            new cells
 	 */
+	@XmlElement(name = "cell")
 	protected final void setCells(final Collection<Cell> newCells) {
 		cells = newCells;
 	}

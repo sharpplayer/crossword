@@ -43,7 +43,7 @@ public class PropertyDialog extends JDialog {
 	private static final int COLUMNS = 2;
 
 	/** Puzzle combo box. */
-	private JComboBox<PuzzleProperties> puzzles = new JComboBox<>();
+	private JComboBox<Puzzle> puzzles = new JComboBox<>();
 
 	/** Puzzle data model. */
 	private PropertiesModel model = new PropertiesModel();
@@ -62,7 +62,7 @@ public class PropertyDialog extends JDialog {
 		// Row 1
 		container.add(new JLabel("Type"));
 		container.add(puzzles);
-		puzzles.setRenderer(new ListCellRenderer<PuzzleProperties>() {
+		puzzles.setRenderer(new ListCellRenderer<Puzzle>() {
 			/*
 			 * (non-Javadoc)
 			 * 
@@ -71,8 +71,8 @@ public class PropertyDialog extends JDialog {
 			 * swing.JList, java.lang.Object, int, boolean, boolean)
 			 */
 			@Override
-			public Component getListCellRendererComponent(final JList<? extends PuzzleProperties> list,
-					final PuzzleProperties value, final int index, final boolean isSelected,
+			public Component getListCellRendererComponent(final JList<? extends Puzzle> list,
+					final Puzzle value, final int index, final boolean isSelected,
 					final boolean cellHasFocus) {
 				return new JLabel(value.getName());
 			}
@@ -88,7 +88,7 @@ public class PropertyDialog extends JDialog {
 			 */
 			@Override
 			public void actionPerformed(final ActionEvent e) {
-				PuzzleProperties properties = (PuzzleProperties) puzzles.getSelectedItem();
+				Puzzle properties = (Puzzle) puzzles.getSelectedItem();
 				model.setProperties(properties);
 			}
 		});
@@ -138,7 +138,7 @@ public class PropertyDialog extends JDialog {
 			public void actionPerformed(final ActionEvent e) {
 				setVisible(false);
 				try {
-					PuzzleProperties properties = (PuzzleProperties) puzzles.getSelectedItem().getClass().newInstance();
+					Puzzle properties = (Puzzle) puzzles.getSelectedItem().getClass().newInstance();
 					properties.setProperties(model.getProperties());
 					masterFrame.activatePuzzle(properties, PropertyDialog.this);
 				} catch (InstantiationException e1) {
@@ -175,7 +175,7 @@ public class PropertyDialog extends JDialog {
 	 * @param puzzle
 	 *            class of puzzle to be selectable
 	 */
-	public final void registerPuzzle(final Class<? extends PuzzleProperties> puzzle) {
+	public final void registerPuzzle(final Class<? extends Puzzle> puzzle) {
 		try {
 			puzzles.addItem(puzzle.newInstance());
 		} catch (InstantiationException e) {

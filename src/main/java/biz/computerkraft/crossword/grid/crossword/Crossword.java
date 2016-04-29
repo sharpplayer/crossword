@@ -2,15 +2,22 @@ package biz.computerkraft.crossword.grid.crossword;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+
 import biz.computerkraft.crossword.grid.Cell;
+import biz.computerkraft.crossword.grid.Clue;
 import biz.computerkraft.crossword.grid.Grid;
 import biz.computerkraft.crossword.grid.Symmetry;
 import biz.computerkraft.crossword.gui.CellRenderer;
+import biz.computerkraft.crossword.gui.ClueItem;
 import biz.computerkraft.crossword.gui.renderer.CrosswordCellRenderer;
 
 /**
@@ -20,6 +27,7 @@ import biz.computerkraft.crossword.gui.renderer.CrosswordCellRenderer;
  * @author Raymond Francis
  *
  */
+@XmlRootElement(name = "crossword")
 public class Crossword extends Grid {
 
 	/** Height property. */
@@ -33,6 +41,12 @@ public class Crossword extends Grid {
 
 	/** Fill action. */
 	private static final String ACTION_FILL = "Fill";
+
+	/** Across category. */
+	private static final String CATEGORY_ACROSS = "Across";
+
+	/** Down category. */
+	private static final String CATEGORY_DOWN = "Down";
 
 	/** Unfill action. */
 	private static final String ACTION_UNFILL = "Unfill";
@@ -64,11 +78,15 @@ public class Crossword extends Grid {
 	/** Actual height set. */
 	private int cellHeight;
 
+	/** Actual symmetry. */
+	private Symmetry symmetry;
+
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see biz.computerkraft.crossword.gui.PuzzleProperties#getProperties()
 	 */
+	@XmlTransient
 	@Override
 	public final Map<String, Object> getProperties() {
 		if (PROPERTIES.size() == 0) {
@@ -90,8 +108,8 @@ public class Crossword extends Grid {
 	public final void setProperties(final Map<String, Object> properties) {
 		int width = (Integer) properties.get(PROPERTY_WIDTH);
 		int height = (Integer) properties.get(PROPERTY_HEIGHT);
-		Symmetry symmetry = (Symmetry) properties.get(PROPERTY_SYMMETRY);
-		initialise(width, height, symmetry);
+		Symmetry newSymmetry = (Symmetry) properties.get(PROPERTY_SYMMETRY);
+		initialise(width, height, newSymmetry);
 	}
 
 	/**
@@ -102,10 +120,10 @@ public class Crossword extends Grid {
 	 *            crossword width
 	 * @param height
 	 *            crossword height
-	 * @param symmetry
+	 * @param newSymmetry
 	 *            crossword symmetry
 	 */
-	private void initialise(final int width, final int height, final Symmetry symmetry) {
+	private void initialise(final int width, final int height, final Symmetry newSymmetry) {
 		Map<String, Cell> grid = new HashMap<>();
 		List<Cell> orderedGrid = new ArrayList<>();
 		for (int y = 0; y < height; y++) {
@@ -168,6 +186,7 @@ public class Crossword extends Grid {
 
 		cellWidth = width;
 		cellHeight = height;
+		symmetry = newSymmetry;
 	}
 
 	/**
@@ -222,6 +241,7 @@ public class Crossword extends Grid {
 	 * @see biz.computerkraft.crossword.gui.PuzzleProperties#getCellWidth()
 	 */
 	@Override
+	@XmlElement(name = "width")
 	public final int getCellWidth() {
 		return cellWidth;
 	}
@@ -232,6 +252,7 @@ public class Crossword extends Grid {
 	 * @see biz.computerkraft.crossword.gui.PuzzleProperties#getCellHeight()
 	 */
 	@Override
+	@XmlElement(name = "height")
 	public final int getCellHeight() {
 		return cellHeight;
 	}
@@ -363,7 +384,9 @@ public class Crossword extends Grid {
 	 * computerkraft.crossword.grid.Cell, java.lang.String)
 	 */
 	@Override
-	public final void cellMenuAction(final Cell cell, final String action) {
+	public final boolean cellMenuAction(final Cell cell, final String action) {
+
+		boolean dirtyReturn = false;
 		if (action.equals(ACTION_FILL)) {
 			for (Cell symmetric : cell.getSymmetrics()) {
 				symmetric.setBlock(DIRECTION_E, true);
@@ -372,6 +395,7 @@ public class Crossword extends Grid {
 				symmetric.setBlock(DIRECTION_S, true);
 			}
 			setMarkers();
+			dirtyReturn = true;
 		} else if (action.equals(ACTION_UNFILL)) {
 			for (Cell symmetric : cell.getSymmetrics()) {
 				unfill(symmetric, DIRECTION_E);
@@ -380,7 +404,10 @@ public class Crossword extends Grid {
 				unfill(symmetric, DIRECTION_S);
 			}
 			setMarkers();
+			dirtyReturn = true;
 		}
+
+		return dirtyReturn;
 	}
 
 	/*
@@ -459,5 +486,101 @@ public class Crossword extends Grid {
 				cell.setMarker("");
 			}
 		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see biz.computerkraft.crossword.gui.PuzzleProperties#getClueCategories()
+	 */
+	@Override
+	public final List<String> getClueCategories() {
+		return Arrays.asList(CATEGORY_ACROSS, CATEGORY_DOWN);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see biz.computerkraft.crossword.gui.PuzzleProperties#getClues()
+	 */
+	@Override
+	public final List<ClueItem> getClues() {
+
+		List<ClueItem> clues = new ArrayList<>();
+		for (Cell cell : getCells()) {
+			if (cell.getMarker().isEmpty()) {
+				cell.clearClue(DIRECTION_E);
+				cell.clearClue(DIRECTION_S);
+			} else {
+				if (cell.isBlocked(DIRECTION_W) && !cell.isBlocked(DIRECTION_E)) {
+					Clue clue;
+					Optional<Clue> optionalClue = cell.getClue(DIRECTION_E);
+					if (!optionalClue.isPresent()) {
+						clue = new Clue();
+						cell.setClue(DIRECTION_E, clue);
+					} else {
+						clue = optionalClue.get();
+					}
+					clues.add(new ClueItem(clue, CATEGORY_ACROSS, cell, DIRECTION_E, getStringWord(cell, DIRECTION_E)));
+				}
+				if (cell.isBlocked(DIRECTION_N) && !cell.isBlocked(DIRECTION_S)) {
+					Clue clue;
+					Optional<Clue> optionalClue = cell.getClue(DIRECTION_S);
+					if (!optionalClue.isPresent()) {
+						clue = new Clue();
+						cell.setClue(DIRECTION_S, clue);
+					} else {
+						clue = optionalClue.get();
+					}
+					clues.add(new ClueItem(clue, CATEGORY_DOWN, cell, DIRECTION_S, getStringWord(cell, DIRECTION_S)));
+				}
+			}
+		}
+		return clues;
+	}
+
+	/**
+	 * Get the string word.
+	 * 
+	 * @param cell
+	 *            start cell of word
+	 * @param direction
+	 *            direction of word
+	 * @return word string if full, blank if any letter missing
+	 */
+	private String getStringWord(final Cell cell, final int direction) {
+		List<Cell> word = getWordWithCell(cell, getReverseDirection(direction), direction);
+		String wordString = "";
+		for (Cell letter : word) {
+			if (letter.getContents().isEmpty()) {
+				return "";
+			} else {
+				wordString += letter.getContents();
+			}
+		}
+		return wordString;
+	}
+
+	/**
+	 * 
+	 * Gets symmetry.
+	 * 
+	 * @return crossword symmetry.
+	 */
+	@XmlElement(name = "symmetry")
+	public final Symmetry getSymmetry() {
+		return symmetry;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see biz.computerkraft.crossword.gui.Puzzle#postLoadTidyup()
+	 */
+	@Override
+	public final void postLoadTidyup() {
+		PROPERTIES.put(PROPERTY_HEIGHT, getCellHeight());
+		PROPERTIES.put(PROPERTY_WIDTH, getCellWidth());
+		PROPERTIES.put(PROPERTY_SYMMETRY, getSymmetry());
 	}
 }

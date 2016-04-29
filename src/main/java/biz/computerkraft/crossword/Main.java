@@ -20,8 +20,6 @@ public class Main {
 				PropertyDialog dialog = new PropertyDialog(mainFrame);
 				dialog.registerPuzzle(Crossword.class);
 				dialog.setVisible(true);
-				System.out.println("Finished");
-				System.exit(0);
 			}
 		});
 	}
