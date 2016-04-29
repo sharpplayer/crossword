@@ -46,6 +46,9 @@ public class Cell {
 	/** Anchor y position. */
 	private double anchorY;
 
+	/** Useful cell identifier. */
+	private String name;
+
 	/**
 	 * Constructor for JAXB.
 	 */
@@ -55,14 +58,17 @@ public class Cell {
 	/**
 	 * Cell constructor.
 	 * 
+	 * @param newName
+	 *            name of cell
 	 * @param anchorXPc
 	 *            percentage of width to anchor cell in puzzle
 	 * @param anchorYPc
 	 *            percentage of height to anchor cell in puzzle
 	 */
-	public Cell(final double anchorXPc, final double anchorYPc) {
+	public Cell(final String newName, final double anchorXPc, final double anchorYPc) {
 		anchorX = anchorXPc;
 		anchorY = anchorYPc;
+		name = newName;
 	}
 
 	/**
@@ -240,6 +246,17 @@ public class Cell {
 
 	/**
 	 * 
+	 * Sets anchoring x position.
+	 * 
+	 * @param newX
+	 *            new anchor x position
+	 */
+	public final void setAnchorX(final double newX) {
+		anchorX = newX;
+	}
+
+	/**
+	 * 
 	 * Gets the cell location y as percentage of height.
 	 * 
 	 * @return the anchor percentage Y
@@ -247,6 +264,17 @@ public class Cell {
 	@XmlElement(name = "anchorY")
 	public final double getAnchorY() {
 		return anchorY;
+	}
+
+	/**
+	 * 
+	 * Sets anchoring y position.
+	 * 
+	 * @param newY
+	 *            new anchor y position
+	 */
+	public final void setAnchorY(final double newY) {
+		anchorY = newY;
 	}
 
 	/**
@@ -295,6 +323,16 @@ public class Cell {
 	}
 
 	/**
+	 * XML deserialisation of clues.
+	 * 
+	 * @param newClues
+	 *            deserialised clues
+	 */
+	public final void setClues(final Map<Integer, Clue> newClues) {
+		clues = newClues;
+	}
+
+	/**
 	 * XML serialisation of blocks.
 	 * 
 	 * @return blocks to serialise
@@ -302,6 +340,38 @@ public class Cell {
 	@XmlElement(name = "blocks")
 	public final Map<Integer, Boolean> getBlocks() {
 		return blocks;
+	}
+
+	/**
+	 * XML deserialisation of blocks.
+	 * 
+	 * @param newBlocks
+	 *            blocks to set
+	 */
+	public final void setBlocks(final Map<Integer, Boolean> newBlocks) {
+		blocks = newBlocks;
+	}
+
+	/**
+	 * 
+	 * Gets cell name.
+	 * 
+	 * @return the name of the cell
+	 */
+	@XmlElement(name = "name")
+	public final String getName() {
+		return name;
+	}
+
+	/**
+	 * 
+	 * Sets cell name.
+	 * 
+	 * @param newName
+	 *            the name of cell
+	 */
+	public final void setName(final String newName) {
+		this.name = newName;
 	}
 
 }

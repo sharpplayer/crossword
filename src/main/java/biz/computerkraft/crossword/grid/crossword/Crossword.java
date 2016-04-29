@@ -128,12 +128,36 @@ public class Crossword extends Grid {
 		List<Cell> orderedGrid = new ArrayList<>();
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
-				Cell newCell = new Cell(x / (double) width, y / (double) height);
-				grid.put(x + ":" + y, newCell);
+				String name = x + ":" + y;
+				Cell newCell = new Cell(name, x / (double) width, y / (double) height);
+				grid.put(name, newCell);
 				orderedGrid.add(newCell);
 			}
 		}
 
+		setCellGroups(grid, width, height);
+
+		setCells(orderedGrid);
+
+		setMarkers();
+
+		cellWidth = width;
+		cellHeight = height;
+		symmetry = newSymmetry;
+	}
+
+	/**
+	 * 
+	 * Sets up the adjacency and symmetry cell groups.
+	 * 
+	 * @param grid
+	 *            map of cells
+	 * @param width
+	 *            cell width of grid
+	 * @param height
+	 *            cell height of grid
+	 */
+	private void setCellGroups(final Map<String, Cell> grid, final int width, final int height) {
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < height; y++) {
 				Cell cell = grid.get(x + ":" + y);
@@ -180,13 +204,6 @@ public class Crossword extends Grid {
 			}
 		}
 
-		setCells(orderedGrid);
-
-		setMarkers();
-
-		cellWidth = width;
-		cellHeight = height;
-		symmetry = newSymmetry;
 	}
 
 	/**
@@ -246,6 +263,17 @@ public class Crossword extends Grid {
 		return cellWidth;
 	}
 
+	/**
+	 * 
+	 * XML deserialisation setter.
+	 * 
+	 * @param newWidth
+	 *            new width to set.
+	 */
+	public final void setCellWidth(final int newWidth) {
+		cellWidth = newWidth;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -255,6 +283,17 @@ public class Crossword extends Grid {
 	@XmlElement(name = "height")
 	public final int getCellHeight() {
 		return cellHeight;
+	}
+
+	/**
+	 * 
+	 * XML deserialisation setter.
+	 * 
+	 * @param newHeight
+	 *            new height of grid
+	 */
+	public final void setCellHeight(final int newHeight) {
+		cellHeight = newHeight;
 	}
 
 	/*
@@ -572,6 +611,17 @@ public class Crossword extends Grid {
 		return symmetry;
 	}
 
+	/**
+	 * 
+	 * XML deserialisation helper.
+	 * 
+	 * @param newSymmetry
+	 *            new symmetry for crossword
+	 */
+	public final void setSymmetry(final Symmetry newSymmetry) {
+		symmetry = newSymmetry;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -582,5 +632,11 @@ public class Crossword extends Grid {
 		PROPERTIES.put(PROPERTY_HEIGHT, getCellHeight());
 		PROPERTIES.put(PROPERTY_WIDTH, getCellWidth());
 		PROPERTIES.put(PROPERTY_SYMMETRY, getSymmetry());
+		Map<String, Cell> grid = new HashMap<>();
+		for (Cell cell : getCells()) {
+			grid.put(cell.getName(), cell);
+		}
+		setCellGroups(grid, getCellWidth(), getCellHeight());
+
 	}
 }

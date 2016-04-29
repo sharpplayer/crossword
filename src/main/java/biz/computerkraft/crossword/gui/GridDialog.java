@@ -140,7 +140,7 @@ public class GridDialog extends JFrame implements CellUpdateListener {
 						if (chooser.showOpenDialog(GridDialog.this) == JFileChooser.APPROVE_OPTION) {
 							JAXBContext context = JAXBContext.newInstance(Crossword.class, Symmetry.class);
 							Unmarshaller unmarshaller = context.createUnmarshaller();
-
+							unmarshaller.setEventHandler(new javax.xml.bind.helpers.DefaultValidationEventHandler());
 							puzzle = (Puzzle) unmarshaller.unmarshal(chooser.getSelectedFile());
 							puzzle.postLoadTidyup();
 							activatePuzzle(puzzle, propertyDialog);
