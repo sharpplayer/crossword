@@ -1,17 +1,35 @@
 package biz.computerkraft.crossword;
 
-import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 
 import biz.computerkraft.crossword.grid.crossword.Crossword;
 import biz.computerkraft.crossword.gui.GridDialog;
 import biz.computerkraft.crossword.gui.PropertyDialog;
 
-public class Main {
+/**
+ * 
+ * Main entry class for application.
+ * 
+ * @author Raymond Francis
+ *
+ */
+public final class Main {
 
-	public static void main(String[] args) {
+	/**
+	 * Constructor.
+	 */
+	private Main() {
+
+	}
+
+	/**
+	 * 
+	 * Startup class and function for the crossword puzzle designer.
+	 * 
+	 * @param args
+	 *            Main arguments.
+	 */
+	public static void main(final String[] args) {
 		SwingUtilities.invokeLater(new Runnable() {
 
 			@Override

@@ -3,13 +3,17 @@ package biz.computerkraft.crossword.gui;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -18,6 +22,9 @@ import javax.swing.JTable;
 import javax.swing.ListCellRenderer;
 import javax.swing.SpringLayout;
 import javax.swing.table.TableCellEditor;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
 
 import biz.computerkraft.crossword.grid.Symmetry;
 
@@ -71,9 +78,8 @@ public class PropertyDialog extends JDialog {
 			 * swing.JList, java.lang.Object, int, boolean, boolean)
 			 */
 			@Override
-			public Component getListCellRendererComponent(final JList<? extends Puzzle> list,
-					final Puzzle value, final int index, final boolean isSelected,
-					final boolean cellHasFocus) {
+			public Component getListCellRendererComponent(final JList<? extends Puzzle> list, final Puzzle value,
+					final int index, final boolean isSelected, final boolean cellHasFocus) {
 				return new JLabel(value.getName());
 			}
 		});
@@ -121,9 +127,28 @@ public class PropertyDialog extends JDialog {
 
 		// Row 3
 		container.add(new JLabel());
-		panel = new JPanel();
+		panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		container.add(panel);
-		JButton button = new JButton("OK");
+		JButton button = new JButton("Open...");
+		panel.add(button);
+		button.addActionListener(new ActionListener() {
+
+			/*
+			 * (non-Javadoc)
+			 * 
+			 * @see
+			 * java.awt.event.ActionListener#actionPerformed(java.awt.event.
+			 * ActionEvent)
+			 */
+			@Override
+			public void actionPerformed(final ActionEvent e) {
+				if (openFile(PropertyDialog.this, masterFrame)) {
+					setVisible(false);
+				}
+			}
+		});
+
+		button = new JButton("OK");
 		panel.add(button);
 		button.addActionListener(new ActionListener() {
 
@@ -140,7 +165,7 @@ public class PropertyDialog extends JDialog {
 				try {
 					Puzzle properties = (Puzzle) puzzles.getSelectedItem().getClass().newInstance();
 					properties.setProperties(model.getProperties());
-					masterFrame.activatePuzzle(properties, PropertyDialog.this);
+					masterFrame.activatePuzzle(properties, PropertyDialog.this, null);
 				} catch (InstantiationException e1) {
 					e1.printStackTrace();
 				} catch (IllegalAccessException e1) {
@@ -162,6 +187,7 @@ public class PropertyDialog extends JDialog {
 				setVisible(false);
 			}
 		});
+		panel.add(button);
 
 		SpringUtilities.makeCompactGrid(container, ROWS, COLUMNS, MARGIN, MARGIN, MARGIN, MARGIN);
 		pack();
@@ -183,5 +209,41 @@ public class PropertyDialog extends JDialog {
 		} catch (IllegalAccessException e) {
 			e.printStackTrace();
 		}
+	}
+
+	/**
+	 * 
+	 * Opens a puzzle file.
+	 * 
+	 * @param parent
+	 *            parent control to own dialog
+	 * @param frame
+	 *            frame to activate puzzle in
+	 * @return true if opened file
+	 */
+	public final boolean openFile(final Component parent, final GridDialog frame) {
+		JFileChooser chooser = new JFileChooser();
+		Puzzle puzzle = null;
+		if (chooser.showOpenDialog(parent) == JFileChooser.APPROVE_OPTION) {
+			List<Class<?>> puzzleClass = new ArrayList<>();
+			puzzleClass.add(Symmetry.class);
+			for (int index = 0; index < puzzles.getItemCount(); index++) {
+				Puzzle puzzleItem = puzzles.getItemAt(index);
+				puzzleClass.add(puzzleItem.getClass());
+			}
+
+			try {
+				JAXBContext context = JAXBContext.newInstance(puzzleClass.toArray(new Class<?>[0]));
+				Unmarshaller unmarshaller = context.createUnmarshaller();
+				unmarshaller.setEventHandler(new javax.xml.bind.helpers.DefaultValidationEventHandler());
+				puzzle = (Puzzle) unmarshaller.unmarshal(chooser.getSelectedFile());
+				puzzle.postLoadTidyup();
+				frame.activatePuzzle(puzzle, this, chooser.getSelectedFile());
+				return true;
+			} catch (JAXBException e) {
+				e.printStackTrace();
+			}
+		}
+		return false;
 	}
 }

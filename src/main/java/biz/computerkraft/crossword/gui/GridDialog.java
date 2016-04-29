@@ -6,6 +6,7 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.Point2D;
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,19 +17,18 @@ import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.SpringLayout;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
 
 import biz.computerkraft.crossword.db.DBConnection;
 import biz.computerkraft.crossword.db.Word;
 import biz.computerkraft.crossword.grid.Cell;
 import biz.computerkraft.crossword.grid.Symmetry;
-import biz.computerkraft.crossword.grid.crossword.Crossword;
 
 /**
  * 
@@ -90,6 +90,9 @@ public class GridDialog extends JFrame implements CellUpdateListener {
 	/** Dirty flag. */
 	private boolean dirty = false;
 
+	/** Save file. */
+	private File saveFile = null;
+
 	/**
 	 * Constructor.
 	 */
@@ -135,19 +138,7 @@ public class GridDialog extends JFrame implements CellUpdateListener {
 			@Override
 			public void actionPerformed(final ActionEvent e) {
 				if (dirtyCheck()) {
-					try {
-						JFileChooser chooser = new JFileChooser();
-						if (chooser.showOpenDialog(GridDialog.this) == JFileChooser.APPROVE_OPTION) {
-							JAXBContext context = JAXBContext.newInstance(Crossword.class, Symmetry.class);
-							Unmarshaller unmarshaller = context.createUnmarshaller();
-							unmarshaller.setEventHandler(new javax.xml.bind.helpers.DefaultValidationEventHandler());
-							puzzle = (Puzzle) unmarshaller.unmarshal(chooser.getSelectedFile());
-							puzzle.postLoadTidyup();
-							activatePuzzle(puzzle, propertyDialog);
-						}
-					} catch (JAXBException e1) {
-						e1.printStackTrace();
-					}
+					propertyDialog.openFile(GridDialog.this, GridDialog.this);
 				}
 			}
 		});
@@ -166,20 +157,7 @@ public class GridDialog extends JFrame implements CellUpdateListener {
 			 */
 			@Override
 			public void actionPerformed(final ActionEvent e) {
-				try {
-					JFileChooser chooser = new JFileChooser();
-					if (chooser.showSaveDialog(GridDialog.this) == JFileChooser.APPROVE_OPTION) {
-						JAXBContext context = JAXBContext.newInstance(puzzle.getClass(), Symmetry.class);
-						Marshaller marshaller = context.createMarshaller();
-						marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-
-						marshaller.marshal(puzzle, chooser.getSelectedFile());
-						dirty = false;
-					}
-				} catch (JAXBException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
+				saveFile();
 			}
 		});
 
@@ -189,7 +167,7 @@ public class GridDialog extends JFrame implements CellUpdateListener {
 		properties.setFont(DEFAULT_MENU_FONT);
 		fileMenu.add(properties);
 		properties.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(final ActionEvent e) {
 				propertyDialog.setVisible(true);
@@ -219,10 +197,13 @@ public class GridDialog extends JFrame implements CellUpdateListener {
 	 *            puzzle to set up
 	 * @param properties
 	 *            puzzle properties
+	 * @param file
+	 *            file loaded from
 	 */
-	public final void activatePuzzle(final Puzzle newPuzzle, final PropertyDialog properties) {
+	public final void activatePuzzle(final Puzzle newPuzzle, final PropertyDialog properties, final File file) {
 		propertyDialog = properties;
 		puzzle = newPuzzle;
+		saveFile = file;
 		dirty = false;
 		crosswordGrid.reset(
 				new Dimension(puzzle.getCellWidth() * DEFAULT_CELL_SIZE, puzzle.getCellHeight() * DEFAULT_CELL_SIZE));
@@ -403,8 +384,41 @@ public class GridDialog extends JFrame implements CellUpdateListener {
 	 */
 	private boolean dirtyCheck() {
 		if (dirty) {
-
+			int confirm = JOptionPane.showConfirmDialog(this, "Do you wish to save changes?");
+			if (confirm == JOptionPane.YES_OPTION) {
+				return saveFile();
+			} else if (confirm == JOptionPane.CANCEL_OPTION) {
+				return false;
+			}
 		}
 		return true;
+	}
+
+	/**
+	 * Function to save crossword.
+	 * 
+	 * @return true if successful
+	 */
+	private boolean saveFile() {
+		try {
+			JFileChooser chooser = new JFileChooser();
+			if (saveFile == null && chooser.showSaveDialog(GridDialog.this) == JFileChooser.APPROVE_OPTION) {
+				saveFile = chooser.getSelectedFile();
+			}
+			if (saveFile != null) {
+				JAXBContext context = JAXBContext.newInstance(puzzle.getClass(), Symmetry.class);
+				Marshaller marshaller = context.createMarshaller();
+				marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+
+				marshaller.marshal(puzzle, saveFile);
+				dirty = false;
+				return true;
+			}
+		} catch (JAXBException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		return false;
+
 	}
 }
