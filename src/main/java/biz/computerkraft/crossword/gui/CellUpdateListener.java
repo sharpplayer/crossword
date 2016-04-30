@@ -28,6 +28,17 @@ public interface CellUpdateListener {
 
 	/**
 	 * 
+	 * Event raised when cell selected.
+	 * 
+	 * @param cell
+	 *            selected cell.
+	 * @param direction
+	 *            direction of selection
+	 */
+	void selectCell(Cell cell, int direction);
+
+	/**
+	 * 
 	 * Event raised when cell to left needs to be selected.
 	 * 
 	 * @param cell
@@ -112,7 +123,7 @@ public interface CellUpdateListener {
 	 *            word to set.
 	 */
 	void setWord(Word word);
-	
+
 	/**
 	 * Increases word list sort letter.
 	 */

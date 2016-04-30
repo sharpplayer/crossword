@@ -610,4 +610,28 @@ public class Crossword extends Grid {
 		setCellGroups(grid, getCellWidth(), getCellHeight());
 		updateClues();
 	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see biz.computerkraft.crossword.gui.Puzzle#getPointFromDirection(int)
+	 */
+	@Override
+	public final Point2D getPointFromDirection(final int direction) {
+		double x = CELL_CENTRE;
+		double y = CELL_CENTRE;
+		if ((direction & DIRECTION_E) != 0) {
+			x += CELL_CENTRE;
+		}
+		if ((direction & DIRECTION_W) != 0) {
+			x -= CELL_CENTRE;
+		}
+		if ((direction & DIRECTION_N) != 0) {
+			y -= CELL_CENTRE;
+		}
+		if ((direction & DIRECTION_S) != 0) {
+			y += CELL_CENTRE;
+		}
+		return new Point2D.Double(x, y);
+	}
 }

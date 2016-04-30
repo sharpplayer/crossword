@@ -164,4 +164,19 @@ public class ClueModel extends AbstractTableModel {
 	public final String getCategory() {
 		return category;
 	}
+
+	/**
+	 * Gets clue item for given index.
+	 * 
+	 * @param index
+	 *            index of clue item
+	 * @return clue item at index
+	 */
+	public final ClueItem getClueItemAt(final int index) {
+		if (index >= 0 && index < clueItems.size()) {
+			return clueItems.get(index);
+		} else {
+			return null;
+		}
+	}
 }

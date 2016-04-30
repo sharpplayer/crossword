@@ -86,6 +86,17 @@ public interface Puzzle {
 
 	/**
 	 * 
+	 * Gets a point for specified direction.
+	 * 
+	 * @param direction
+	 *            direction to generate point for
+	 * 
+	 * @return point that can generate given direction.
+	 */
+	Point2D getPointFromDirection(int direction);
+
+	/**
+	 * 
 	 * Adds content to cell.
 	 * 
 	 * @param cell

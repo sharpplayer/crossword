@@ -1,5 +1,6 @@
 package biz.computerkraft.crossword.gui;
 
+import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -21,6 +22,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.JTable;
 import javax.swing.SpringLayout;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -30,6 +32,7 @@ import biz.computerkraft.crossword.db.DBConnection;
 import biz.computerkraft.crossword.db.Word;
 import biz.computerkraft.crossword.grid.Cell;
 import biz.computerkraft.crossword.grid.Symmetry;
+import biz.computerkraft.crossword.gui.input.TableMouseAdapter;
 import biz.computerkraft.crossword.gui.input.WordListKeyListener;
 import biz.computerkraft.crossword.gui.input.WordListMouseAdapter;
 
@@ -232,7 +235,14 @@ public class GridDialog extends JFrame implements CellUpdateListener {
 
 			List<ClueModel> clues = puzzle.getClueModels();
 			for (ClueModel model : clues) {
-				wordTabs.addTab(model.getCategory(), model.getVisualComponent());
+				Component component = model.getVisualComponent();
+				if (component instanceof JScrollPane) {
+					Component view = ((JScrollPane) component).getViewport().getView();
+					if (view instanceof JTable) {
+						((JTable) view).addMouseListener(new TableMouseAdapter(this));
+					}
+				}
+				wordTabs.addTab(model.getCategory(), component);
 			}
 			clueModels.addAll(clues);
 
@@ -242,6 +252,7 @@ public class GridDialog extends JFrame implements CellUpdateListener {
 		} catch (InstantiationException | IllegalAccessException e) {
 			e.printStackTrace();
 		}
+
 	}
 
 	/*
@@ -461,5 +472,18 @@ public class GridDialog extends JFrame implements CellUpdateListener {
 	@Override
 	public final void decreaseSortLetter() {
 		wordlListModel.decreaseSortLetter();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see biz.computerkraft.crossword.gui.CellUpdateListener#selectCell(biz.
+	 * computerkraft.crossword.grid.Cell, int)
+	 */
+	@Override
+	public final void selectCell(final Cell cell, final int direction) {
+		lastOffset = puzzle.getPointFromDirection(direction);
+		selectCell(cell, lastOffset);
+
 	}
 }
