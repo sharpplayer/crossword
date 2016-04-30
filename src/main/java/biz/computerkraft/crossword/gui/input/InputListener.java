@@ -72,5 +72,4 @@ public interface InputListener {
 	 * 
 	 */
 	void moveDown();
-
 }

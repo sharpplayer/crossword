@@ -30,6 +30,7 @@ import biz.computerkraft.crossword.db.DBConnection;
 import biz.computerkraft.crossword.db.Word;
 import biz.computerkraft.crossword.grid.Cell;
 import biz.computerkraft.crossword.grid.Symmetry;
+import biz.computerkraft.crossword.gui.input.WordListKeyListener;
 import biz.computerkraft.crossword.gui.input.WordListMouseAdapter;
 
 /**
@@ -43,12 +44,6 @@ public class GridDialog extends JFrame implements CellUpdateListener {
 
 	/** Serial id. */
 	private static final long serialVersionUID = -1887552377378707619L;
-
-	/** Default font size for word list. */
-	private static final int DEFAULT_FONT_SIZE = 40;
-
-	/** Default font size for word list. */
-	public static final Font DEFAULT_MENU_FONT = new Font("Arial", Font.BOLD, DEFAULT_FONT_SIZE);
 
 	/** Margin around controls. */
 	private static final int MARGIN = 10;
@@ -72,7 +67,7 @@ public class GridDialog extends JFrame implements CellUpdateListener {
 	private CrosswordPanel crosswordGrid = new CrosswordPanel(this);
 
 	/** Word list model. */
-	private WordListModel wordlListModel = new WordListModel();
+	private WordListModel wordlListModel = new WordListModel(connection);
 
 	/** Crossword viewer. */
 	private JScrollPane crosswordViewer;
@@ -102,11 +97,9 @@ public class GridDialog extends JFrame implements CellUpdateListener {
 		super("Crossword");
 		JMenuBar menu = new JMenuBar();
 		JMenu fileMenu = new JMenu("File");
-		fileMenu.setFont(DEFAULT_MENU_FONT);
 		menu.add(fileMenu);
 
 		JMenuItem newMenu = new JMenuItem("New...");
-		newMenu.setFont(DEFAULT_MENU_FONT);
 		fileMenu.add(newMenu);
 		newMenu.addActionListener(new ActionListener() {
 
@@ -126,7 +119,6 @@ public class GridDialog extends JFrame implements CellUpdateListener {
 		});
 
 		JMenuItem open = new JMenuItem("Open...");
-		open.setFont(DEFAULT_MENU_FONT);
 		fileMenu.add(open);
 		open.addActionListener(new ActionListener() {
 
@@ -146,7 +138,6 @@ public class GridDialog extends JFrame implements CellUpdateListener {
 		});
 
 		JMenuItem save = new JMenuItem("Save");
-		save.setFont(DEFAULT_MENU_FONT);
 		fileMenu.add(save);
 		save.addActionListener(new ActionListener() {
 
@@ -166,7 +157,6 @@ public class GridDialog extends JFrame implements CellUpdateListener {
 		fileMenu.addSeparator();
 
 		JMenuItem properties = new JMenuItem("Properties...");
-		properties.setFont(DEFAULT_MENU_FONT);
 		fileMenu.add(properties);
 		properties.addActionListener(new ActionListener() {
 
@@ -202,8 +192,8 @@ public class GridDialog extends JFrame implements CellUpdateListener {
 		pane.add(wordTabs);
 		JList<Word> wordList = new JList<>(wordlListModel);
 		wordList.addMouseListener(new WordListMouseAdapter(this));
-		// wordList.addListSelectionListener(new WordListSelectionListener());
-		wordList.setFont(new Font("Courier New", Font.BOLD, DEFAULT_FONT_SIZE));
+		wordList.addKeyListener(new WordListKeyListener(this));
+		wordList.setFont(new Font("Courier New", Font.BOLD, wordList.getFont().getSize()));
 		wordTabs.addTab("Words", new JScrollPane(wordList));
 
 	}
@@ -295,7 +285,7 @@ public class GridDialog extends JFrame implements CellUpdateListener {
 				word += indirectCell.getContents();
 			}
 		}
-		wordlListModel.setWordList(connection.getWords(word, 1));
+		wordlListModel.setWordList(word);
 	}
 
 	/*
@@ -449,5 +439,27 @@ public class GridDialog extends JFrame implements CellUpdateListener {
 		}
 		updateWordList();
 		crosswordGrid.repaint();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * biz.computerkraft.crossword.gui.CellUpdateListener#increaseSortLetter()
+	 */
+	@Override
+	public final void increaseSortLetter() {
+		wordlListModel.increaseSortLetter();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * biz.computerkraft.crossword.gui.CellUpdateListener#decreaseSortLetter()
+	 */
+	@Override
+	public final void decreaseSortLetter() {
+		wordlListModel.decreaseSortLetter();
 	}
 }

@@ -139,8 +139,8 @@ public class Crossword extends Grid {
 		cellHeight = height;
 		symmetry = newSymmetry;
 
-		setCellGroups(grid, width, height);
 		setCells(orderedGrid);
+		setCellGroups(grid, width, height);
 		setMarkers();
 	}
 
@@ -414,7 +414,6 @@ public class Crossword extends Grid {
 				symmetric.setBlock(DIRECTION_S, true);
 			}
 			setMarkers();
-			updateClues();
 			dirtyReturn = true;
 		} else if (action.equals(ACTION_UNFILL)) {
 			for (Cell symmetric : cell.getSymmetrics()) {
@@ -424,7 +423,6 @@ public class Crossword extends Grid {
 				unfill(symmetric, DIRECTION_S);
 			}
 			setMarkers();
-			updateClues();
 			dirtyReturn = true;
 		}
 
@@ -507,6 +505,7 @@ public class Crossword extends Grid {
 				cell.setMarker("");
 			}
 		}
+		updateClues();
 	}
 
 	/*
@@ -609,5 +608,6 @@ public class Crossword extends Grid {
 			grid.put(cell.getName(), cell);
 		}
 		setCellGroups(grid, getCellWidth(), getCellHeight());
+		updateClues();
 	}
 }

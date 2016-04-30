@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.swing.AbstractListModel;
 
+import biz.computerkraft.crossword.db.DBConnection;
 import biz.computerkraft.crossword.db.Word;
 
 /**
@@ -20,6 +21,26 @@ public class WordListModel extends AbstractListModel<Word> {
 
 	/** Word list being managed. */
 	private List<Word> wordList;
+
+	/** Connection to database. */
+	private DBConnection connection;
+
+	/** Sort letter index. */
+	private int sortLetterIndex = 1;
+
+	/** Last word searched for. */
+	private String lastWord = "";
+
+	/**
+	 * 
+	 * Constructs a word list.
+	 * 
+	 * @param newConnection
+	 *            DB connection
+	 */
+	public WordListModel(final DBConnection newConnection) {
+		connection = newConnection;
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -47,14 +68,55 @@ public class WordListModel extends AbstractListModel<Word> {
 
 	/**
 	 * 
-	 * Sets new list for model.
+	 * Sets new template for word model.
 	 * 
-	 * @param list
-	 *            new list
+	 * @param word
+	 *            new tempate for populating word list
 	 */
-	public final void setWordList(final List<Word> list) {
-		wordList = list;
+	public final void setWordList(final String word) {
+		if (word.length() != lastWord.length()) {
+			updateList(word, 1);
+		} else {
+			updateList(word, sortLetterIndex);
+		}
+	}
+
+	/**
+	 * Updates list.
+	 * 
+	 * @param word
+	 *            wildcarded word to search for.
+	 * @param sortIndex
+	 *            sort on index.
+	 */
+	private void updateList(final String word, final int sortIndex) {
+		sortLetterIndex = sortIndex;
+		lastWord = word;
+		wordList = connection.getWords(word, sortLetterIndex);
 		fireContentsChanged(this, 0, wordList.size());
+
+	}
+
+	/**
+	 * 
+	 * Increases sort letter.
+	 * 
+	 */
+	public final void increaseSortLetter() {
+		if (sortLetterIndex < lastWord.length()) {
+			updateList(lastWord, sortLetterIndex + 1);
+		}
+	}
+
+	/**
+	 * 
+	 * Decreases sort letter.
+	 * 
+	 */
+	public final void decreaseSortLetter() {
+		if (sortLetterIndex > 1) {
+			updateList(lastWord, sortLetterIndex - 1);
+		}
 	}
 
 }

@@ -150,7 +150,6 @@ public class CrosswordPanel extends JPanel implements InputListener {
 					for (String action : actions) {
 						JMenuItem item = new JMenuItem(action);
 						item.setAction(new CrosswordCellAction(renderer.getCell(), action, listener, this));
-						item.setFont(GridDialog.DEFAULT_MENU_FONT);
 						popup.add(item);
 					}
 					popup.show(this, (int) x, (int) y);
@@ -256,7 +255,11 @@ public class CrosswordPanel extends JPanel implements InputListener {
 	 * @return indirect selection
 	 */
 	public final List<Cell> getFirstIndirectSelection() {
-		return indirectSelections.get(0);
+		if (indirectSelections.size() > 0) {
+			return indirectSelections.get(0);
+		} else {
+			return new ArrayList<>();
+		}
 	}
 
 	/**
@@ -327,7 +330,7 @@ public class CrosswordPanel extends JPanel implements InputListener {
 	public final void moveLeft() {
 		List<Cell> currentSelection = new ArrayList<>();
 		currentSelection.addAll(directSelections);
-		indirectSelections.clear();
+		// indirectSelections.clear();
 		for (Cell cell : currentSelection) {
 			listener.selectCellLeft(cell);
 		}

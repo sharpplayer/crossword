@@ -1,6 +1,9 @@
 package biz.computerkraft.crossword;
 
+import java.awt.Font;
+
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 
 import biz.computerkraft.crossword.grid.crossword.Crossword;
 import biz.computerkraft.crossword.gui.GridDialog;
@@ -30,6 +33,18 @@ public final class Main {
 	 *            Main arguments.
 	 */
 	public static void main(final String[] args) {
+
+		for (Object key : UIManager.getLookAndFeelDefaults().keySet()) {
+			if (key instanceof String) {
+				if (key.toString().endsWith(".font")) {
+					Font font = UIManager.getFont(key);
+					Font biggerFont = font.deriveFont(2.0f * font.getSize2D());
+					UIManager.put(key, biggerFont);
+				}
+			}
+		}
+		UIManager.put("ScrollBar.width", 2 * UIManager.getInt("ScrollBar.width"));
+
 		SwingUtilities.invokeLater(new Runnable() {
 
 			@Override

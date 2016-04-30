@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
 /**
@@ -33,7 +32,7 @@ public class ClueModel extends AbstractTableModel {
 	private List<ClueItem> clueItems = new ArrayList<>();
 
 	/** Component to render. */
-	private Component component = new JScrollPane(new JTable(this));
+	private Component component = new JScrollPane(new JHighDPITable(this));
 
 	/** Category of clues. */
 	private String category;

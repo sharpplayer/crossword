@@ -112,4 +112,15 @@ public interface CellUpdateListener {
 	 *            word to set.
 	 */
 	void setWord(Word word);
+	
+	/**
+	 * Increases word list sort letter.
+	 */
+	void increaseSortLetter();
+
+	/**
+	 * Decreases word list sort letter.
+	 */
+	void decreaseSortLetter();
+
 }

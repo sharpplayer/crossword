@@ -103,7 +103,7 @@ public class PropertyDialog extends JDialog {
 
 		// Row 2
 		JPanel panel = new JPanel();
-		JTable table = new JTable(model) {
+		JTable table = new JHighDPITable(model) {
 			/** Serial id. */
 			private static final long serialVersionUID = 1L;
 
