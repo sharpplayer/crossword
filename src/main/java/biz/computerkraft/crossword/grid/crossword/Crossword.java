@@ -2,7 +2,6 @@ package biz.computerkraft.crossword.grid.crossword;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +17,7 @@ import biz.computerkraft.crossword.grid.Grid;
 import biz.computerkraft.crossword.grid.Symmetry;
 import biz.computerkraft.crossword.gui.CellRenderer;
 import biz.computerkraft.crossword.gui.ClueItem;
+import biz.computerkraft.crossword.gui.ClueModel;
 import biz.computerkraft.crossword.gui.renderer.CrosswordCellRenderer;
 
 /**
@@ -201,7 +201,8 @@ public class Crossword extends Grid {
 				}
 			}
 		}
-
+		addClueModel(new ClueModel(CATEGORY_ACROSS));
+		addClueModel(new ClueModel(CATEGORY_DOWN));
 	}
 
 	/**
@@ -336,6 +337,7 @@ public class Crossword extends Grid {
 	@Override
 	public final void addCellContent(final Cell cell, final String content) {
 		cell.setContents(content.toUpperCase());
+		updateClues();
 	}
 
 	/*
@@ -394,26 +396,6 @@ public class Crossword extends Grid {
 		return getCell(cell, DIRECTION_N);
 	}
 
-	/**
-	 * 
-	 * Get adjacent cell in given direction.
-	 * 
-	 * @param cell
-	 *            cell to move from
-	 * @param direction
-	 *            direction to move
-	 * @return new cell
-	 */
-	private Cell getCell(final Cell cell, final int direction) {
-		Optional<Cell> optionalCell = cell.getAdjacent(direction);
-		if (optionalCell.isPresent()) {
-			return optionalCell.get();
-		} else {
-			return cell;
-		}
-
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -432,6 +414,7 @@ public class Crossword extends Grid {
 				symmetric.setBlock(DIRECTION_S, true);
 			}
 			setMarkers();
+			updateClues();
 			dirtyReturn = true;
 		} else if (action.equals(ACTION_UNFILL)) {
 			for (Cell symmetric : cell.getSymmetrics()) {
@@ -441,6 +424,7 @@ public class Crossword extends Grid {
 				unfill(symmetric, DIRECTION_S);
 			}
 			setMarkers();
+			updateClues();
 			dirtyReturn = true;
 		}
 
@@ -528,17 +512,7 @@ public class Crossword extends Grid {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see biz.computerkraft.crossword.gui.PuzzleProperties#getClueCategories()
-	 */
-	@Override
-	public final List<String> getClueCategories() {
-		return Arrays.asList(CATEGORY_ACROSS, CATEGORY_DOWN);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see biz.computerkraft.crossword.gui.PuzzleProperties#getClues()
+	 * @see biz.computerkraft.crossword.grid.Grid#getClues()
 	 */
 	@Override
 	public final List<ClueItem> getClues() {
@@ -635,6 +609,5 @@ public class Crossword extends Grid {
 			grid.put(cell.getName(), cell);
 		}
 		setCellGroups(grid, getCellWidth(), getCellHeight());
-
 	}
 }

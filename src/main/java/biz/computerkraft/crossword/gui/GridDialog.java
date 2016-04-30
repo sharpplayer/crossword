@@ -9,9 +9,8 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.geom.Point2D;
 import java.io.File;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -88,7 +87,7 @@ public class GridDialog extends JFrame implements CellUpdateListener {
 	private JTabbedPane wordTabs = new JTabbedPane();
 
 	/** Clue models. */
-	private Map<String, ClueModel> clueModels = new HashMap<>();
+	private List<ClueModel> clueModels = new ArrayList<>();
 
 	/** Dirty flag. */
 	private boolean dirty = false;
@@ -236,18 +235,16 @@ public class GridDialog extends JFrame implements CellUpdateListener {
 				crosswordGrid.addRenderer(renderer);
 			}
 
-			for (ClueModel model : clueModels.values()) {
+			for (ClueModel model : clueModels) {
 				wordTabs.remove(wordTabs.indexOfComponent(model.getVisualComponent()));
 			}
 			clueModels.clear();
 
-			List<ClueItem> clues = puzzle.getClues();
-			for (String clueCategory : newPuzzle.getClueCategories()) {
-				ClueModel model = new ClueModel(clueCategory);
-				clueModels.put(clueCategory, model);
-				model.setClues(clues);
-				wordTabs.addTab(clueCategory, model.getVisualComponent());
+			List<ClueModel> clues = puzzle.getClueModels();
+			for (ClueModel model : clues) {
+				wordTabs.addTab(model.getCategory(), model.getVisualComponent());
 			}
+			clueModels.addAll(clues);
 
 			SpringUtilities.makeCompactGrid(getContentPane(), 1, 2, MARGIN, MARGIN, MARGIN, MARGIN);
 			pack();
@@ -282,7 +279,6 @@ public class GridDialog extends JFrame implements CellUpdateListener {
 	@Override
 	public final void addCellContent(final Cell cell, final String content) {
 		puzzle.addCellContent(cell, content);
-		updateClues();
 		dirty = true;
 		updateWordList();
 	}
@@ -313,7 +309,6 @@ public class GridDialog extends JFrame implements CellUpdateListener {
 	public final void clearCellContent(final Cell cell) {
 		puzzle.clearCellContent(cell);
 		dirty = true;
-		updateClues();
 		updateWordList();
 	}
 
@@ -378,7 +373,6 @@ public class GridDialog extends JFrame implements CellUpdateListener {
 	@Override
 	public final void cellMenuAction(final Cell cell, final String action) {
 		dirty |= puzzle.cellMenuAction(cell, action);
-		updateClues();
 		selectCell(cell, lastOffset);
 	}
 
@@ -454,18 +448,6 @@ public class GridDialog extends JFrame implements CellUpdateListener {
 			letter++;
 		}
 		updateWordList();
-		updateClues();
 		crosswordGrid.repaint();
-	}
-
-	/**
-	 * Updates clue lists.
-	 */
-	private void updateClues() {
-		List<ClueItem> clues = puzzle.getClues();
-		for (ClueModel model : clueModels.values()) {
-			model.setClues(clues);
-		}
-
 	}
 }

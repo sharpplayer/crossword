@@ -155,4 +155,14 @@ public class ClueModel extends AbstractTableModel {
 	public final Component getVisualComponent() {
 		return component;
 	}
+
+	/**
+	 * 
+	 * Gets clue model category.
+	 * 
+	 * @return category
+	 */
+	public final String getCategory() {
+		return category;
+	}
 }

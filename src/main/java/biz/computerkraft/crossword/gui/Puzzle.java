@@ -169,19 +169,11 @@ public interface Puzzle {
 
 	/**
 	 * 
-	 * Get clue categories.
+	 * Get clue models.
 	 * 
-	 * @return clue categories
+	 * @return clue models
 	 */
-	List<String> getClueCategories();
-
-	/**
-	 * 
-	 * Get clue items.
-	 * 
-	 * @return clue items
-	 */
-	List<ClueItem> getClues();
+	List<ClueModel> getClueModels();
 
 	/**
 	 * Call made after loading to tidy up.
