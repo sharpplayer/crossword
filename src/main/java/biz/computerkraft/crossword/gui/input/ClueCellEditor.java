@@ -1,13 +1,13 @@
 package biz.computerkraft.crossword.gui.input;
 
 import java.awt.Component;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.AbstractCellEditor;
 import javax.swing.JTable;
 import javax.swing.table.TableCellEditor;
 
+import biz.computerkraft.crossword.db.ClueWriter;
 import biz.computerkraft.crossword.db.DBConnection;
 import biz.computerkraft.crossword.grid.Clue;
 import biz.computerkraft.crossword.gui.CellUpdateListener;
@@ -22,19 +22,22 @@ import biz.computerkraft.crossword.gui.ClueModel;
  * @author Raymond Francis
  *
  */
-public class ClueCellEditor extends AbstractCellEditor implements TableCellEditor {
+public class ClueCellEditor extends AbstractCellEditor implements TableCellEditor, ClueWriter {
 
 	/** Serial id. */
 	private static final long serialVersionUID = -686861361499643521L;
 
 	/** Clue editor control. */
-	private ClueEditor editor = new ClueEditor();
+	private ClueEditor editor = new ClueEditor(this);
 
 	/** Database connection. */
 	private DBConnection connection;
 
 	/** Call back listener for cell selection. */
 	private CellUpdateListener listener;
+
+	/** Current word. */
+	private String word;
 
 	/**
 	 * 
@@ -71,11 +74,8 @@ public class ClueCellEditor extends AbstractCellEditor implements TableCellEdito
 	public final Component getTableCellEditorComponent(final JTable table, final Object value, final boolean isSelected,
 			final int row, final int column) {
 		ClueItem clue = ((ClueModel) table.getModel()).getClueItemAt(row);
-		String word = clue.getWord();
+		word = clue.getWord();
 		List<Clue> clues = connection.getClues(word);
-		clues = new ArrayList<>();
-		clues.add(new Clue(1, "Clue 1 - " + word));
-		clues.add(new Clue(2, "Clue 2 - " + word));
 		listener.selectCell(clue.getStartCell(), clue.getDirection());
 		editor.setClue(clues, (Clue) value);
 		return editor;
@@ -95,5 +95,18 @@ public class ClueCellEditor extends AbstractCellEditor implements TableCellEdito
 		table.getActionMap().put(action.getKey(), action);
 		action = new TableCellTabAction(table, column, false, editor);
 		table.getActionMap().put(action.getKey(), action);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * biz.computerkraft.crossword.db.ClueWriter#saveClue(biz.computerkraft.
+	 * crossword.grid.Clue)
+	 */
+	@Override
+	public final void saveClue(final Clue clue) {
+		connection.saveClue(word, clue);
+
 	}
 }

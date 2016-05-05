@@ -22,6 +22,9 @@ public class DBConnection {
 	/** Clue column. */
 	private static final int COLUMN_CLUE = 3;
 
+	/** Clue id column. */
+	private static final int COLUMN_CLUE_ID = 1;
+
 	/** Live connection. */
 	private Connection connection = null;
 
@@ -113,6 +116,31 @@ public class DBConnection {
 		} else {
 			query.executeUpdate(sql);
 			return null;
+		}
+	}
+
+	/**
+	 * 
+	 * Saves a clue to the database.
+	 * 
+	 * @param word
+	 *            word to associate clue with
+	 * @param clue
+	 *            clue to save
+	 */
+	public final void saveClue(final String word, final Clue clue) {
+		try {
+			if (clue.getClueId() == 0) {
+				ResultSet insert = executeQuery(
+						"INSERT INTO tblclue(Word, Clue) VALUES('" + word + "', '" + clue.getClueText() + "')");
+				if (insert.next()) {
+					clue.setClueId(insert.getInt(COLUMN_CLUE_ID));
+				}
+			} else {
+				executeQuery("UPDATE tblclue SET Clue='" + clue.getClueText() + "' WHERE ClueId=" + clue.getClueId());
+			}
+		} catch (SQLException ex) {
+			ex.printStackTrace();
 		}
 	}
 }

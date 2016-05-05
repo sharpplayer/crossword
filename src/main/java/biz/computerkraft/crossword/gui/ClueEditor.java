@@ -14,6 +14,7 @@ import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.SpringLayout;
 
+import biz.computerkraft.crossword.db.ClueWriter;
 import biz.computerkraft.crossword.grid.Clue;
 import biz.computerkraft.crossword.gui.input.ComplexCellEditor;
 
@@ -41,10 +42,15 @@ public class ClueEditor extends JPanel implements ComplexCellEditor {
 	/** Button clicked for overwriting an exisiting clue in the database. */
 	private JButton saveButton;
 
+	private int lastSelected = 0;
+
 	/**
 	 * Constructor for the clue editor.
+	 * 
+	 * @param writer
+	 *            saves clues to database
 	 */
-	public ClueEditor() {
+	public ClueEditor(final ClueWriter writer) {
 		setLayout(new SpringLayout());
 		setRequestFocusEnabled(true);
 		setFocusable(true);
@@ -62,11 +68,20 @@ public class ClueEditor extends JPanel implements ComplexCellEditor {
 			 */
 			@Override
 			public void actionPerformed(final ActionEvent e) {
-				System.out.println("New:" + clueList.getSelectedItem());
+				Object selected = clueList.getSelectedItem();
+				Clue newClue;
+				if (selected instanceof Clue) {
+					newClue = new Clue(0, ((Clue) selected).getClueText());
+				} else {
+					newClue = new Clue(0, selected.toString());
+				}
+				clueList.addItem(newClue);
+				writer.saveClue(newClue);
+				clueList.setSelectedItem(newClue);
 			}
 		});
-
 		add(newButton);
+
 		saveButton = new JButton("S");
 		saveButton.addActionListener(new ActionListener() {
 
@@ -79,10 +94,13 @@ public class ClueEditor extends JPanel implements ComplexCellEditor {
 			 */
 			@Override
 			public void actionPerformed(final ActionEvent e) {
-				System.out.println("Save" + clueList.getSelectedItem());
+				Clue clue = getSelectedItem(true);
+				writer.saveClue(clue);
+				clueList.setSelectedItem(clue);
 			}
 		});
 		add(saveButton);
+
 		clueList.getEditor().getEditorComponent().addKeyListener(new KeyAdapter() {
 			/*
 			 * (non-Javadoc)
@@ -106,7 +124,8 @@ public class ClueEditor extends JPanel implements ComplexCellEditor {
 			 */
 			@Override
 			public void actionPerformed(final ActionEvent e) {
-				getSelectedItem(false);
+				Clue clue = getSelectedItem(false);
+				System.out.println(clue.getClueId());
 			}
 		});
 		SpringUtilities.makeCompactGrid(this, 1, CONTROL_COUNT, 0, 0, 0, 0);
@@ -131,6 +150,8 @@ public class ClueEditor extends JPanel implements ComplexCellEditor {
 				if (possibleClue.getClueText().equalsIgnoreCase(textString)) {
 					clue = possibleClue;
 					break;
+				} else if (possibleClue.getClueId() == lastSelected) {
+					clue = possibleClue;
 				}
 			}
 
@@ -144,22 +165,26 @@ public class ClueEditor extends JPanel implements ComplexCellEditor {
 					} else {
 						saveButton.setEnabled(clue.getClueId() != 0);
 						newButton.setEnabled(true);
-						if (updateClue) {
-							clue.setClueId(0);
+						if (updateClue || clue.getClueId() == 0) {
 							clue.setClueText(textString);
 						}
 					}
 				} else {
 					clue = new Clue(0, textString);
-					saveButton.setEnabled(true);
-					newButton.setEnabled(false);
+					saveButton.setEnabled(lastSelected != 0);
+					newButton.setEnabled(true);
 				}
 			} else {
-				saveButton.setEnabled(false);
-				newButton.setEnabled(clue.getClueId() == 0);
+				lastSelected = clue.getClueId();
+				saveButton.setEnabled(lastSelected != 0);
+				newButton.setEnabled(true);
+				if (updateClue || lastSelected == 0) {
+					clue.setClueText(textString);
+				}
 			}
 		} else {
 			clue = (Clue) text;
+			lastSelected = clue.getClueId();
 			saveButton.setEnabled(false);
 			newButton.setEnabled(clue.getClueId() == 0);
 		}
