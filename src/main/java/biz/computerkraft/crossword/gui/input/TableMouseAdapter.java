@@ -40,13 +40,11 @@ public class TableMouseAdapter extends MouseAdapter {
 	@Override
 	public final void mouseClicked(final MouseEvent event) {
 		JTable table = (JTable) event.getSource();
-		if (event.getClickCount() == 2) {
-			int index = table.rowAtPoint(event.getPoint());
-			if (index != -1) {
-				ClueModel model = (ClueModel) table.getModel();
-				ClueItem item = model.getClueItemAt(index);
-				listener.selectCell(item.getStartCell(), item.getDirection());
-			}
+		int index = table.rowAtPoint(event.getPoint());
+		if (index != -1) {
+			ClueModel model = (ClueModel) table.getModel();
+			ClueItem item = model.getClueItemAt(index);
+			listener.selectCell(item.getStartCell(), item.getDirection());
 		}
 	}
 

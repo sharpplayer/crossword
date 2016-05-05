@@ -63,6 +63,17 @@ public class ClueItem {
 
 	/**
 	 * 
+	 * Sets the clue object.
+	 * 
+	 * @param newClue
+	 *            the new clue object
+	 */
+	public final void setClue(final Clue newClue) {
+		clue = newClue;
+	}
+
+	/**
+	 * 
 	 * Gets the clue category.
 	 * 
 	 * @return the category

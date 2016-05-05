@@ -16,6 +16,25 @@ public class Clue {
 	private int clueId = 0;
 
 	/**
+	 * Default constructor.
+	 */
+	public Clue() {
+	}
+
+	/**
+	 * Constructor.
+	 * 
+	 * @param newId
+	 *            database id of clue
+	 * @param clue
+	 *            clue text
+	 */
+	public Clue(final int newId, final String clue) {
+		clueId = newId;
+		clueText = clue;
+	}
+
+	/**
 	 * 
 	 * Gets the clue text.
 	 * 
@@ -56,4 +75,13 @@ public class Clue {
 		this.clueId = newClueId;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public final String toString() {
+		return getClueText();
+	}
 }

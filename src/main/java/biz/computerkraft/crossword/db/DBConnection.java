@@ -8,6 +8,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import biz.computerkraft.crossword.grid.Clue;
+
 /**
  * 
  * Manages database connection.
@@ -16,6 +18,9 @@ import java.util.List;
  *
  */
 public class DBConnection {
+
+	/** Clue column. */
+	private static final int COLUMN_CLUE = 3;
 
 	/** Live connection. */
 	private Connection connection = null;
@@ -54,6 +59,30 @@ public class DBConnection {
 			ResultSet result = executeQuery(sql);
 			while (result.next()) {
 				returnList.add(new Word(result.getInt(1), result.getString(2)));
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return returnList;
+
+	}
+
+	/**
+	 * 
+	 * @param word
+	 *            word to clue hunt
+	 * @return list of save clues for word
+	 */
+	public final List<Clue> getClues(final String word) {
+		List<Clue> returnList = new ArrayList<>();
+
+		String sql = "SELECT * FROM tblclue WHERE Word = '" + word + "' ORDER BY Word, Clue";
+		try {
+			ResultSet result = executeQuery(sql);
+			while (result.next()) {
+				returnList.add(new Clue(result.getInt(1), result.getString(COLUMN_CLUE)));
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block

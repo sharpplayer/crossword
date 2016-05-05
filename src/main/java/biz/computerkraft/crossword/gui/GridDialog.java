@@ -54,6 +54,9 @@ public class GridDialog extends JFrame implements CellUpdateListener {
 	/** Default cell size on screen. */
 	private static final int DEFAULT_CELL_SIZE = 40;
 
+	/** Clue section width. */
+	private static final int WIDTH_CLUE = 1000;
+
 	/** Default scrollpane border. */
 	private static final int SCROLLPANE_BORDER = 3;
 
@@ -216,8 +219,8 @@ public class GridDialog extends JFrame implements CellUpdateListener {
 		puzzle = newPuzzle;
 		saveFile = file;
 		dirty = false;
-		crosswordGrid.reset(
-				new Dimension(puzzle.getCellWidth() * DEFAULT_CELL_SIZE, puzzle.getCellHeight() * DEFAULT_CELL_SIZE));
+		int height = puzzle.getCellHeight() * DEFAULT_CELL_SIZE;
+		crosswordGrid.reset(new Dimension(puzzle.getCellWidth() * DEFAULT_CELL_SIZE, height));
 		crosswordViewer.setPreferredSize(new Dimension(puzzle.getCellWidth() * DEFAULT_CELL_SIZE + SCROLLPANE_BORDER,
 				puzzle.getCellHeight() * DEFAULT_CELL_SIZE + SCROLLPANE_BORDER));
 		Class<? extends CellRenderer> renderClass = puzzle.getRendererClass();
@@ -229,13 +232,14 @@ public class GridDialog extends JFrame implements CellUpdateListener {
 			}
 
 			for (ClueModel model : clueModels) {
-				wordTabs.remove(wordTabs.indexOfComponent(model.getVisualComponent()));
+				wordTabs.remove(wordTabs.indexOfComponent(model.getVisualComponent(connection, this)));
 			}
 			clueModels.clear();
 
 			List<ClueModel> clues = puzzle.getClueModels();
 			for (ClueModel model : clues) {
-				Component component = model.getVisualComponent();
+				Component component = model.getVisualComponent(connection, this);
+				component.setPreferredSize(new Dimension(WIDTH_CLUE, height));
 				if (component instanceof JScrollPane) {
 					Component view = ((JScrollPane) component).getViewport().getView();
 					if (view instanceof JTable) {

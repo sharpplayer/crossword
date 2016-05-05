@@ -5,7 +5,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableColumn;
+
+import biz.computerkraft.crossword.db.DBConnection;
+import biz.computerkraft.crossword.grid.Clue;
+import biz.computerkraft.crossword.gui.input.ClueCellEditor;
 
 /**
  * 
@@ -28,11 +34,17 @@ public class ClueModel extends AbstractTableModel {
 	/** Word column. */
 	private static final int COLUMN_WORD = 2;
 
+	/** Marker column width. */
+	private static final int WIDTH_MARKER = 50;
+
+	/** Clue column width. */
+	private static final int WIDTH_CLUE = 500;
+
 	/** Clues to display. */
 	private List<ClueItem> clueItems = new ArrayList<>();
 
 	/** Component to render. */
-	private Component component = new JScrollPane(new JHighDPITable(this));
+	private Component component;
 
 	/** Category of clues. */
 	private String category;
@@ -95,7 +107,7 @@ public class ClueModel extends AbstractTableModel {
 		if (columnIndex == COLUMN_MARKER) {
 			return clueItems.get(rowIndex).getStartCell().getMarker();
 		} else if (columnIndex == COLUMN_CLUE) {
-			return clueItems.get(rowIndex).getClue().getClueText();
+			return clueItems.get(rowIndex).getClue();
 		} else if (columnIndex == COLUMN_WORD) {
 			return clueItems.get(rowIndex).getWord();
 		}
@@ -124,7 +136,8 @@ public class ClueModel extends AbstractTableModel {
 	@Override
 	public final void setValueAt(final Object aValue, final int rowIndex, final int columnIndex) {
 		if (columnIndex == COLUMN_CLUE) {
-			clueItems.get(rowIndex).getClue().setClueText(aValue.toString());
+			clueItems.get(rowIndex).setClue((Clue) aValue);
+			fireTableCellUpdated(rowIndex, columnIndex);
 		}
 	}
 
@@ -149,9 +162,25 @@ public class ClueModel extends AbstractTableModel {
 	 * 
 	 * Get visualisation of model.
 	 * 
+	 * @param connection
+	 *            db connection
+	 * @param listener
+	 *            cell selection listener
+	 * 
 	 * @return a visual component for the model.
 	 */
-	public final Component getVisualComponent() {
+	public final Component getVisualComponent(final DBConnection connection, final CellUpdateListener listener) {
+		if (component == null) {
+			JTable table = new JHighDPITable(this);
+			TableColumn clueColumn = table.getColumnModel().getColumn(COLUMN_MARKER);
+			clueColumn.setMaxWidth(WIDTH_MARKER);
+			clueColumn = table.getColumnModel().getColumn(COLUMN_CLUE);
+			clueColumn.setMinWidth(WIDTH_CLUE);
+			ClueCellEditor editor = new ClueCellEditor(connection, listener);
+			editor.addTableActions(table, COLUMN_CLUE);
+			clueColumn.setCellEditor(editor);
+			component = new JScrollPane(table);
+		}
 		return component;
 	}
 
