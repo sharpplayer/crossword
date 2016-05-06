@@ -10,7 +10,7 @@ import javax.swing.table.TableCellEditor;
 import biz.computerkraft.crossword.db.ClueWriter;
 import biz.computerkraft.crossword.db.DBConnection;
 import biz.computerkraft.crossword.grid.Clue;
-import biz.computerkraft.crossword.gui.CellUpdateListener;
+import biz.computerkraft.crossword.gui.CellSelectListener;
 import biz.computerkraft.crossword.gui.ClueEditor;
 import biz.computerkraft.crossword.gui.ClueItem;
 import biz.computerkraft.crossword.gui.ClueModel;
@@ -34,7 +34,7 @@ public class ClueCellEditor extends AbstractCellEditor implements TableCellEdito
 	private DBConnection connection;
 
 	/** Call back listener for cell selection. */
-	private CellUpdateListener listener;
+	private CellSelectListener listener;
 
 	/** Current word. */
 	private String word;
@@ -48,7 +48,7 @@ public class ClueCellEditor extends AbstractCellEditor implements TableCellEdito
 	 * @param newListener
 	 *            cell selection listener
 	 */
-	public ClueCellEditor(final DBConnection newConnection, final CellUpdateListener newListener) {
+	public ClueCellEditor(final DBConnection newConnection, final CellSelectListener newListener) {
 		connection = newConnection;
 		listener = newListener;
 	}

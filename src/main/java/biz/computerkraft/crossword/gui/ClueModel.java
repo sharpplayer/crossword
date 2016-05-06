@@ -169,7 +169,7 @@ public class ClueModel extends AbstractTableModel {
 	 * 
 	 * @return a visual component for the model.
 	 */
-	public final Component getVisualComponent(final DBConnection connection, final CellUpdateListener listener) {
+	public final Component getVisualComponent(final DBConnection connection, final CellSelectListener listener) {
 		if (component == null) {
 			JTable table = new JHighDPITable(this);
 			TableColumn clueColumn = table.getColumnModel().getColumn(COLUMN_MARKER);

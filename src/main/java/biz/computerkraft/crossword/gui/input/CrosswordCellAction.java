@@ -24,7 +24,7 @@ public class CrosswordCellAction extends AbstractAction {
 	private final Cell actionCell;
 
 	/** Callback. */
-	private final CellUpdateListener listener;
+	private final CellUpdateListener updateListener;
 
 	/** Component to repaint on completed action. */
 	private final JComponent component;
@@ -37,17 +37,17 @@ public class CrosswordCellAction extends AbstractAction {
 	 *            cell actioning
 	 * @param action
 	 *            action to perform
-	 * @param newListener
+	 * @param newUpdateListener
 	 *            listener to invoke on action
 	 * @param crosswordPanel
 	 *            panel to repaint on action
 	 */
-	public CrosswordCellAction(final Cell cell, final String action, final CellUpdateListener newListener,
+	public CrosswordCellAction(final Cell cell, final String action, final CellUpdateListener newUpdateListener,
 			final JComponent crosswordPanel) {
 		actionCell = cell;
 		putValue(NAME, action);
-		listener = newListener;
 		component = crosswordPanel;
+		updateListener = newUpdateListener;
 	}
 
 	/*
@@ -58,7 +58,7 @@ public class CrosswordCellAction extends AbstractAction {
 	 */
 	@Override
 	public final void actionPerformed(final ActionEvent e) {
-		listener.cellMenuAction(actionCell, e.getActionCommand());
+		updateListener.cellMenuAction(actionCell, e.getActionCommand());
 		component.repaint();
 	}
 

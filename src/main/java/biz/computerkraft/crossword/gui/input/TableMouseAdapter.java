@@ -5,7 +5,7 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.JTable;
 
-import biz.computerkraft.crossword.gui.CellUpdateListener;
+import biz.computerkraft.crossword.gui.CellSelectListener;
 import biz.computerkraft.crossword.gui.ClueItem;
 import biz.computerkraft.crossword.gui.ClueModel;
 
@@ -19,7 +19,7 @@ import biz.computerkraft.crossword.gui.ClueModel;
 public class TableMouseAdapter extends MouseAdapter {
 
 	/** Listener for callbacks. */
-	private CellUpdateListener listener;
+	private CellSelectListener listener;
 
 	/**
 	 * 
@@ -28,7 +28,7 @@ public class TableMouseAdapter extends MouseAdapter {
 	 * @param newListener
 	 *            listener to cell updates.
 	 */
-	public TableMouseAdapter(final CellUpdateListener newListener) {
+	public TableMouseAdapter(final CellSelectListener newListener) {
 		listener = newListener;
 	}
 

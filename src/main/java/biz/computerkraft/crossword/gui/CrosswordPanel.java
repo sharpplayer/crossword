@@ -47,8 +47,11 @@ public class CrosswordPanel extends JPanel implements InputListener {
 	/** Indirect selections. */
 	private final List<List<Cell>> indirectSelections = new ArrayList<>();
 
+	/** Cell selection listener. */
+	private final CellSelectListener listener;
+
 	/** Cell update listener. */
-	private final CellUpdateListener listener;
+	private final CellUpdateListener updateListener;
 
 	/** Popup menu. */
 	private final JPopupMenu popup = new JPopupMenu();
@@ -57,13 +60,16 @@ public class CrosswordPanel extends JPanel implements InputListener {
 	 * Constructor.
 	 * 
 	 * @param newListener
-	 *            new cell update listener
+	 *            new cell seelction listener
+	 * @param newUpdateListener
+	 *            listener to update cells
 	 */
-	public CrosswordPanel(final CellUpdateListener newListener) {
+	public CrosswordPanel(final CellSelectListener newListener, final CellUpdateListener newUpdateListener) {
 		setFocusable(true);
 		addMouseListener(new CrosswordMouseAdapter(this));
 		addKeyListener(new CrosswordKeyListener(this));
 		listener = newListener;
+		updateListener = newUpdateListener;
 	}
 
 	/**
@@ -146,10 +152,10 @@ public class CrosswordPanel extends JPanel implements InputListener {
 				if (withPopup) {
 					popup.removeAll();
 					List<String> actions = new ArrayList<>();
-					listener.populateCellMenu(renderer.getCell(), actions);
+					updateListener.populateCellMenu(renderer.getCell(), actions);
 					for (String action : actions) {
 						JMenuItem item = new JMenuItem(action);
-						item.setAction(new CrosswordCellAction(renderer.getCell(), action, listener, this));
+						item.setAction(new CrosswordCellAction(renderer.getCell(), action, updateListener, this));
 						popup.add(item);
 					}
 					popup.show(this, (int) x, (int) y);
@@ -285,7 +291,7 @@ public class CrosswordPanel extends JPanel implements InputListener {
 	@Override
 	public final void addCellContent(final String content) {
 		for (Cell cell : directSelections) {
-			listener.addCellContent(cell, content);
+			updateListener.addCellContent(cell, content);
 		}
 		setDirectSelectionNext();
 		repaint();
@@ -300,7 +306,7 @@ public class CrosswordPanel extends JPanel implements InputListener {
 	@Override
 	public final void deleteCellContent() {
 		for (Cell cell : directSelections) {
-			listener.clearCellContent(cell);
+			updateListener.clearCellContent(cell);
 		}
 		repaint();
 	}
@@ -316,7 +322,7 @@ public class CrosswordPanel extends JPanel implements InputListener {
 	public final void backspaceCellContent() {
 		setDirectSelectionPrevious();
 		for (Cell cell : directSelections) {
-			listener.clearCellContent(cell);
+			updateListener.clearCellContent(cell);
 		}
 		repaint();
 	}

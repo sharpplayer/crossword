@@ -43,7 +43,7 @@ import biz.computerkraft.crossword.gui.input.WordListMouseAdapter;
  * @author Raymond Francis
  *
  */
-public class GridDialog extends JFrame implements CellUpdateListener {
+public class GridDialog extends JFrame implements CellUpdateListener, CellSelectListener {
 
 	/** Serial id. */
 	private static final long serialVersionUID = -1887552377378707619L;
@@ -70,7 +70,7 @@ public class GridDialog extends JFrame implements CellUpdateListener {
 	private DBConnection connection = new DBConnection();
 
 	/** Panel for crossword. */
-	private CrosswordPanel crosswordGrid = new CrosswordPanel(this);
+	private CrosswordPanel crosswordGrid = new CrosswordPanel(this, this);
 
 	/** Word list model. */
 	private WordListModel wordlListModel = new WordListModel(connection);

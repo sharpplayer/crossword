@@ -1,6 +1,5 @@
 package biz.computerkraft.crossword.gui;
 
-import java.awt.geom.Point2D;
 import java.util.List;
 
 import biz.computerkraft.crossword.db.Word;
@@ -14,64 +13,6 @@ import biz.computerkraft.crossword.grid.Cell;
  *
  */
 public interface CellUpdateListener {
-
-	/**
-	 * 
-	 * Event raised when cell selected.
-	 * 
-	 * @param cell
-	 *            selected cell.
-	 * @param point
-	 *            point in cell of selection
-	 */
-	void selectCell(Cell cell, Point2D point);
-
-	/**
-	 * 
-	 * Event raised when cell selected.
-	 * 
-	 * @param cell
-	 *            selected cell.
-	 * @param direction
-	 *            direction of selection
-	 */
-	void selectCell(Cell cell, int direction);
-
-	/**
-	 * 
-	 * Event raised when cell to left needs to be selected.
-	 * 
-	 * @param cell
-	 *            currently selected cell.
-	 */
-	void selectCellLeft(Cell cell);
-
-	/**
-	 * 
-	 * Event raised when cell up needs to be selected.
-	 * 
-	 * @param cell
-	 *            currently selected cell.
-	 */
-	void selectCellUp(Cell cell);
-
-	/**
-	 * 
-	 * Event raised when cell to right needs to be selected.
-	 * 
-	 * @param cell
-	 *            currently selected cell.
-	 */
-	void selectCellRight(Cell cell);
-
-	/**
-	 * 
-	 * Event raised when cell down needs to be selected.
-	 * 
-	 * @param cell
-	 *            currently selected cell.
-	 */
-	void selectCellDown(Cell cell);
 
 	/**
 	 * 

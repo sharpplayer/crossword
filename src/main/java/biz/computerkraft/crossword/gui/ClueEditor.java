@@ -42,6 +42,7 @@ public class ClueEditor extends JPanel implements ComplexCellEditor {
 	/** Button clicked for overwriting an exisiting clue in the database. */
 	private JButton saveButton;
 
+	/** Last selected clue. */
 	private int lastSelected = 0;
 
 	/**
