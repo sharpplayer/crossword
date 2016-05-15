@@ -10,7 +10,7 @@ import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 
 import biz.computerkraft.crossword.grid.Cell;
-import biz.computerkraft.crossword.grid.crossword.AbstractCrossword;
+import biz.computerkraft.crossword.grid.crossword.RectandleGrid;
 import biz.computerkraft.crossword.gui.CellRenderer;
 import biz.computerkraft.crossword.gui.Selection;
 
@@ -91,11 +91,11 @@ public abstract class AbstractCellRenderer implements CellRenderer {
 		double y = cell.getAnchorY();
 		double widthPc = 1 - x;
 		double heightPc = 1 - y;
-		if (cell.getAdjacent(AbstractCrossword.DIRECTION_E).isPresent()) {
-			widthPc = cell.getAdjacent(AbstractCrossword.DIRECTION_E).get().getAnchorX() - x;
+		if (cell.getAdjacent(RectandleGrid.DIRECTION_E).isPresent()) {
+			widthPc = cell.getAdjacent(RectandleGrid.DIRECTION_E).get().getAnchorX() - x;
 		}
-		if (cell.getAdjacent(AbstractCrossword.DIRECTION_S).isPresent()) {
-			heightPc = cell.getAdjacent(AbstractCrossword.DIRECTION_S).get().getAnchorY() - y;
+		if (cell.getAdjacent(RectandleGrid.DIRECTION_S).isPresent()) {
+			heightPc = cell.getAdjacent(RectandleGrid.DIRECTION_S).get().getAnchorY() - y;
 		}
 
 		cellShape = new Rectangle((int) Math.round(x * width), (int) Math.round(y * height),

@@ -26,7 +26,7 @@ import biz.computerkraft.crossword.gui.renderer.WordsearchCellRenderer;
  *
  */
 @XmlRootElement(name = "wordsearch")
-public class Wordsearch extends AbstractCrossword {
+public class Wordsearch extends RectandleGrid {
 
 	/** Search clue category. */
 	private static final String CATEGORY_SEARCH = "Search";

@@ -27,7 +27,7 @@ import biz.computerkraft.crossword.gui.renderer.CrosswordCellRenderer;
  *
  */
 @XmlRootElement(name = "crossword")
-public class Crossword extends AbstractCrossword {
+public class Crossword extends RectandleGrid {
 
 	/** Fill action. */
 	private static final String ACTION_FILL = "Fill";

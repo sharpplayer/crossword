@@ -7,7 +7,7 @@ import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 
 import biz.computerkraft.crossword.grid.Cell;
-import biz.computerkraft.crossword.grid.crossword.AbstractCrossword;
+import biz.computerkraft.crossword.grid.crossword.RectandleGrid;
 import biz.computerkraft.crossword.gui.Selection;
 
 /**
@@ -39,8 +39,8 @@ public class CrosswordCellRenderer extends AbstractCellRenderer {
 			final Selection selection) {
 		boolean fill = false;
 		Cell cell = getCell();
-		if (cell.isBlocked(AbstractCrossword.DIRECTION_N) && cell.isBlocked(AbstractCrossword.DIRECTION_S)
-				&& cell.isBlocked(AbstractCrossword.DIRECTION_E) && cell.isBlocked(AbstractCrossword.DIRECTION_W)) {
+		if (cell.isBlocked(RectandleGrid.DIRECTION_N) && cell.isBlocked(RectandleGrid.DIRECTION_S)
+				&& cell.isBlocked(RectandleGrid.DIRECTION_E) && cell.isBlocked(RectandleGrid.DIRECTION_W)) {
 			fill = true;
 		}
 

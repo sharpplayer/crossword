@@ -20,7 +20,7 @@ import biz.computerkraft.crossword.grid.Grid;
  * @author Raymond Francis
  *
  */
-public abstract class AbstractCrossword extends Grid {
+public abstract class RectandleGrid extends Grid {
 
 	/** Height property. */
 	private static final String PROPERTY_HEIGHT = "Height";
