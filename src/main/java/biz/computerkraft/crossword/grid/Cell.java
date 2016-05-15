@@ -374,4 +374,32 @@ public class Cell {
 		this.name = newName;
 	}
 
+	/**
+	 * 
+	 * Gets direction of assumed adjacent cell.
+	 * 
+	 * @param cell
+	 *            cell to get direction from this cell
+	 * @param defaultDirection
+	 *            if cell not adjacent, default return value
+	 * @return direction of cell
+	 */
+	public final int getDirection(final Cell cell, final int defaultDirection) {
+		for (Entry<Integer, Cell> entry : adjacents.entrySet()) {
+			if (entry.getValue().equals(cell)) {
+				return entry.getKey();
+			}
+		}
+		return defaultDirection;
+	}
+
+	/**
+	 * 
+	 * Gets the status of clues.
+	 * 
+	 * @return true if there are clues.
+	 */
+	public final boolean hasClues() {
+		return clues.size() > 0;
+	}
 }

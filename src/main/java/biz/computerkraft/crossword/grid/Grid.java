@@ -39,7 +39,7 @@ public abstract class Grid implements Puzzle {
 	 *            reverse direction
 	 * @return list of cells forming word
 	 */
-	public final List<Cell> getWordWithCell(final Cell cell, final int backward, final int forward) {
+	protected final List<Cell> getWordWithCell(final Cell cell, final int backward, final int forward) {
 		List<Cell> word = new ArrayList<>();
 		Cell startCell = cell;
 		while (!startCell.isBlocked(backward)) {

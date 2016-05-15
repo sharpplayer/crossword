@@ -447,11 +447,7 @@ public class GridDialog extends JFrame implements CellUpdateListener, CellSelect
 	 */
 	@Override
 	public final void setWord(final Word word) {
-		int letter = 0;
-		for (Cell cell : crosswordGrid.getFirstIndirectSelection()) {
-			puzzle.addCellContent(cell, word.getWord().substring(letter, letter + 1));
-			letter++;
-		}
+		puzzle.addWordContent(crosswordGrid.getFirstIndirectSelection(), word);
 		updateWordList();
 		crosswordGrid.repaint();
 	}

@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import biz.computerkraft.crossword.db.Word;
 import biz.computerkraft.crossword.grid.Cell;
 
 /**
@@ -105,6 +106,17 @@ public interface Puzzle {
 	 *            content to add
 	 */
 	void addCellContent(Cell cell, String content);
+
+	/**
+	 * 
+	 * Adds word to cell.
+	 * 
+	 * @param cells
+	 *            cells to add content to
+	 * @param word
+	 *            word to add
+	 */
+	void addWordContent(List<Cell> cells, Word word);
 
 	/**
 	 * 
