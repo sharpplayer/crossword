@@ -6,12 +6,12 @@ import biz.computerkraft.crossword.gui.Selection;
 
 /**
  * 
- * Basic crossword cell renderer.
+ * Renders a barword cell.
  * 
  * @author Raymond Francis
  *
  */
-public class WordsearchCellRenderer extends AbstractCellRenderer {
+public class BarwordCellRenderer extends RectangleGridCellRenderer {
 
 	/*
 	 * (non-Javadoc)
@@ -22,7 +22,7 @@ public class WordsearchCellRenderer extends AbstractCellRenderer {
 	@Override
 	public final void renderCell(final Graphics2D graphics, final double width, final double height,
 			final Selection selection) {
-		baseRenderCell(graphics, width, height, selection, 0);
+		renderCell(graphics, width, height, selection, true);
 	}
 
 }

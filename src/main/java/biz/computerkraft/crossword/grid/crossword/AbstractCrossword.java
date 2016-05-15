@@ -13,10 +13,8 @@ import biz.computerkraft.crossword.db.Word;
 import biz.computerkraft.crossword.grid.Cell;
 import biz.computerkraft.crossword.grid.Clue;
 import biz.computerkraft.crossword.grid.Symmetry;
-import biz.computerkraft.crossword.gui.CellRenderer;
 import biz.computerkraft.crossword.gui.ClueItem;
 import biz.computerkraft.crossword.gui.cluemodel.CrosswordClueModel;
-import biz.computerkraft.crossword.gui.renderer.CrosswordCellRenderer;
 
 /**
  * 
@@ -37,7 +35,7 @@ public abstract class AbstractCrossword extends RectandleGrid {
 	private static final String PROPERTY_SYMMETRY = "Symmetry";
 
 	/** Actual symmetry. */
-	private Symmetry symmetry;
+	private Symmetry symmetry = Symmetry.EIGHTWAY;
 
 	/*
 	 * (non-Javadoc)
@@ -54,16 +52,6 @@ public abstract class AbstractCrossword extends RectandleGrid {
 		setMarkers();
 		addClueModel(new CrosswordClueModel(CATEGORY_ACROSS));
 		addClueModel(new CrosswordClueModel(CATEGORY_DOWN));
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see biz.computerkraft.crossword.gui.PuzzleProperties#getRendererClass()
-	 */
-	@Override
-	public final Class<? extends CellRenderer> getRendererClass() {
-		return CrosswordCellRenderer.class;
 	}
 
 	/*
@@ -219,7 +207,7 @@ public abstract class AbstractCrossword extends RectandleGrid {
 	public final Map<String, Object> getProperties() {
 		Map<String, Object> properties = getBaseProperties();
 		if (!properties.containsKey(PROPERTY_SYMMETRY)) {
-			properties.put(PROPERTY_SYMMETRY, Symmetry.EIGHTWAY);
+			properties.put(PROPERTY_SYMMETRY, symmetry);
 		}
 		return properties;
 	}

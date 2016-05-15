@@ -5,7 +5,8 @@ import java.awt.Font;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
-import biz.computerkraft.crossword.grid.crossword.AbstractCrossword;
+import biz.computerkraft.crossword.grid.crossword.Barword;
+import biz.computerkraft.crossword.grid.crossword.Crossword;
 import biz.computerkraft.crossword.grid.crossword.Wordsearch;
 import biz.computerkraft.crossword.gui.GridDialog;
 import biz.computerkraft.crossword.gui.PropertyDialog;
@@ -52,7 +53,8 @@ public final class Main {
 			public void run() {
 				GridDialog mainFrame = new GridDialog();
 				PropertyDialog dialog = new PropertyDialog(mainFrame);
-				dialog.registerPuzzle(AbstractCrossword.class);
+				dialog.registerPuzzle(Crossword.class);
+				dialog.registerPuzzle(Barword.class);
 				dialog.registerPuzzle(Wordsearch.class);
 				dialog.setVisible(true);
 			}

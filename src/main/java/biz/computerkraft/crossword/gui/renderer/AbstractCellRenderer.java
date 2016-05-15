@@ -10,6 +10,7 @@ import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 
 import biz.computerkraft.crossword.grid.Cell;
+import biz.computerkraft.crossword.grid.crossword.AbstractCrossword;
 import biz.computerkraft.crossword.grid.crossword.RectandleGrid;
 import biz.computerkraft.crossword.gui.CellRenderer;
 import biz.computerkraft.crossword.gui.Selection;
@@ -34,6 +35,9 @@ public abstract class AbstractCellRenderer implements CellRenderer {
 
 	/** Default selected filled cell border. */
 	private static final int CELL_BORDER = 6;
+
+	/** Default selected filled cell border. */
+	private static final int BAR_BORDER = 4;
 
 	/** Font for crossword. */
 	protected static final Font DEFAULT_FONT = new Font("Arial", Font.BOLD, DEFAULT_FONT_SIZE);
@@ -83,10 +87,10 @@ public abstract class AbstractCellRenderer implements CellRenderer {
 	 * @param selection
 	 *            method of selection
 	 * @param fill
-	 *            fill as blocked
+	 *            fill sides
 	 */
 	protected final void baseRenderCell(final Graphics2D graphics, final double width, final double height,
-			final Selection selection, final boolean fill) {
+			final Selection selection, final int fill) {
 		double x = cell.getAnchorX();
 		double y = cell.getAnchorY();
 		double widthPc = 1 - x;
@@ -101,7 +105,9 @@ public abstract class AbstractCellRenderer implements CellRenderer {
 		cellShape = new Rectangle((int) Math.round(x * width), (int) Math.round(y * height),
 				(int) Math.round(widthPc * width), (int) Math.round(heightPc * height));
 
-		if (fill) {
+		boolean fullFill = fill == (AbstractCrossword.DIRECTION_E | AbstractCrossword.DIRECTION_N
+				| AbstractCrossword.DIRECTION_W | AbstractCrossword.DIRECTION_S);
+		if (fullFill) {
 			graphics.setColor(Color.BLACK);
 		} else if (selection == Selection.NONE) {
 			graphics.setColor(Color.WHITE);
@@ -113,15 +119,17 @@ public abstract class AbstractCellRenderer implements CellRenderer {
 
 		graphics.fill(cellShape);
 
+		int newX = (int) Math.round(x * width + CELL_BORDER / 2 + 1);
+		int newY = (int) Math.round(y * height + CELL_BORDER / 2 + 1);
+		int newWidth = (int) Math.round(widthPc * width) - 1 - CELL_BORDER;
+		int newHeight = (int) Math.round(heightPc * height) - 1 - CELL_BORDER;
+
 		Shape borderShape = cellShape;
-		if (!fill) {
+		if (!fullFill) {
 			graphics.setStroke(new BasicStroke(1));
 			graphics.setColor(Color.BLACK);
 		} else {
-			borderShape = new Rectangle((int) Math.round(x * width + CELL_BORDER / 2 + 1),
-					(int) Math.round(y * height + CELL_BORDER / 2 + 1),
-					(int) Math.round(widthPc * width) - 1 - CELL_BORDER,
-					(int) Math.round(heightPc * height) - 1 - CELL_BORDER);
+			borderShape = new Rectangle(newX, newY, newWidth, newHeight);
 			graphics.setStroke(new BasicStroke(CELL_BORDER));
 			if (selection == Selection.NONE) {
 				graphics.setColor(Color.BLACK);
@@ -133,6 +141,28 @@ public abstract class AbstractCellRenderer implements CellRenderer {
 		}
 
 		graphics.draw(borderShape);
+
+		if (!fullFill) {
+			newX = (int) Math.round(x * width + BAR_BORDER / 2);
+			newY = (int) Math.round(y * height + BAR_BORDER / 2);
+			newWidth = (int) Math.round(widthPc * width) + 1 - BAR_BORDER;
+			newHeight = (int) Math.round(heightPc * height) + 1 - BAR_BORDER;
+
+			graphics.setStroke(new BasicStroke(BAR_BORDER / 2));
+
+			if ((fill & AbstractCrossword.DIRECTION_E) != 0) {
+				graphics.drawLine(newX + newWidth, newY, newX + newWidth, newY + newHeight);
+			}
+			if ((fill & AbstractCrossword.DIRECTION_W) != 0) {
+				graphics.drawLine(newX, newY, newX, newY + newHeight);
+			}
+			if ((fill & AbstractCrossword.DIRECTION_N) != 0) {
+				graphics.drawLine(newX, newY, newX + newWidth, newY);
+			}
+			if ((fill & AbstractCrossword.DIRECTION_S) != 0) {
+				graphics.drawLine(newX, newY + newHeight, newX + newWidth, newY + newHeight);
+			}
+		}
 
 		if (!cell.getContents().isEmpty()) {
 			Rectangle2D bounds = cellShape.getBounds2D();

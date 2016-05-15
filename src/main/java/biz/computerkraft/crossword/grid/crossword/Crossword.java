@@ -5,6 +5,8 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import biz.computerkraft.crossword.grid.Cell;
+import biz.computerkraft.crossword.gui.CellRenderer;
+import biz.computerkraft.crossword.gui.renderer.CrosswordCellRenderer;
 
 /**
  * 
@@ -84,6 +86,16 @@ public class Crossword extends AbstractCrossword {
 				actions.add(ACTION_FILL);
 			}
 		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see biz.computerkraft.crossword.gui.PuzzleProperties#getRendererClass()
+	 */
+	@Override
+	public final Class<? extends CellRenderer> getRendererClass() {
+		return CrosswordCellRenderer.class;
 	}
 
 }
