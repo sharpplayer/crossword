@@ -7,6 +7,8 @@ import javax.swing.UIManager;
 
 import biz.computerkraft.crossword.grid.crossword.Barword;
 import biz.computerkraft.crossword.grid.crossword.Crossword;
+import biz.computerkraft.crossword.grid.crossword.MultiDirectionGrid;
+import biz.computerkraft.crossword.grid.crossword.Sudoku;
 import biz.computerkraft.crossword.grid.crossword.Wordsearch;
 import biz.computerkraft.crossword.gui.GridDialog;
 import biz.computerkraft.crossword.gui.PropertyDialog;
@@ -56,6 +58,7 @@ public final class Main {
 				dialog.registerPuzzle(Crossword.class);
 				dialog.registerPuzzle(Barword.class);
 				dialog.registerPuzzle(Wordsearch.class);
+				dialog.registerPuzzle(Sudoku.class);
 				dialog.setVisible(true);
 			}
 		});

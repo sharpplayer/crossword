@@ -23,7 +23,7 @@ import biz.computerkraft.crossword.gui.cluemodel.CrosswordClueModel;
  * @author Raymond Francis
  *
  */
-public abstract class AbstractCrossword extends RectandleGrid {
+public abstract class AbstractCrossword extends RectangleGrid {
 
 	/** Across category. */
 	private static final String CATEGORY_ACROSS = "Across";
@@ -63,42 +63,7 @@ public abstract class AbstractCrossword extends RectandleGrid {
 	 */
 	@Override
 	public final List<Cell> getIndirectSelection(final Cell cell, final Point2D selectionSpot) {
-		List<Cell> selection;
-		if (isCellFilled(cell)) {
-			selection = new ArrayList<>();
-		} else {
-			int forward = DIRECTION_E;
-
-			if (Math.abs(selectionSpot.getX() - CELL_CENTRE) < Math.abs(selectionSpot.getY() - CELL_CENTRE)) {
-				forward = DIRECTION_S;
-			}
-			int backward = getReverseDirection(forward);
-			selection = getWordWithCell(cell, backward, forward);
-			if (selection.size() == 1) {
-				if (forward == DIRECTION_E) {
-					forward = DIRECTION_S;
-				} else {
-					forward = DIRECTION_E;
-				}
-				backward = getReverseDirection(forward);
-				selection = getWordWithCell(cell, backward, forward);
-			}
-		}
-		return selection;
-	}
-
-	/**
-	 * 
-	 * Gets full blocked status of cell.
-	 * 
-	 * @param cell
-	 *            cell to test for filled status
-	 * 
-	 * @return blocked status
-	 */
-	protected final boolean isCellFilled(final Cell cell) {
-		return cell.isBlocked(DIRECTION_E) && cell.isBlocked(DIRECTION_N) && cell.isBlocked(DIRECTION_S)
-				&& cell.isBlocked(DIRECTION_W);
+		return getRestrictedIndirectSelection(cell, selectionSpot, false, false);
 	}
 
 	/**

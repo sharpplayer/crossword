@@ -20,13 +20,13 @@ import biz.computerkraft.crossword.grid.Grid;
  * @author Raymond Francis
  *
  */
-public abstract class RectandleGrid extends Grid {
+public abstract class RectangleGrid extends Grid {
 
 	/** Height property. */
-	private static final String PROPERTY_HEIGHT = "Height";
+	protected static final String PROPERTY_HEIGHT = "Height";
 
 	/** Width property. */
-	private static final String PROPERTY_WIDTH = "Width";
+	protected static final String PROPERTY_WIDTH = "Width";
 
 	/** North direction. */
 	public static final int DIRECTION_N = 1;
@@ -50,10 +50,10 @@ public abstract class RectandleGrid extends Grid {
 	private final Map<String, Object> properties = new HashMap<>();
 
 	/** Actual width set. */
-	private int cellWidth;
+	private int cellWidth = DEFAULT_SIZE;
 
 	/** Actual height set. */
-	private int cellHeight;
+	private int cellHeight = DEFAULT_SIZE;
 
 	/**
 	 * 
@@ -64,8 +64,8 @@ public abstract class RectandleGrid extends Grid {
 	@XmlTransient
 	protected final Map<String, Object> getBaseProperties() {
 		if (properties.size() == 0) {
-			properties.put(PROPERTY_HEIGHT, new Integer(DEFAULT_SIZE));
-			properties.put(PROPERTY_WIDTH, new Integer(DEFAULT_SIZE));
+			properties.put(PROPERTY_HEIGHT, new Integer(cellWidth));
+			properties.put(PROPERTY_WIDTH, new Integer(cellHeight));
 		}
 		return properties;
 	}
@@ -326,4 +326,75 @@ public abstract class RectandleGrid extends Grid {
 			cells.get(letter).setContents(wordString.substring(letter, letter + 1));
 		}
 	}
+
+	/**
+	 * 
+	 * Gets the cell map.
+	 * 
+	 * @return cell map
+	 */
+	protected final Map<String, Cell> getCellMap() {
+		Map<String, Cell> grid = new HashMap<>();
+		for (Cell cell : getCells()) {
+			grid.put(cell.getName(), cell);
+		}
+		return grid;
+	}
+
+	/**
+	 * Gets indirect selection across or down.
+	 * 
+	 * @param cell
+	 *            cell to include in selection
+	 * @param selectionSpot
+	 *            selection spot in cell
+	 * @param fromCell
+	 *            start selection at cell
+	 * @param singleSelect
+	 *            can a single cell only be selected
+	 * @return indirect selection
+	 */
+	protected final List<Cell> getRestrictedIndirectSelection(final Cell cell, final Point2D selectionSpot,
+			final boolean fromCell, final boolean singleSelect) {
+		List<Cell> selection;
+		if (isCellFilled(cell)) {
+			selection = new ArrayList<>();
+		} else {
+			int forward = DIRECTION_E;
+
+			if (Math.abs(selectionSpot.getX() - CELL_CENTRE) < Math.abs(selectionSpot.getY() - CELL_CENTRE)) {
+				forward = DIRECTION_S;
+			}
+			int backward = 0;
+			if (!fromCell) {
+				getReverseDirection(forward);
+			}
+			selection = getWordWithCell(cell, backward, forward);
+			if (selection.size() == 1 && !singleSelect) {
+				if (forward == DIRECTION_E) {
+					forward = DIRECTION_S;
+				} else {
+					forward = DIRECTION_E;
+				}
+				backward = getReverseDirection(forward);
+				selection = getWordWithCell(cell, backward, forward);
+			}
+		}
+		return selection;
+	}
+
+	/**
+	 * 
+	 * Gets full blocked status of cell.
+	 * 
+	 * @param cell
+	 *            cell to test for filled status
+	 * 
+	 * @return blocked status
+	 */
+	protected final boolean isCellFilled(final Cell cell) {
+		return cell.isBlocked(DIRECTION_E) && cell.isBlocked(DIRECTION_N) && cell.isBlocked(DIRECTION_S)
+				&& cell.isBlocked(DIRECTION_W);
+	}
+
 }
