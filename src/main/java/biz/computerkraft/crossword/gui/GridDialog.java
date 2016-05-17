@@ -223,39 +223,35 @@ public class GridDialog extends JFrame implements CellUpdateListener, CellSelect
 		crosswordGrid.reset(new Dimension(puzzle.getCellWidth() * DEFAULT_CELL_SIZE, height));
 		crosswordViewer.setPreferredSize(new Dimension(puzzle.getCellWidth() * DEFAULT_CELL_SIZE + SCROLLPANE_BORDER,
 				puzzle.getCellHeight() * DEFAULT_CELL_SIZE + SCROLLPANE_BORDER));
-		Class<? extends CellRenderer> renderClass = puzzle.getRendererClass();
-		try {
-			for (Cell cell : puzzle.getCells()) {
-				CellRenderer renderer = renderClass.newInstance();
-				renderer.setCell(cell);
-				crosswordGrid.addRenderer(renderer);
-			}
 
-			for (ClueModel model : clueModels) {
-				wordTabs.remove(wordTabs.indexOfComponent(model.getVisualComponent(connection, this)));
-			}
-			clueModels.clear();
-
-			List<ClueModel> clues = puzzle.getClueModels();
-			for (ClueModel model : clues) {
-				Component component = model.getVisualComponent(connection, this);
-				component.setPreferredSize(new Dimension(WIDTH_CLUE, height));
-				if (component instanceof JScrollPane) {
-					Component view = ((JScrollPane) component).getViewport().getView();
-					if (view instanceof JTable) {
-						((JTable) view).addMouseListener(new TableMouseAdapter(this));
-					}
-				}
-				wordTabs.addTab(model.getCategory(), component);
-			}
-			clueModels.addAll(clues);
-
-			SpringUtilities.makeCompactGrid(getContentPane(), 1, 2, MARGIN, MARGIN, MARGIN, MARGIN);
-			pack();
-			setVisible(true);
-		} catch (InstantiationException | IllegalAccessException e) {
-			e.printStackTrace();
+		for (Cell cell : puzzle.getCells()) {
+			CellRenderer renderer = puzzle.getNewCellRenderer();
+			renderer.setCell(cell);
+			crosswordGrid.addRenderer(renderer);
 		}
+
+		for (ClueModel model : clueModels) {
+			wordTabs.remove(wordTabs.indexOfComponent(model.getVisualComponent(connection, this)));
+		}
+		clueModels.clear();
+
+		List<ClueModel> clues = puzzle.getClueModels();
+		for (ClueModel model : clues) {
+			Component component = model.getVisualComponent(connection, this);
+			component.setPreferredSize(new Dimension(WIDTH_CLUE, height));
+			if (component instanceof JScrollPane) {
+				Component view = ((JScrollPane) component).getViewport().getView();
+				if (view instanceof JTable) {
+					((JTable) view).addMouseListener(new TableMouseAdapter(this));
+				}
+			}
+			wordTabs.addTab(model.getCategory(), component);
+		}
+		clueModels.addAll(clues);
+
+		SpringUtilities.makeCompactGrid(getContentPane(), 1, 2, MARGIN, MARGIN, MARGIN, MARGIN);
+		pack();
+		setVisible(true);
 
 	}
 

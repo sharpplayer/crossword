@@ -49,6 +49,9 @@ public class Cell {
 	/** Useful cell identifier. */
 	private String name;
 
+	/** Special cell. */
+	private boolean transientSpecial;
+
 	/**
 	 * Constructor for JAXB.
 	 */
@@ -231,6 +234,28 @@ public class Cell {
 	 */
 	public final void setMarker(final String newMarker) {
 		marker = newMarker;
+	}
+
+	/**
+	 * 
+	 * Returns transient special status of cell.
+	 * 
+	 * @return the special status
+	 */
+	@XmlTransient
+	public final boolean isTransientSpecial() {
+		return transientSpecial;
+	}
+
+	/**
+	 * 
+	 * Sets the transient special status for cell.
+	 * 
+	 * @param newSpecial
+	 *            the special to set
+	 */
+	public final void setTransientSpecial(final boolean newSpecial) {
+		transientSpecial = newSpecial;
 	}
 
 	/**

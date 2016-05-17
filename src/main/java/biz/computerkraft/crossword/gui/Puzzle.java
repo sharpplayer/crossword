@@ -67,11 +67,11 @@ public interface Puzzle {
 
 	/**
 	 * 
-	 * Gets the cell renderer class.
+	 * Gets the cell renderer.
 	 * 
 	 * @return cell renderer
 	 */
-	Class<? extends CellRenderer> getRendererClass();
+	CellRenderer getNewCellRenderer();
 
 	/**
 	 * 

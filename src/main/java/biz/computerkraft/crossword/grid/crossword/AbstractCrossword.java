@@ -273,4 +273,16 @@ public abstract class AbstractCrossword extends RectangleGrid {
 		baseClearCellContent(cell);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * biz.computerkraft.crossword.gui.Puzzle#addCellContent(biz.computerkraft.
+	 * crossword.grid.Cell, java.lang.String)
+	 */
+	@Override
+	public final void addCellContent(final Cell cell, final String content) {
+		baseAddCellContent(cell, content);
+	}
+
 }

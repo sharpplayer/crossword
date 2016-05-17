@@ -22,7 +22,7 @@ public class BarwordCellRenderer extends RectangleGridCellRenderer {
 	@Override
 	public final void renderCell(final Graphics2D graphics, final double width, final double height,
 			final Selection selection) {
-		renderCell(graphics, width, height, selection, true);
+		renderCell(graphics, width, height, selection, true, true);
 	}
 
 }

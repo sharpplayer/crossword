@@ -23,10 +23,10 @@ public abstract class RectangleGridCellRenderer extends AbstractCellRenderer {
 	private static final int MARKER_FONT_SIZE = 10;
 
 	/** Default marker border. */
-	private static final int MARKER_BORDER = 3;
+	protected static final int MARKER_BORDER = 3;
 
 	/** Marker font for crossword. */
-	private static final Font MARKER_FONT = new Font("Arial", Font.BOLD, MARKER_FONT_SIZE);
+	protected static final Font MARKER_FONT = new Font("Arial", Font.BOLD, MARKER_FONT_SIZE);
 
 	/**
 	 * 
@@ -40,11 +40,13 @@ public abstract class RectangleGridCellRenderer extends AbstractCellRenderer {
 	 *            grid height
 	 * @param selection
 	 *            how cell is selected
+	 * @param defaultMarkers
+	 *            default marker rendering
 	 * @param bars
 	 *            render bars or whole cell
 	 */
 	protected final void renderCell(final Graphics2D graphics, final double width, final double height,
-			final Selection selection, final boolean bars) {
+			final Selection selection, final boolean bars, final boolean defaultMarkers) {
 		Cell cell = getCell();
 		int fill = 0;
 		for (Entry<Integer, Boolean> block : cell.getBlocks().entrySet()) {
@@ -58,11 +60,13 @@ public abstract class RectangleGridCellRenderer extends AbstractCellRenderer {
 
 		baseRenderCell(graphics, width, height, selection, fill);
 
-		if (!cell.getMarker().isEmpty()) {
+		if (!cell.getMarker().isEmpty() && defaultMarkers) {
 			Rectangle2D bounds = getCellShape().getBounds2D();
 			graphics.setColor(Color.BLACK);
 			graphics.setFont(MARKER_FONT);
 			FontMetrics metrics = graphics.getFontMetrics(MARKER_FONT);
+			
+			
 			graphics.drawString(cell.getMarker(), (int) (bounds.getX() + MARKER_BORDER),
 					(int) (bounds.getY() + MARKER_BORDER + metrics.getAscent()));
 		}

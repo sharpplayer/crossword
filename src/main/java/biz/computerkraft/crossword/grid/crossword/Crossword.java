@@ -91,11 +91,11 @@ public class Crossword extends AbstractCrossword {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see biz.computerkraft.crossword.gui.PuzzleProperties#getRendererClass()
+	 * @see biz.computerkraft.crossword.gui.Puzzle#getNewCellRenderer()
 	 */
 	@Override
-	public final Class<? extends CellRenderer> getRendererClass() {
-		return CrosswordCellRenderer.class;
+	public final CellRenderer getNewCellRenderer() {
+		return new CrosswordCellRenderer();
 	}
 
 }

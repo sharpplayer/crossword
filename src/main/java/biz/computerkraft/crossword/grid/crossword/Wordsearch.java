@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import biz.computerkraft.crossword.db.Word;
 import biz.computerkraft.crossword.grid.Cell;
 import biz.computerkraft.crossword.grid.Clue;
 import biz.computerkraft.crossword.gui.CellRenderer;
@@ -72,8 +73,8 @@ public class Wordsearch extends MultiDirectionGrid {
 	 * @see biz.computerkraft.crossword.gui.Puzzle#getRendererClass()
 	 */
 	@Override
-	public final Class<? extends CellRenderer> getRendererClass() {
-		return WordsearchCellRenderer.class;
+	public final CellRenderer getNewCellRenderer() {
+		return new WordsearchCellRenderer();
 	}
 
 	/*
@@ -86,5 +87,43 @@ public class Wordsearch extends MultiDirectionGrid {
 	public final List<Cell> getIndirectSelection(final Cell cell, final Point2D offset) {
 		return getFreeIndirectSelection(cell, offset);
 	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * biz.computerkraft.crossword.gui.Puzzle#addWordContent(java.util.List,
+	 * biz.computerkraft.crossword.db.Word)
+	 */
+	@Override
+	public final void addWordContent(final List<Cell> cells, final Word word) {
+		addCluedWordContent(cells, word);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * biz.computerkraft.crossword.gui.Puzzle#addCellContent(biz.computerkraft.
+	 * crossword.grid.Cell, java.lang.String)
+	 */
+	@Override
+	public final void addCellContent(final Cell cell, final String content) {
+		baseAddCellContent(cell, content);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * biz.computerkraft.crossword.gui.Puzzle#clearCellContent(biz.computerkraft
+	 * .crossword.grid.Cell)
+	 */
+	@Override
+	public final void clearCellContent(final Cell cell) {
+		clearCellContent(cell, true);
+	}
+
+
 
 }

@@ -190,14 +190,16 @@ public abstract class RectangleGrid extends Grid {
 		cellHeight = newHeight;
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
 	 * 
-	 * @see biz.computerkraft.crossword.gui.PuzzleProperties#addCellContent(biz.
-	 * computerkraft.crossword.grid.Cell, java.lang.String)
+	 * Adds content to cell.
+	 * 
+	 * @param cell
+	 *            cell to add content to
+	 * @param content
+	 *            content to add
 	 */
-	@Override
-	public final void addCellContent(final Cell cell, final String content) {
+	public final void baseAddCellContent(final Cell cell, final String content) {
 		cell.setContents(content.toUpperCase());
 		updateClues();
 	}

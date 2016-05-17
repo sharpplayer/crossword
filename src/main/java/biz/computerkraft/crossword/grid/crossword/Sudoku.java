@@ -2,23 +2,26 @@ package biz.computerkraft.crossword.grid.crossword;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import biz.computerkraft.crossword.db.Word;
 import biz.computerkraft.crossword.grid.Cell;
 import biz.computerkraft.crossword.grid.Clue;
 import biz.computerkraft.crossword.gui.CellRenderer;
 import biz.computerkraft.crossword.gui.ClueItem;
 import biz.computerkraft.crossword.gui.cluemodel.WordsearchClueModel;
-import biz.computerkraft.crossword.gui.renderer.BarwordCellRenderer;
+import biz.computerkraft.crossword.gui.renderer.SudokuCellRenderer;
 
 /**
  * 
- * Clued sukoku variant.
+ * Clued sudoku variant.
  * 
  * @author Raymond Francis
  *
@@ -41,11 +44,25 @@ public class Sudoku extends MultiDirectionGrid {
 	/** Property name for cell group height. */
 	private static final String PROPERTY_CELL_GROUP_HEIGHT = "Cell Group Height";
 
+	/** Markers options. */
+	private static final String MARKERS = "123456789ABCDEFGHIJKLMNOPQRSTUVWXYZa";
+
 	/** Cell group width. */
 	private int cellGroupWidth = DEFAULT_CELL_GROUP_WIDTH;
 
 	/** Cell group width. */
 	private int cellGroupHeight = DEFAULT_CELL_GROUP_HEIGHT;
+
+	/** Sudoku rows. */
+	private List<List<Cell>> rows = new ArrayList<>();
+
+	/** Sudoku columns. */
+	private List<List<Cell>> colums = new ArrayList<>();
+
+	/** Sudoku blocks. */
+	private List<List<Cell>> blocks = new ArrayList<>();
+
+	int countX = 1;
 
 	/*
 	 * (non-Javadoc)
@@ -106,6 +123,12 @@ public class Sudoku extends MultiDirectionGrid {
 				grid.get(name).setBlock(DIRECTION_S, true);
 			}
 		}
+
+		String markers = getMarkers();
+		for (Cell cell : getCells()) {
+			cell.setMarker(markers);
+		}
+		setCellGroups();
 		addClueModel(new WordsearchClueModel(CATEGORY_CLUES));
 	}
 
@@ -153,11 +176,11 @@ public class Sudoku extends MultiDirectionGrid {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see biz.computerkraft.crossword.gui.Puzzle#getRendererClass()
+	 * @see biz.computerkraft.crossword.gui.Puzzle#getNewCellRenderer()
 	 */
 	@Override
-	public final Class<? extends CellRenderer> getRendererClass() {
-		return BarwordCellRenderer.class;
+	public final CellRenderer getNewCellRenderer() {
+		return new SudokuCellRenderer(cellGroupWidth, cellGroupHeight);
 	}
 
 	/*
@@ -171,4 +194,240 @@ public class Sudoku extends MultiDirectionGrid {
 		return getRestrictedIndirectSelection(cell, offset, true, true);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * biz.computerkraft.crossword.gui.Puzzle#addWordContent(java.util.List,
+	 * biz.computerkraft.crossword.db.Word)
+	 */
+	@Override
+	public void addWordContent(List<Cell> cells, Word word) {
+		addCluedWordContent(cells, word);
+		updateMarkers();
+	}
+
+	private void updateMarkers() {
+		countX = 1;
+		String markers = getMarkers();
+		for (Cell cell : getCells()) {
+			if (cell.getContents().isEmpty() || cell.isTransientSpecial()) {
+				cell.setContents("");
+				cell.setMarker(markers);
+			} else {
+				cell.setMarker("");
+			}
+			cell.setTransientSpecial(false);
+		}
+
+		boolean repeat = true;
+		while (repeat) {
+			repeat = false;
+			for (List<Cell> cellBlock : rows) {
+				repeat |= updateCellBlock(cellBlock);
+			}
+			for (List<Cell> cellBlock : colums) {
+				repeat |= updateCellBlock(cellBlock);
+			}
+			for (List<Cell> cellBlock : blocks) {
+				repeat |= updateCellBlock(cellBlock);
+			}
+		}
+
+		for (Cell cell : getCells()) {
+			if (cell.getContents().isEmpty() && cell.getMarker().trim().length() == 0) {
+				cell.setContents("X");
+				cell.setTransientSpecial(true);
+			}
+		}
+
+	}
+
+	/**
+	 * Stores cells in rows columns and groups.
+	 */
+	private void setCellGroups() {
+		Cell start = getCells().iterator().next();
+		for (int list = 0; list < cellGroupHeight * cellGroupWidth; list++) {
+			blocks.add(new ArrayList<>());
+		}
+		int row = 0;
+		do {
+			List<Cell> rowOfCells = getLineOfCells(start, DIRECTION_E);
+			int x = 0;
+			for (Cell cell : rowOfCells) {
+				blocks.get((row / cellGroupHeight) * cellGroupWidth + x / cellGroupWidth).add(cell);
+				x++;
+			}
+			rows.add(rowOfCells);
+			Optional<Cell> optionalStart = start.getAdjacent(DIRECTION_S);
+			if (optionalStart.isPresent()) {
+				start = optionalStart.get();
+				row++;
+			} else {
+				start = null;
+			}
+		} while (start != null);
+
+		start = getCells().iterator().next();
+		Cell columnStart = start;
+		do {
+			List<Cell> columnOfCells = getLineOfCells(columnStart, DIRECTION_S);
+			colums.add(columnOfCells);
+
+			Optional<Cell> optionalStart = columnStart.getAdjacent(DIRECTION_E);
+			if (optionalStart.isPresent()) {
+				columnStart = optionalStart.get();
+			} else {
+				columnStart = null;
+			}
+		} while (columnStart != null);
+	}
+
+	private boolean updateCellBlock(List<Cell> block) {
+		String used = "";
+		String markers = getMarkers();
+		for (Cell cell : block) {
+			if (!cell.getContents().isEmpty()) {
+				used += cell.getContents();
+			}
+		}
+		boolean repeat = true;
+		boolean change = false;
+		String count = "";
+		while (repeat) {
+			while (repeat) {
+				count = "";
+				repeat = false;
+				String regeXused = "[" + used + "]";
+				for (Cell cell : block) {
+					if (cell.getContents().isEmpty()) {
+						if (!used.isEmpty()) {
+							cell.setMarker(cell.getMarker().replaceAll(regeXused, " "));
+							if (cell.getMarker().trim().length() == 1) {
+								cell.setContents(cell.getMarker().trim());
+								cell.setTransientSpecial(true);
+								cell.setMarker("");
+								used += cell.getContents();
+								regeXused = "[" + used + "]";
+								count = count.replaceAll(cell.getContents(), " ");
+								repeat = true;
+								change = true;
+							} else {
+								count += cell.getMarker();
+							}
+						} else {
+							count += cell.getMarker();
+						}
+					}
+				}
+			}
+			repeat = false;
+			for (int index = 0; index < markers.length(); index++) {
+				String marker = markers.substring(index, index + 1);
+				if (countMatches(count, marker) == 1) {
+					for (Cell cell : block) {
+						if (cell.getMarker().contains(marker)) {
+							cell.setContents(marker);
+							cell.setMarker("");
+							cell.setTransientSpecial(true);
+							used += cell.getContents();
+							repeat = true;
+							change = true;
+						}
+					}
+				}
+			}
+
+			Map<String, Integer> groups = new HashMap<>();
+			for (Cell cell : block) {
+				String marker = cell.getMarker();
+				if (!marker.isEmpty()) {
+					if (groups.containsKey(marker)) {
+						groups.put(marker, groups.get(marker) + 1);
+					} else {
+						groups.put(marker, 1);
+					}
+				}
+			}
+
+			for (Entry<String, Integer> entry : groups.entrySet()) {
+				String compactMarker = entry.getKey().replaceAll(" ", "");
+				if (compactMarker.length() == entry.getValue()) {
+					String regeXused = "[" + compactMarker + "]";
+					for (Cell cell : block) {
+						if (!cell.getMarker().equals(entry.getKey())) {
+							cell.setMarker(cell.getMarker().replaceAll(regeXused, " "));
+							if (cell.getMarker().trim().length() == 1) {
+								cell.setContents(cell.getMarker().trim());
+								cell.setTransientSpecial(true);
+								count += cell.getMarker();
+								cell.setMarker("");
+								used += cell.getContents();
+								repeat = true;
+								change = true;
+							}
+						}
+					}
+				}
+			}
+
+		}
+
+		return change;
+
+	}
+
+	private List<Cell> getLineOfCells(Cell start, int direction) {
+		Optional<Cell> optionalStart;
+		List<Cell> listOfCells = new ArrayList<>();
+		Cell rowStart = start;
+		do {
+			listOfCells.add(rowStart);
+			optionalStart = rowStart.getAdjacent(direction);
+			if (optionalStart.isPresent()) {
+				rowStart = optionalStart.get();
+			} else {
+				rowStart = null;
+			}
+		} while (rowStart != null);
+
+		return listOfCells;
+	}
+
+	@Override
+	public void addCellContent(Cell cell, String content) {
+		String markers = getMarkers();
+		if (markers.contains(content.toUpperCase())) {
+			baseAddCellContent(cell, content.toUpperCase());
+			updateMarkers();
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * biz.computerkraft.crossword.gui.Puzzle#clearCellContent(biz.computerkraft
+	 * .crossword.grid.Cell)
+	 */
+	@Override
+	public final void clearCellContent(final Cell cell) {
+		clearCellContent(cell, true);
+		updateMarkers();
+	}
+
+	private String getMarkers() {
+		return MARKERS.substring(0, cellGroupHeight * cellGroupWidth);
+	}
+
+	private int countMatches(String haystack, String substring) {
+		int count = 0;
+		int index = 0;
+		while ((index = haystack.indexOf(substring, index)) != -1) {
+			count++;
+			index += substring.length();
+		}
+		return count;
+	}
 }

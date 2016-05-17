@@ -108,13 +108,31 @@ public abstract class AbstractCellRenderer implements CellRenderer {
 		boolean fullFill = fill == (AbstractCrossword.DIRECTION_E | AbstractCrossword.DIRECTION_N
 				| AbstractCrossword.DIRECTION_W | AbstractCrossword.DIRECTION_S);
 		if (fullFill) {
-			graphics.setColor(Color.BLACK);
+			if (cell.isTransientSpecial()) {
+				graphics.setColor(Color.DARK_GRAY);
+			} else {
+				graphics.setColor(Color.BLACK);
+			}
 		} else if (selection == Selection.NONE) {
-			graphics.setColor(Color.WHITE);
+			if (cell.isTransientSpecial()) {
+				graphics.setColor(Color.GRAY);
+			} else {
+				graphics.setColor(Color.WHITE);
+			}
 		} else if (selection == Selection.DIRECT) {
-			graphics.setColor(Color.ORANGE);
+			if (cell.isTransientSpecial()) {
+				graphics.setColor(Color.ORANGE.darker());
+			} else {
+				graphics.setColor(Color.ORANGE);
+			}
 		} else if (selection == Selection.INDIRECT) {
-			graphics.setColor(Color.YELLOW);
+			if (cell.isTransientSpecial()) {
+				graphics.setColor(Color.YELLOW.darker());
+			} else {
+				graphics.setColor(Color.YELLOW);
+			}
+		} else if (selection == Selection.ERROR) {
+			graphics.setColor(Color.RED);
 		}
 
 		graphics.fill(cellShape);

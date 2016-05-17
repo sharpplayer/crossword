@@ -132,11 +132,11 @@ public class Barword extends AbstractCrossword {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see biz.computerkraft.crossword.gui.Puzzle#getRendererClass()
+	 * @see biz.computerkraft.crossword.gui.Puzzle#getNewCellRenderer()
 	 */
 	@Override
-	public final Class<? extends CellRenderer> getRendererClass() {
-		return BarwordCellRenderer.class;
+	public final CellRenderer getNewCellRenderer() {
+		return new BarwordCellRenderer();
 	}
 
 }

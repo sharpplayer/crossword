@@ -22,7 +22,7 @@ public class CrosswordCellRenderer extends RectangleGridCellRenderer {
 	@Override
 	public final void renderCell(final Graphics2D graphics, final double width, final double height,
 			final Selection selection) {
-		renderCell(graphics, width, height, selection, false);
+		renderCell(graphics, width, height, selection, false, true);
 	}
 
 }

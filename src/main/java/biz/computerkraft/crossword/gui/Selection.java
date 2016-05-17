@@ -10,6 +10,6 @@ package biz.computerkraft.crossword.gui;
 public enum Selection {
 
 	/** Selection states. */
-	NONE, DIRECT, INDIRECT
+	NONE, DIRECT, INDIRECT, ERROR
 
 }

@@ -140,15 +140,16 @@ public abstract class MultiDirectionGrid extends RectangleGrid {
 		basePostLoadTidyup();
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
 	 * 
-	 * @see
-	 * biz.computerkraft.crossword.gui.Puzzle#addWordContent(java.util.List,
-	 * biz.computerkraft.crossword.db.Word)
+	 * Adds word and clue to cell.
+	 * 
+	 * @param cells
+	 *            cells to set
+	 * @param word
+	 *            word to assign clue to
 	 */
-	@Override
-	public final void addWordContent(final List<Cell> cells, final Word word) {
+	public final void addCluedWordContent(final List<Cell> cells, final Word word) {
 		baseAddWordContent(cells, word);
 		int direction = DIRECTION_E;
 		if (cells.size() > 1) {
@@ -156,18 +157,6 @@ public abstract class MultiDirectionGrid extends RectangleGrid {
 		}
 		cells.get(0).setClue(direction, new Clue(0, word.getWord()));
 		updateClues();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * biz.computerkraft.crossword.gui.Puzzle#clearCellContent(biz.computerkraft
-	 * .crossword.grid.Cell)
-	 */
-	@Override
-	public final void clearCellContent(final Cell cell) {
-		clearCellContent(cell, true);
 	}
 
 	/**
@@ -179,7 +168,7 @@ public abstract class MultiDirectionGrid extends RectangleGrid {
 	 * @param force
 	 *            for clear of cell
 	 */
-	private void clearCellContent(final Cell cell, final boolean force) {
+	protected final void clearCellContent(final Cell cell, final boolean force) {
 		int[] directions = { DIRECTION_E, DIRECTION_S | DIRECTION_E, DIRECTION_S, DIRECTION_S | DIRECTION_W };
 		boolean clear = force;
 		for (int direction : directions) {
