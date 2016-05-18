@@ -5,97 +5,73 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import biz.computerkraft.crossword.grid.Cell;
-import biz.computerkraft.crossword.gui.CellRenderer;
-import biz.computerkraft.crossword.gui.renderer.CrosswordCellRenderer;
+import biz.computerkraft.crossword.gui.ClueItem;
 
 /**
  * 
- * Simple crossword puzzle.
+ * Basic crossword puzzle.
  * 
  * @author Raymond Francis
  *
  */
 @XmlRootElement(name = "crossword")
-public class Crossword extends AbstractCrossword {
-
-	/** Fill action. */
-	private static final String ACTION_FILL = "Fill";
-
-	/** Unfill action. */
-	private static final String ACTION_UNFILL = "Unfill";
+public class Crossword extends AbstractFillCrossword {
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see biz.computerkraft.crossword.gui.PuzzleProperties#cellMenuAction(biz.
-	 * computerkraft.crossword.grid.Cell, java.lang.String)
+	 * @see
+	 * biz.computerkraft.crossword.grid.crossword.AbstractCrossword#setMarkers()
 	 */
 	@Override
-	public final boolean cellMenuAction(final Cell cell, final String action) {
+	protected final void setMarkers() {
+		setAcrossDownMarkers();
 
-		boolean dirtyReturn = false;
-		if (action.equals(ACTION_FILL)) {
-			for (Cell symmetric : cell.getSymmetrics()) {
-				symmetric.setBlock(DIRECTION_E, true);
-				symmetric.setBlock(DIRECTION_W, true);
-				symmetric.setBlock(DIRECTION_N, true);
-				symmetric.setBlock(DIRECTION_S, true);
-			}
-			setMarkers();
-			dirtyReturn = true;
-		} else if (action.equals(ACTION_UNFILL)) {
-			for (Cell symmetric : cell.getSymmetrics()) {
-				unfill(symmetric, DIRECTION_E);
-				unfill(symmetric, DIRECTION_W);
-				unfill(symmetric, DIRECTION_N);
-				unfill(symmetric, DIRECTION_S);
-			}
-			setMarkers();
-			dirtyReturn = true;
-		}
+	}
 
-		return dirtyReturn;
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see biz.computerkraft.crossword.grid.crossword.AbstractCrossword#
+	 * setClueModels()
+	 */
+	@Override
+	protected final void setClueModels() {
+		setAcrossDownClueModel();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see biz.computerkraft.crossword.grid.Grid#getClues()
+	 */
+	@Override
+	public final List<ClueItem> getClues() {
+		return getAcrossDownClues();
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * biz.computerkraft.crossword.gui.PuzzleProperties#populateCellMenu(biz.
-	 * computerkraft.crossword.grid.Cell, java.util.List)
+	 * biz.computerkraft.crossword.gui.Puzzle#addCellContent(biz.computerkraft.
+	 * crossword.grid.Cell, java.lang.String)
 	 */
 	@Override
-	public final void populateCellMenu(final Cell cell, final List<String> actions) {
-
-		if (isCellFilled(cell)) {
-			for (Cell adjacent : cell.getAdjacents()) {
-				if (!isCellFilled(adjacent)) {
-					actions.add(ACTION_UNFILL);
-					break;
-				}
-			}
-		} else {
-			boolean fillable = true;
-			for (Cell symmetricCell : cell.getSymmetrics()) {
-				if (!symmetricCell.getContents().isEmpty()) {
-					fillable = false;
-					break;
-				}
-			}
-			if (fillable) {
-				actions.add(ACTION_FILL);
-			}
-		}
+	public final void addCellContent(final Cell cell, final String content) {
+		baseAddCellContent(cell, content);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see biz.computerkraft.crossword.gui.Puzzle#getNewCellRenderer()
+	 * @see
+	 * biz.computerkraft.crossword.gui.Puzzle#clearCellContent(biz.computerkraft
+	 * .crossword.grid.Cell)
 	 */
 	@Override
-	public final CellRenderer getNewCellRenderer() {
-		return new CrosswordCellRenderer();
+	public final void clearCellContent(final Cell cell) {
+		baseClearCellContent(cell);
 	}
 
 }

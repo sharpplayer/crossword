@@ -40,9 +40,7 @@ public abstract class AbstractCrossword extends RectangleGrid {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * biz.computerkraft.crossword.gui.PuzzleProperties#setProperties(java.util.
-	 * Map)
+	 * @see biz.computerkraft.crossword.gui.Puzzle#setProperties(java.util.Map)
 	 */
 	@Override
 	public final void setProperties(final Map<String, Object> properties) {
@@ -50,8 +48,7 @@ public abstract class AbstractCrossword extends RectangleGrid {
 		symmetry = (Symmetry) properties.get(PROPERTY_SYMMETRY);
 		setCellGroups();
 		setMarkers();
-		addClueModel(new CrosswordClueModel(CATEGORY_ACROSS));
-		addClueModel(new CrosswordClueModel(CATEGORY_DOWN));
+		setClueModels();
 	}
 
 	/*
@@ -86,7 +83,7 @@ public abstract class AbstractCrossword extends RectangleGrid {
 	/**
 	 * Sets the markers on the cells.
 	 */
-	protected final void setMarkers() {
+	protected final void setAcrossDownMarkers() {
 		int marker = 1;
 		for (Cell cell : getCells()) {
 			if (!isCellFilled(cell) && ((cell.isBlocked(DIRECTION_W) && !cell.isBlocked(DIRECTION_E))
@@ -100,13 +97,21 @@ public abstract class AbstractCrossword extends RectangleGrid {
 		updateClues();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see biz.computerkraft.crossword.grid.Grid#getClues()
+	/**
+	 * Sets the markers on the cells.
 	 */
-	@Override
-	public final List<ClueItem> getClues() {
+	protected final void setAcrossDownClueModel() {
+		addClueModel(new CrosswordClueModel(CATEGORY_ACROSS));
+		addClueModel(new CrosswordClueModel(CATEGORY_DOWN));
+	}
+
+	/**
+	 * 
+	 * Get classic across down clue list.
+	 * 
+	 * @return classic across down clue list
+	 */
+	protected final List<ClueItem> getAcrossDownClues() {
 
 		List<ClueItem> clues = new ArrayList<>();
 		for (Cell cell : getCells()) {
@@ -261,28 +266,14 @@ public abstract class AbstractCrossword extends RectangleGrid {
 		updateClues();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * biz.computerkraft.crossword.gui.Puzzle#clearCellContent(biz.computerkraft
-	 * .crossword.grid.Cell)
+	/**
+	 * Sets the markers for the cells.
 	 */
-	@Override
-	public final void clearCellContent(final Cell cell) {
-		baseClearCellContent(cell);
-	}
+	protected abstract void setMarkers();
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * biz.computerkraft.crossword.gui.Puzzle#addCellContent(biz.computerkraft.
-	 * crossword.grid.Cell, java.lang.String)
+	/**
+	 * Sets cluemodels for the cells.
 	 */
-	@Override
-	public final void addCellContent(final Cell cell, final String content) {
-		baseAddCellContent(cell, content);
-	}
+	protected abstract void setClueModels();
 
 }

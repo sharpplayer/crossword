@@ -6,6 +6,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import biz.computerkraft.crossword.grid.crossword.Barword;
+import biz.computerkraft.crossword.grid.crossword.Codeword;
 import biz.computerkraft.crossword.grid.crossword.Crossword;
 import biz.computerkraft.crossword.grid.crossword.Sudoku;
 import biz.computerkraft.crossword.grid.crossword.Wordsearch;
@@ -55,6 +56,7 @@ public final class Main {
 				GridDialog mainFrame = new GridDialog();
 				PropertyDialog dialog = new PropertyDialog(mainFrame);
 				dialog.registerPuzzle(Crossword.class);
+				dialog.registerPuzzle(Codeword.class);
 				dialog.registerPuzzle(Barword.class);
 				dialog.registerPuzzle(Wordsearch.class);
 				dialog.registerPuzzle(Sudoku.class);

@@ -44,7 +44,9 @@ public class TableMouseAdapter extends MouseAdapter {
 		if (index != -1) {
 			ClueModel model = (ClueModel) table.getModel();
 			ClueItem item = model.getClueItemAt(index);
-			listener.selectCell(item.getStartCell(), item.getDirection());
+			if (item.getStartCell() != null) {
+				listener.selectCell(item.getStartCell(), item.getDirection());
+			}
 		}
 	}
 

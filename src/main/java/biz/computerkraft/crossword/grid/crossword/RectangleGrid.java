@@ -369,7 +369,7 @@ public abstract class RectangleGrid extends Grid {
 			}
 			int backward = 0;
 			if (!fromCell) {
-				getReverseDirection(forward);
+				backward = getReverseDirection(forward);
 			}
 			selection = getWordWithCell(cell, backward, forward);
 			if (selection.size() == 1 && !singleSelect) {

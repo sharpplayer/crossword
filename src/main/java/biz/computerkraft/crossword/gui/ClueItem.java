@@ -94,6 +94,18 @@ public class ClueItem {
 
 	/**
 	 * 
+	 * Sets the start cell for clue word.
+	 * 
+	 * @param newCell
+	 *            new start cell for clue
+	 * 
+	 */
+	public final void setStartCell(final Cell newCell) {
+		startCell = newCell;
+	}
+
+	/**
+	 * 
 	 * Gets the direction for the clue word.
 	 * 
 	 * @return the direction
