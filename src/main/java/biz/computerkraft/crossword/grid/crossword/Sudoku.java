@@ -32,6 +32,9 @@ public class Sudoku extends MultiDirectionGrid {
 	/** Search clue category. */
 	private static final String CATEGORY_CLUES = "Clues";
 
+	/** Invalid cell text. */
+	private static final String TEXT_INVALID_CELL = "*";
+
 	/** Default cell group width. */
 	private static final int DEFAULT_CELL_GROUP_WIDTH = 3;
 
@@ -61,8 +64,6 @@ public class Sudoku extends MultiDirectionGrid {
 
 	/** Sudoku blocks. */
 	private List<List<Cell>> blocks = new ArrayList<>();
-
-	int countX = 1;
 
 	/*
 	 * (non-Javadoc)
@@ -180,7 +181,7 @@ public class Sudoku extends MultiDirectionGrid {
 	 */
 	@Override
 	public final CellRenderer getNewCellRenderer() {
-		return new SudokuCellRenderer(cellGroupWidth, cellGroupHeight);
+		return new SudokuCellRenderer(cellGroupWidth, cellGroupHeight, TEXT_INVALID_CELL);
 	}
 
 	/*
@@ -202,13 +203,15 @@ public class Sudoku extends MultiDirectionGrid {
 	 * biz.computerkraft.crossword.db.Word)
 	 */
 	@Override
-	public void addWordContent(List<Cell> cells, Word word) {
+	public final void addWordContent(final List<Cell> cells, final Word word) {
 		addCluedWordContent(cells, word);
 		updateMarkers();
 	}
 
+	/**
+	 * Updates the Sudoku markers.
+	 */
 	private void updateMarkers() {
-		countX = 1;
 		String markers = getMarkers();
 		for (Cell cell : getCells()) {
 			if (cell.getContents().isEmpty() || cell.isTransientSpecial()) {
@@ -236,7 +239,7 @@ public class Sudoku extends MultiDirectionGrid {
 
 		for (Cell cell : getCells()) {
 			if (cell.getContents().isEmpty() && cell.getMarker().trim().length() == 0) {
-				cell.setContents("X");
+				cell.setContents(TEXT_INVALID_CELL);
 				cell.setTransientSpecial(true);
 			}
 		}
@@ -284,7 +287,14 @@ public class Sudoku extends MultiDirectionGrid {
 		} while (columnStart != null);
 	}
 
-	private boolean updateCellBlock(List<Cell> block) {
+	/**
+	 * Evaluates options in a cell block.
+	 * 
+	 * @param block
+	 *            row, column or block to analyse.
+	 * @return true if a change in cell occurred
+	 */
+	private boolean updateCellBlock(final List<Cell> block) {
 		String used = "";
 		String markers = getMarkers();
 		for (Cell cell : block) {
@@ -378,7 +388,16 @@ public class Sudoku extends MultiDirectionGrid {
 
 	}
 
-	private List<Cell> getLineOfCells(Cell start, int direction) {
+	/**
+	 * Gets a line of cells in a given direction, ignoring word breaks.
+	 * 
+	 * @param start
+	 *            start cell
+	 * @param direction
+	 *            direction from start cell
+	 * @return line of cells
+	 */
+	private List<Cell> getLineOfCells(final Cell start, final int direction) {
 		Optional<Cell> optionalStart;
 		List<Cell> listOfCells = new ArrayList<>();
 		Cell rowStart = start;
@@ -395,8 +414,15 @@ public class Sudoku extends MultiDirectionGrid {
 		return listOfCells;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * biz.computerkraft.crossword.gui.Puzzle#addCellContent(biz.computerkraft.
+	 * crossword.grid.Cell, java.lang.String)
+	 */
 	@Override
-	public void addCellContent(Cell cell, String content) {
+	public final void addCellContent(final Cell cell, final String content) {
 		String markers = getMarkers();
 		if (markers.contains(content.toUpperCase())) {
 			baseAddCellContent(cell, content.toUpperCase());
@@ -417,11 +443,27 @@ public class Sudoku extends MultiDirectionGrid {
 		updateMarkers();
 	}
 
+	/**
+	 * 
+	 * Gets the markers string.
+	 * 
+	 * @return possible markers.
+	 */
 	private String getMarkers() {
 		return MARKERS.substring(0, cellGroupHeight * cellGroupWidth);
 	}
 
-	private int countMatches(String haystack, String substring) {
+	/**
+	 * 
+	 * Counts occurences of string in another.
+	 * 
+	 * @param haystack
+	 *            string to search
+	 * @param substring
+	 *            string to search for
+	 * @return number of occurrences
+	 */
+	private int countMatches(final String haystack, final String substring) {
 		int count = 0;
 		int index = 0;
 		while ((index = haystack.indexOf(substring, index)) != -1) {

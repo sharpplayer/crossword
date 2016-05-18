@@ -16,9 +16,14 @@ import biz.computerkraft.crossword.gui.Selection;
  */
 public class SudokuCellRenderer extends RectangleGridCellRenderer {
 
+	/** Number of markers to display in width. */
 	private int markerWidth;
 
+	/** Number of markers to display in height. */
 	private int markerHeight;
+
+	/** Contents of invalid cell. */
+	private String invalidCell;
 
 	/**
 	 * 
@@ -29,10 +34,13 @@ public class SudokuCellRenderer extends RectangleGridCellRenderer {
 	 *            number of markers for width
 	 * @param height
 	 *            number of markers for for height
+	 * @param invalidCellText
+	 *            text of invalid cell
 	 */
-	public SudokuCellRenderer(final int width, final int height) {
+	public SudokuCellRenderer(final int width, final int height, final String invalidCellText) {
 		markerWidth = width;
 		markerHeight = height;
+		invalidCell = invalidCellText;
 	}
 
 	/*
@@ -45,8 +53,7 @@ public class SudokuCellRenderer extends RectangleGridCellRenderer {
 	public final void renderCell(final Graphics2D graphics, final double width, final double height,
 			final Selection selection) {
 		Selection newSelection = selection;
-		if(getCell().getContents().equals("X"))
-		{
+		if (getCell().getContents().equals(invalidCell)) {
 			newSelection = Selection.ERROR;
 		}
 		renderCell(graphics, width, height, newSelection, true, false);

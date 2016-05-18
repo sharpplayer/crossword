@@ -7,7 +7,6 @@ import javax.swing.UIManager;
 
 import biz.computerkraft.crossword.grid.crossword.Barword;
 import biz.computerkraft.crossword.grid.crossword.Crossword;
-import biz.computerkraft.crossword.grid.crossword.MultiDirectionGrid;
 import biz.computerkraft.crossword.grid.crossword.Sudoku;
 import biz.computerkraft.crossword.grid.crossword.Wordsearch;
 import biz.computerkraft.crossword.gui.GridDialog;
