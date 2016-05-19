@@ -134,5 +134,17 @@ public abstract class Grid implements Puzzle {
 	 * @return list of clues
 	 */
 	public abstract List<ClueItem> getClues();
+	
+	/**
+	 * Sets the markers for the cells.
+	 */
+	protected abstract void setMarkers();
+
+	/**
+	 * Sets cluemodels for the cells.
+	 */
+	protected abstract void setClueModels();
+
+
 
 }

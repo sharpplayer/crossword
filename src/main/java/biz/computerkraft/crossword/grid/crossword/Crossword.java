@@ -74,4 +74,15 @@ public class Crossword extends AbstractFillCrossword {
 		baseClearCellContent(cell);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see biz.computerkraft.crossword.gui.Puzzle#postLoadTidyup()
+	 */
+	@Override
+	public final void postLoadTidyup() {
+		abstractCrosswordPostLoadTidyup();
+		updateClues();
+	}
+
 }

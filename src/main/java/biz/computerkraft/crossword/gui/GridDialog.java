@@ -236,6 +236,7 @@ public class GridDialog extends JFrame implements CellUpdateListener, CellSelect
 		clueModels.clear();
 
 		List<ClueModel> clues = puzzle.getClueModels();
+
 		for (ClueModel model : clues) {
 			Component component = model.getVisualComponent(connection, this);
 			component.setPreferredSize(new Dimension(WIDTH_CLUE, height));

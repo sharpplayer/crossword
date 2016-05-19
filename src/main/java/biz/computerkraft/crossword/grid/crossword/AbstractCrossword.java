@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 import biz.computerkraft.crossword.db.Word;
 import biz.computerkraft.crossword.grid.Cell;
@@ -173,6 +174,7 @@ public abstract class AbstractCrossword extends RectangleGrid {
 	 * 
 	 * @see biz.computerkraft.crossword.gui.Puzzle#getProperties()
 	 */
+	@XmlTransient
 	@Override
 	public final Map<String, Object> getProperties() {
 		Map<String, Object> properties = getBaseProperties();
@@ -182,17 +184,14 @@ public abstract class AbstractCrossword extends RectangleGrid {
 		return properties;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see biz.computerkraft.crossword.gui.Puzzle#postLoadTidyup()
+	/**
+	 * Post tidy up for abstract crossword.
 	 */
-	@Override
-	public final void postLoadTidyup() {
+	protected final void abstractCrosswordPostLoadTidyup() {
 		basePostLoadTidyup();
 		getBaseProperties().put(PROPERTY_SYMMETRY, getSymmetry());
 		setCellGroups();
-		updateClues();
+		setClueModels();
 	}
 
 	/**
@@ -265,15 +264,4 @@ public abstract class AbstractCrossword extends RectangleGrid {
 		baseAddWordContent(cells, word);
 		updateClues();
 	}
-
-	/**
-	 * Sets the markers for the cells.
-	 */
-	protected abstract void setMarkers();
-
-	/**
-	 * Sets cluemodels for the cells.
-	 */
-	protected abstract void setClueModels();
-
 }

@@ -138,4 +138,16 @@ public class Codeword extends AbstractFillCrossword {
 		baseClearCellContent(cell);
 		setMarkers();
 	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see biz.computerkraft.crossword.gui.Puzzle#postLoadTidyup()
+	 */
+	@Override
+	public final void postLoadTidyup() {
+		abstractCrosswordPostLoadTidyup();
+		setMarkers();
+	}
+
 }

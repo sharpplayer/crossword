@@ -33,46 +33,7 @@ public abstract class MultiDirectionGrid extends RectangleGrid {
 	 */
 	protected final void setMultiDirectionGridProperties(final Map<String, Object> properties) {
 		setBaseProperties(properties);
-		Map<String, Cell> grid = getCellMap();
-		int width = getCellWidth();
-		int height = getCellHeight();
-		for (int x = 0; x < width; x++) {
-			for (int y = 0; y < height; y++) {
-				Cell cell = grid.get(x + ":" + y);
-				Cell north = grid.get(x + ":" + (y - 1));
-				Cell south = grid.get(x + ":" + (y + 1));
-				Cell east = grid.get((x + 1) + ":" + y);
-				Cell west = grid.get((x - 1) + ":" + y);
-				Cell ne = grid.get((x + 1) + ":" + (y - 1));
-				Cell se = grid.get((x + 1) + ":" + (y + 1));
-				Cell nw = grid.get((x - 1) + ":" + (y - 1));
-				Cell sw = grid.get((x - 1) + ":" + (y + 1));
-				if (north != null) {
-					cell.setAdjacent(DIRECTION_N, north);
-				}
-				if (south != null) {
-					cell.setAdjacent(DIRECTION_S, south);
-				}
-				if (east != null) {
-					cell.setAdjacent(DIRECTION_E, east);
-				}
-				if (west != null) {
-					cell.setAdjacent(DIRECTION_W, west);
-				}
-				if (ne != null) {
-					cell.setAdjacent(DIRECTION_N + DIRECTION_E, ne);
-				}
-				if (nw != null) {
-					cell.setAdjacent(DIRECTION_N + DIRECTION_W, nw);
-				}
-				if (se != null) {
-					cell.setAdjacent(DIRECTION_S + DIRECTION_E, se);
-				}
-				if (sw != null) {
-					cell.setAdjacent(DIRECTION_S + DIRECTION_W, sw);
-				}
-			}
-		}
+		setCellGroups();
 	}
 
 	/**
@@ -130,14 +91,14 @@ public abstract class MultiDirectionGrid extends RectangleGrid {
 	public final void populateCellMenu(final Cell cell, final List<String> actions) {
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see biz.computerkraft.crossword.gui.Puzzle#postLoadTidyup()
+	/**
+	 * Post load tidyup.
 	 */
-	@Override
-	public final void postLoadTidyup() {
+	public final void multiDirectionGridPostLoadTidyup() {
 		basePostLoadTidyup();
+		setCellGroups();
+		setClueModels();
+		updateClues();
 	}
 
 	/**
@@ -222,5 +183,52 @@ public abstract class MultiDirectionGrid extends RectangleGrid {
 		}
 
 		updateClues();
+	}
+
+	/**
+	 * Sets up cell groups.
+	 */
+	protected final void setCellGroups() {
+		Map<String, Cell> grid = getCellMap();
+		int width = getCellWidth();
+		int height = getCellHeight();
+		for (int x = 0; x < width; x++) {
+			for (int y = 0; y < height; y++) {
+				Cell cell = grid.get(x + ":" + y);
+				Cell north = grid.get(x + ":" + (y - 1));
+				Cell south = grid.get(x + ":" + (y + 1));
+				Cell east = grid.get((x + 1) + ":" + y);
+				Cell west = grid.get((x - 1) + ":" + y);
+				Cell ne = grid.get((x + 1) + ":" + (y - 1));
+				Cell se = grid.get((x + 1) + ":" + (y + 1));
+				Cell nw = grid.get((x - 1) + ":" + (y - 1));
+				Cell sw = grid.get((x - 1) + ":" + (y + 1));
+				if (north != null) {
+					cell.setAdjacent(DIRECTION_N, north);
+				}
+				if (south != null) {
+					cell.setAdjacent(DIRECTION_S, south);
+				}
+				if (east != null) {
+					cell.setAdjacent(DIRECTION_E, east);
+				}
+				if (west != null) {
+					cell.setAdjacent(DIRECTION_W, west);
+				}
+				if (ne != null) {
+					cell.setAdjacent(DIRECTION_N + DIRECTION_E, ne);
+				}
+				if (nw != null) {
+					cell.setAdjacent(DIRECTION_N + DIRECTION_W, nw);
+				}
+				if (se != null) {
+					cell.setAdjacent(DIRECTION_S + DIRECTION_E, se);
+				}
+				if (sw != null) {
+					cell.setAdjacent(DIRECTION_S + DIRECTION_W, sw);
+				}
+			}
+		}
+
 	}
 }

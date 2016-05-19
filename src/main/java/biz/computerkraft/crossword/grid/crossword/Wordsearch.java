@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 import biz.computerkraft.crossword.db.Word;
 import biz.computerkraft.crossword.grid.Cell;
@@ -35,6 +36,7 @@ public class Wordsearch extends MultiDirectionGrid {
 	 * @see biz.computerkraft.crossword.gui.Puzzle#getProperties()
 	 */
 	@Override
+	@XmlTransient
 	public final Map<String, Object> getProperties() {
 		return getBaseProperties();
 	}
@@ -64,7 +66,7 @@ public class Wordsearch extends MultiDirectionGrid {
 	@Override
 	public final void setProperties(final Map<String, Object> properties) {
 		setMultiDirectionGridProperties(properties);
-		addClueModel(new WordsearchClueModel(CATEGORY_SEARCH));
+		setClueModels();
 	}
 
 	/*
@@ -111,7 +113,7 @@ public class Wordsearch extends MultiDirectionGrid {
 	public final void addCellContent(final Cell cell, final String content) {
 		baseAddCellContent(cell, content);
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -124,6 +126,33 @@ public class Wordsearch extends MultiDirectionGrid {
 		clearCellContent(cell, true);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see biz.computerkraft.crossword.grid.Grid#setMarkers()
+	 */
+	@Override
+	protected final void setMarkers() {
+	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see biz.computerkraft.crossword.grid.Grid#setClueModels()
+	 */
+	@Override
+	protected final void setClueModels() {
+		addClueModel(new WordsearchClueModel(CATEGORY_SEARCH));
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see biz.computerkraft.crossword.gui.Puzzle#postLoadTidyup()
+	 */
+	@Override
+	public final void postLoadTidyup() {
+		multiDirectionGridPostLoadTidyup();
+	}
 
 }

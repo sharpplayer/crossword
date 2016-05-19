@@ -171,7 +171,7 @@ public class Barword extends AbstractCrossword {
 	public final List<ClueItem> getClues() {
 		return getAcrossDownClues();
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -196,5 +196,15 @@ public class Barword extends AbstractCrossword {
 		baseClearCellContent(cell);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see biz.computerkraft.crossword.gui.Puzzle#postLoadTidyup()
+	 */
+	@Override
+	public final void postLoadTidyup() {
+		abstractCrosswordPostLoadTidyup();
+		updateClues();
+	}
 
 }

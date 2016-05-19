@@ -130,7 +130,8 @@ public class Sudoku extends MultiDirectionGrid {
 			cell.setMarker(markers);
 		}
 		setCellGroups();
-		addClueModel(new WordsearchClueModel(CATEGORY_CLUES));
+		setSudokuCellGroups();
+		setClueModels();
 	}
 
 	/**
@@ -141,6 +142,17 @@ public class Sudoku extends MultiDirectionGrid {
 	@XmlElement(name = "cellGroupWidth")
 	public final int getCellGroupWidth() {
 		return cellGroupWidth;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see biz.computerkraft.crossword.gui.Puzzle#postLoadTidyup()
+	 */
+	@Override
+	public final void postLoadTidyup() {
+		multiDirectionGridPostLoadTidyup();
+		setSudokuCellGroups();
 	}
 
 	/**
@@ -205,13 +217,16 @@ public class Sudoku extends MultiDirectionGrid {
 	@Override
 	public final void addWordContent(final List<Cell> cells, final Word word) {
 		addCluedWordContent(cells, word);
-		updateMarkers();
+		setMarkers();
 	}
 
-	/**
-	 * Updates the Sudoku markers.
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see biz.computerkraft.crossword.grid.Grid#setMarkers()
 	 */
-	private void updateMarkers() {
+	@Override
+	protected final void setMarkers() {
 		String markers = getMarkers();
 		for (Cell cell : getCells()) {
 			if (cell.getContents().isEmpty() || cell.isTransientSpecial()) {
@@ -249,7 +264,7 @@ public class Sudoku extends MultiDirectionGrid {
 	/**
 	 * Stores cells in rows columns and groups.
 	 */
-	private void setCellGroups() {
+	private void setSudokuCellGroups() {
 		Cell start = getCells().iterator().next();
 		for (int list = 0; list < cellGroupHeight * cellGroupWidth; list++) {
 			blocks.add(new ArrayList<>());
@@ -426,7 +441,7 @@ public class Sudoku extends MultiDirectionGrid {
 		String markers = getMarkers();
 		if (markers.contains(content.toUpperCase())) {
 			baseAddCellContent(cell, content.toUpperCase());
-			updateMarkers();
+			setMarkers();
 		}
 	}
 
@@ -440,7 +455,7 @@ public class Sudoku extends MultiDirectionGrid {
 	@Override
 	public final void clearCellContent(final Cell cell) {
 		clearCellContent(cell, true);
-		updateMarkers();
+		setMarkers();
 	}
 
 	/**
@@ -471,5 +486,15 @@ public class Sudoku extends MultiDirectionGrid {
 			index += substring.length();
 		}
 		return count;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see biz.computerkraft.crossword.grid.Grid#setClueModels()
+	 */
+	@Override
+	protected final void setClueModels() {
+		addClueModel(new WordsearchClueModel(CATEGORY_CLUES));
 	}
 }
