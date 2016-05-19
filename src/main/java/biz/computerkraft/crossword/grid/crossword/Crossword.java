@@ -1,9 +1,12 @@
 package biz.computerkraft.crossword.grid.crossword;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
+import biz.computerkraft.crossword.db.Word;
 import biz.computerkraft.crossword.grid.Cell;
 import biz.computerkraft.crossword.gui.ClueItem;
 
@@ -85,4 +88,37 @@ public class Crossword extends AbstractFillCrossword {
 		updateClues();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see biz.computerkraft.crossword.gui.Puzzle#setProperties(java.util.Map)
+	 */
+	@Override
+	public final void setProperties(final Map<String, Object> properties) {
+		setAbstractCrosswordProperties(properties);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see biz.computerkraft.crossword.gui.Puzzle#getProperties()
+	 */
+	@XmlTransient
+	@Override
+	public final Map<String, Object> getProperties() {
+		return getAbstractCrosswordProperties();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * biz.computerkraft.crossword.gui.Puzzle#addWordContent(java.util.List,
+	 * biz.computerkraft.crossword.db.Word)
+	 */
+	@Override
+	public final void addWordContent(final List<Cell> cells, final Word word) {
+		baseAddWordContent(cells, word);
+		updateClues();
+	}
 }

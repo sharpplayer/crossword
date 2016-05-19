@@ -28,7 +28,8 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
-import biz.computerkraft.crossword.grid.Symmetry;
+import biz.computerkraft.crossword.grid.crossword.enumeration.Encoding;
+import biz.computerkraft.crossword.grid.crossword.enumeration.Symmetry;
 
 /**
  * 
@@ -117,6 +118,8 @@ public class PropertyDialog extends JDialog {
 				Class<?> cellClass = model.getValueAt(row, column).getClass();
 				if (cellClass.isAssignableFrom(Symmetry.class)) {
 					return new DefaultCellEditor(new JComboBox<>(Symmetry.values()));
+				} else if (cellClass.isAssignableFrom(Encoding.class)) {
+					return new DefaultCellEditor(new JComboBox<>(Encoding.values()));
 				} else {
 					return super.getCellEditor(row, column);
 				}

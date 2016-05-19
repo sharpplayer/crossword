@@ -1,4 +1,4 @@
-package biz.computerkraft.crossword.grid;
+package biz.computerkraft.crossword.grid.crossword.enumeration;
 
 /**
  * 

@@ -8,12 +8,11 @@ import java.util.Map;
 import java.util.Optional;
 
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 import biz.computerkraft.crossword.db.Word;
 import biz.computerkraft.crossword.grid.Cell;
 import biz.computerkraft.crossword.grid.Clue;
-import biz.computerkraft.crossword.grid.Symmetry;
+import biz.computerkraft.crossword.grid.crossword.enumeration.Symmetry;
 import biz.computerkraft.crossword.gui.ClueItem;
 import biz.computerkraft.crossword.gui.cluemodel.CrosswordClueModel;
 
@@ -38,13 +37,14 @@ public abstract class AbstractCrossword extends RectangleGrid {
 	/** Actual symmetry. */
 	private Symmetry symmetry = Symmetry.EIGHTWAY;
 
-	/*
-	 * (non-Javadoc)
+	/**
 	 * 
-	 * @see biz.computerkraft.crossword.gui.Puzzle#setProperties(java.util.Map)
+	 * Sets the abstract crossword properties.
+	 * 
+	 * @param properties
+	 *            property container
 	 */
-	@Override
-	public final void setProperties(final Map<String, Object> properties) {
+	protected final void setAbstractCrosswordProperties(final Map<String, Object> properties) {
 		setBaseProperties(properties);
 		symmetry = (Symmetry) properties.get(PROPERTY_SYMMETRY);
 		setCellGroups();
@@ -169,14 +169,13 @@ public abstract class AbstractCrossword extends RectangleGrid {
 		symmetry = newSymmetry;
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
 	 * 
-	 * @see biz.computerkraft.crossword.gui.Puzzle#getProperties()
+	 * Gets the abstract crossword properties.
+	 * 
+	 * @return property map
 	 */
-	@XmlTransient
-	@Override
-	public final Map<String, Object> getProperties() {
+	protected final Map<String, Object> getAbstractCrosswordProperties() {
 		Map<String, Object> properties = getBaseProperties();
 		if (!properties.containsKey(PROPERTY_SYMMETRY)) {
 			properties.put(PROPERTY_SYMMETRY, symmetry);
@@ -250,18 +249,5 @@ public abstract class AbstractCrossword extends RectangleGrid {
 
 			}
 		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * biz.computerkraft.crossword.gui.Puzzle#addWordContent(java.util.List,
-	 * biz.computerkraft.crossword.db.Word)
-	 */
-	@Override
-	public final void addWordContent(final List<Cell> cells, final Word word) {
-		baseAddWordContent(cells, word);
-		updateClues();
 	}
 }

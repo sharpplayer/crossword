@@ -31,7 +31,7 @@ import javax.xml.bind.Marshaller;
 import biz.computerkraft.crossword.db.DBConnection;
 import biz.computerkraft.crossword.db.Word;
 import biz.computerkraft.crossword.grid.Cell;
-import biz.computerkraft.crossword.grid.Symmetry;
+import biz.computerkraft.crossword.grid.crossword.enumeration.Symmetry;
 import biz.computerkraft.crossword.gui.input.TableMouseAdapter;
 import biz.computerkraft.crossword.gui.input.WordListKeyListener;
 import biz.computerkraft.crossword.gui.input.WordListMouseAdapter;

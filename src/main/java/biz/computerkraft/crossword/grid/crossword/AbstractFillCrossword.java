@@ -24,7 +24,7 @@ public abstract class AbstractFillCrossword extends AbstractCrossword {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see biz.computerkraft.crossword.gui.PuzzleProperties#cellMenuAction(biz.
+	 * @see biz.computerkraft.crossword.gui.Puzzle#cellMenuAction(biz.
 	 * computerkraft.crossword.grid.Cell, java.lang.String)
 	 */
 	@Override
@@ -57,8 +57,7 @@ public abstract class AbstractFillCrossword extends AbstractCrossword {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * biz.computerkraft.crossword.gui.PuzzleProperties#populateCellMenu(biz.
+	 * @see biz.computerkraft.crossword.gui.Puzzle#populateCellMenu(biz.
 	 * computerkraft.crossword.grid.Cell, java.util.List)
 	 */
 	@Override
