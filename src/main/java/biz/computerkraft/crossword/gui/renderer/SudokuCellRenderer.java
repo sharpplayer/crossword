@@ -53,7 +53,7 @@ public class SudokuCellRenderer extends RectangleGridCellRenderer {
 	public final void renderCell(final Graphics2D graphics, final double width, final double height,
 			final Selection selection) {
 		Selection newSelection = selection;
-		if (getCell().getContents().equals(invalidCell)) {
+		if (getCell().getDisplayContents().equals(invalidCell)) {
 			newSelection = Selection.ERROR;
 		}
 		renderCell(graphics, width, height, newSelection, true, false);

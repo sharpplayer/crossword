@@ -49,8 +49,8 @@ public class Cell {
 	/** Useful cell identifier. */
 	private String name;
 
-	/** Special cell. */
-	private boolean transientSpecial;
+	/** Transient cell content. */
+	private String transientContents = "";
 
 	/**
 	 * Constructor for JAXB.
@@ -238,24 +238,24 @@ public class Cell {
 
 	/**
 	 * 
-	 * Returns transient special status of cell.
+	 * Returns transient contents of cell.
 	 * 
 	 * @return the special status
 	 */
 	@XmlTransient
-	public final boolean isTransientSpecial() {
-		return transientSpecial;
+	public final String getTransientContents() {
+		return transientContents;
 	}
 
 	/**
 	 * 
-	 * Sets the transient special status for cell.
+	 * Sets the transient contents for cell.
 	 * 
-	 * @param newSpecial
-	 *            the special to set
+	 * @param newContents
+	 *            the content to set
 	 */
-	public final void setTransientSpecial(final boolean newSpecial) {
-		transientSpecial = newSpecial;
+	public final void setTransientContents(final String newContents) {
+		transientContents = newContents;
 	}
 
 	/**
@@ -426,5 +426,29 @@ public class Cell {
 	 */
 	public final boolean hasClues() {
 		return clues.size() > 0;
+	}
+
+	/**
+	 * 
+	 * Gets cell emptiness.
+	 * 
+	 * @return true if cell is empty
+	 */
+	public final boolean isEmpty() {
+		return transientContents.isEmpty() && contents.isEmpty();
+	}
+
+	/**
+	 * 
+	 * Gets display contents.
+	 * 
+	 * @return contents for display
+	 */
+	public final String getDisplayContents() {
+		if (contents.isEmpty()) {
+			return transientContents;
+		} else {
+			return contents;
+		}
 	}
 }

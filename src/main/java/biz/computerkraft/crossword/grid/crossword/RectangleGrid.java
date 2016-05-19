@@ -272,10 +272,10 @@ public abstract class RectangleGrid extends Grid {
 		List<Cell> word = getWordWithCell(cell, getReverseDirection(direction), direction);
 		String wordString = "";
 		for (Cell letter : word) {
-			if (letter.getContents().isEmpty()) {
+			if (letter.isEmpty()) {
 				return "";
 			} else {
-				wordString += letter.getContents();
+				wordString += letter.getDisplayContents();
 			}
 		}
 		return wordString;

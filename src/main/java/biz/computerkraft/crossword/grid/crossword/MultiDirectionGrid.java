@@ -98,7 +98,6 @@ public abstract class MultiDirectionGrid extends RectangleGrid {
 		basePostLoadTidyup();
 		setCellGroups();
 		setClueModels();
-		updateClues();
 	}
 
 	/**

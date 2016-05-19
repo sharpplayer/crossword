@@ -10,6 +10,7 @@ import java.util.Optional;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 import biz.computerkraft.crossword.db.Word;
 import biz.computerkraft.crossword.grid.Cell;
@@ -70,6 +71,7 @@ public class Sudoku extends MultiDirectionGrid {
 	 * 
 	 * @see biz.computerkraft.crossword.gui.Puzzle#getProperties()
 	 */
+	@XmlTransient
 	@Override
 	public final Map<String, Object> getProperties() {
 		Map<String, Object> properties = getBaseProperties();
@@ -153,6 +155,8 @@ public class Sudoku extends MultiDirectionGrid {
 	public final void postLoadTidyup() {
 		multiDirectionGridPostLoadTidyup();
 		setSudokuCellGroups();
+		setMarkers();
+		updateClues();
 	}
 
 	/**
@@ -229,13 +233,13 @@ public class Sudoku extends MultiDirectionGrid {
 	protected final void setMarkers() {
 		String markers = getMarkers();
 		for (Cell cell : getCells()) {
-			if (cell.getContents().isEmpty() || cell.isTransientSpecial()) {
+			if (cell.getContents().isEmpty() || !cell.getTransientContents().isEmpty()) {
 				cell.setContents("");
 				cell.setMarker(markers);
 			} else {
 				cell.setMarker("");
 			}
-			cell.setTransientSpecial(false);
+			cell.setTransientContents("");
 		}
 
 		boolean repeat = true;
@@ -253,9 +257,8 @@ public class Sudoku extends MultiDirectionGrid {
 		}
 
 		for (Cell cell : getCells()) {
-			if (cell.getContents().isEmpty() && cell.getMarker().trim().length() == 0) {
-				cell.setContents(TEXT_INVALID_CELL);
-				cell.setTransientSpecial(true);
+			if (cell.isEmpty() && cell.getMarker().trim().length() == 0) {
+				cell.setTransientContents(TEXT_INVALID_CELL);
 			}
 		}
 
@@ -326,16 +329,15 @@ public class Sudoku extends MultiDirectionGrid {
 				repeat = false;
 				String regeXused = "[" + used + "]";
 				for (Cell cell : block) {
-					if (cell.getContents().isEmpty()) {
+					if (cell.isEmpty()) {
 						if (!used.isEmpty()) {
 							cell.setMarker(cell.getMarker().replaceAll(regeXused, " "));
 							if (cell.getMarker().trim().length() == 1) {
-								cell.setContents(cell.getMarker().trim());
-								cell.setTransientSpecial(true);
+								cell.setTransientContents(cell.getMarker().trim());
 								cell.setMarker("");
-								used += cell.getContents();
+								used += cell.getTransientContents();
 								regeXused = "[" + used + "]";
-								count = count.replaceAll(cell.getContents(), " ");
+								count = count.replaceAll(cell.getTransientContents(), " ");
 								repeat = true;
 								change = true;
 							} else {
@@ -353,10 +355,9 @@ public class Sudoku extends MultiDirectionGrid {
 				if (countMatches(count, marker) == 1) {
 					for (Cell cell : block) {
 						if (cell.getMarker().contains(marker)) {
-							cell.setContents(marker);
+							cell.setTransientContents(marker);
 							cell.setMarker("");
-							cell.setTransientSpecial(true);
-							used += cell.getContents();
+							used += cell.getTransientContents();
 							repeat = true;
 							change = true;
 						}
@@ -384,11 +385,10 @@ public class Sudoku extends MultiDirectionGrid {
 						if (!cell.getMarker().equals(entry.getKey())) {
 							cell.setMarker(cell.getMarker().replaceAll(regeXused, " "));
 							if (cell.getMarker().trim().length() == 1) {
-								cell.setContents(cell.getMarker().trim());
-								cell.setTransientSpecial(true);
+								cell.setTransientContents(cell.getMarker().trim());
 								count += cell.getMarker();
 								cell.setMarker("");
-								used += cell.getContents();
+								used += cell.getTransientContents();
 								repeat = true;
 								change = true;
 							}
@@ -438,7 +438,7 @@ public class Sudoku extends MultiDirectionGrid {
 	 */
 	@Override
 	public final void addCellContent(final Cell cell, final String content) {
-		String markers = getMarkers();
+		String markers = cell.getMarker();
 		if (markers.contains(content.toUpperCase())) {
 			baseAddCellContent(cell, content.toUpperCase());
 			setMarkers();

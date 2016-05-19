@@ -107,26 +107,27 @@ public abstract class AbstractCellRenderer implements CellRenderer {
 
 		boolean fullFill = fill == (AbstractCrossword.DIRECTION_E | AbstractCrossword.DIRECTION_N
 				| AbstractCrossword.DIRECTION_W | AbstractCrossword.DIRECTION_S);
+		boolean transientContent = !cell.getTransientContents().isEmpty();
 		if (fullFill) {
-			if (cell.isTransientSpecial()) {
+			if (transientContent) {
 				graphics.setColor(Color.DARK_GRAY);
 			} else {
 				graphics.setColor(Color.BLACK);
 			}
 		} else if (selection == Selection.NONE) {
-			if (cell.isTransientSpecial()) {
-				graphics.setColor(Color.GRAY);
+			if (transientContent) {
+				graphics.setColor(Color.LIGHT_GRAY);
 			} else {
 				graphics.setColor(Color.WHITE);
 			}
 		} else if (selection == Selection.DIRECT) {
-			if (cell.isTransientSpecial()) {
+			if (transientContent) {
 				graphics.setColor(Color.ORANGE.darker());
 			} else {
 				graphics.setColor(Color.ORANGE);
 			}
 		} else if (selection == Selection.INDIRECT) {
-			if (cell.isTransientSpecial()) {
+			if (transientContent) {
 				graphics.setColor(Color.YELLOW.darker());
 			} else {
 				graphics.setColor(Color.YELLOW);
@@ -182,14 +183,15 @@ public abstract class AbstractCellRenderer implements CellRenderer {
 			}
 		}
 
-		if (!cell.getContents().isEmpty()) {
+		String contents = cell.getDisplayContents();
+		if (!contents.isEmpty()) {
 			Rectangle2D bounds = cellShape.getBounds2D();
 			graphics.setColor(Color.BLACK);
 			graphics.setFont(DEFAULT_FONT);
 			FontMetrics metrics = graphics.getFontMetrics(DEFAULT_FONT);
-			double fontX = bounds.getX() + (bounds.getWidth() - metrics.stringWidth(cell.getContents())) / 2;
+			double fontX = bounds.getX() + (bounds.getWidth() - metrics.stringWidth(contents)) / 2;
 			double fontY = bounds.getY() + ((bounds.getHeight() - metrics.getHeight()) / 2) + metrics.getAscent();
-			graphics.drawString(cell.getContents(), (int) fontX, (int) fontY);
+			graphics.drawString(contents, (int) fontX, (int) fontY);
 		}
 
 	}

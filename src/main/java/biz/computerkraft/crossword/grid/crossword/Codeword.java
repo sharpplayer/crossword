@@ -64,8 +64,8 @@ public class Codeword extends AbstractFillCrossword {
 	@Override
 	protected final void setMarkers() {
 		for (Cell cell : getCells()) {
-			if (!cell.getContents().isEmpty()) {
-				int index = 1 + letters.indexOf(cell.getContents());
+			if (!cell.isEmpty()) {
+				int index = 1 + letters.indexOf(cell.getDisplayContents());
 				cell.setMarker(Integer.toString(index));
 			} else {
 				cell.setMarker("");
@@ -102,9 +102,9 @@ public class Codeword extends AbstractFillCrossword {
 			item.setStartCell(null);
 		}
 		for (Cell cell : getCells()) {
-			if (!cell.getContents().isEmpty() && letterCells.contains(cell.getContents())) {
-				clueItems.get(LETTERS.indexOf(cell.getContents())).setStartCell(cell);
-				letterCells.replace(cell.getContents(), "");
+			if (!cell.getDisplayContents().isEmpty() && letterCells.contains(cell.getDisplayContents())) {
+				clueItems.get(LETTERS.indexOf(cell.getDisplayContents())).setStartCell(cell);
+				letterCells.replace(cell.getDisplayContents(), "");
 				if (letterCells.length() == 0) {
 					break;
 				}

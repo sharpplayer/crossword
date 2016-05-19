@@ -74,7 +74,7 @@ public abstract class AbstractFillCrossword extends AbstractCrossword {
 		} else {
 			boolean fillable = true;
 			for (Cell symmetricCell : cell.getSymmetrics()) {
-				if (!symmetricCell.getContents().isEmpty()) {
+				if (!symmetricCell.getDisplayContents().isEmpty()) {
 					fillable = false;
 					break;
 				}

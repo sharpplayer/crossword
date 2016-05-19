@@ -153,6 +153,7 @@ public class Wordsearch extends MultiDirectionGrid {
 	@Override
 	public final void postLoadTidyup() {
 		multiDirectionGridPostLoadTidyup();
+		updateClues();
 	}
 
 }

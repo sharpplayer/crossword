@@ -291,10 +291,10 @@ public class GridDialog extends JFrame implements CellUpdateListener, CellSelect
 	private void updateWordList() {
 		String word = "";
 		for (Cell indirectCell : crosswordGrid.getFirstIndirectSelection()) {
-			if (indirectCell.getContents().isEmpty()) {
+			if (indirectCell.isEmpty()) {
 				word += " ";
 			} else {
-				word += indirectCell.getContents();
+				word += indirectCell.getDisplayContents();
 			}
 		}
 		wordlListModel.setWordList(word);
