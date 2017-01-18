@@ -1,9 +1,11 @@
 package biz.computerkraft.crossword.gui;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -12,7 +14,10 @@ import java.awt.geom.Point2D;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
+import javax.swing.DefaultListModel;
+import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JList;
@@ -20,17 +25,23 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
 import javax.swing.SpringLayout;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
 import biz.computerkraft.crossword.db.DBConnection;
+import biz.computerkraft.crossword.db.Verse;
 import biz.computerkraft.crossword.db.Word;
 import biz.computerkraft.crossword.grid.Cell;
+import biz.computerkraft.crossword.grid.Clue;
 import biz.computerkraft.crossword.grid.crossword.enumeration.Symmetry;
 import biz.computerkraft.crossword.gui.input.TableMouseAdapter;
 import biz.computerkraft.crossword.gui.input.WordListKeyListener;
@@ -73,7 +84,10 @@ public class GridDialog extends JFrame implements CellUpdateListener, CellSelect
 	private CrosswordPanel crosswordGrid = new CrosswordPanel(this, this);
 
 	/** Word list model. */
-	private WordListModel wordlListModel = new WordListModel(connection);
+	private WordListModel wordListModel = new WordListModel(connection);
+
+	/** Word list. */
+	private JList<Word> wordList = new JList<>(wordListModel);
 
 	/** Crossword viewer. */
 	private JScrollPane crosswordViewer;
@@ -96,11 +110,155 @@ public class GridDialog extends JFrame implements CellUpdateListener, CellSelect
 	/** Save file. */
 	private File saveFile = null;
 
+	/** Verse model list. */
+	private DefaultListModel<Verse> verseModel = new DefaultListModel<>();
+
+	/** Text field showing verse text. */
+	private final JTextArea verseText = new JTextArea();
+
+	/** Add reference to clue button. */
+	private final JButton addRefButton = new JButton("Add Ref");
+
+	/** Add verse button. */
+	private final JButton addVerseButton = new JButton("Add Verse");
+
+	/** Last cell selected. */
+	private Cell lastSelected = null;
+
 	/**
 	 * Constructor.
 	 */
 	public GridDialog() {
 		super("Crossword");
+
+		setupMenu();
+
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		addWindowListener(new WindowAdapter() {
+			/*
+			 * (non-Javadoc)
+			 * 
+			 * @see java.awt.event.WindowAdapter#windowClosing(java.awt.event.
+			 * WindowEvent)
+			 */
+			@Override
+			public void windowClosing(final WindowEvent e) {
+				if (dirtyCheck()) {
+					System.exit(0);
+				}
+			}
+		});
+
+		Container pane = getContentPane();
+		pane.setLayout(new SpringLayout());
+		crosswordViewer = new JScrollPane(crosswordGrid);
+		pane.add(crosswordViewer);
+
+		pane.add(wordTabs);
+		JPanel wordPanel = new JPanel(new BorderLayout());
+		wordList.addMouseListener(new WordListMouseAdapter(this));
+		wordList.addKeyListener(new WordListKeyListener(this));
+		wordList.setFont(new Font("Courier New", Font.BOLD, wordList.getFont().getSize()));
+		wordPanel.add(new JScrollPane(wordList), BorderLayout.CENTER);
+		JPanel versePanel = new JPanel(new SpringLayout());
+		wordPanel.add(versePanel, BorderLayout.SOUTH);
+		verseText.setAlignmentY(TOP_ALIGNMENT);
+		verseText.setLineWrap(true);
+		verseText.setWrapStyleWord(true);
+		verseText.setEditable(false);
+		JList<Verse> verseList = new JList<>(verseModel);
+		verseList.addListSelectionListener(new ListSelectionListener() {
+
+			/*
+			 * (non-Javadoc)
+			 * 
+			 * @see
+			 * javax.swing.event.ListSelectionListener#valueChanged(javax.swing.
+			 * event.ListSelectionEvent)
+			 */
+			@Override
+			public void valueChanged(final ListSelectionEvent e) {
+				if (e.getValueIsAdjusting()) {
+					Verse verse = (Verse) ((JList<?>) e.getSource()).getSelectedValue();
+					if (verse != null) {
+						verseText.setText(verse.getText(connection));
+					} else {
+						verseText.setText("");
+					}
+					selectCell(lastSelected, lastOffset);
+				}
+			}
+		});
+		versePanel.add(new JScrollPane(verseList));
+		JPanel buttonPanel = new JPanel(new GridLayout(1, 2, MARGIN, MARGIN));
+		addRefButton.addActionListener(new ActionListener() {
+
+			/*
+			 * (non-Javadoc)
+			 * 
+			 * @see
+			 * java.awt.event.ActionListener#actionPerformed(java.awt.event.
+			 * ActionEvent)
+			 */
+			@Override
+			public void actionPerformed(final ActionEvent e) {
+				List<Cell> currentCells = crosswordGrid.getFirstIndirectSelection();
+				for (Cell cell : currentCells) {
+					int direction = puzzle.getDirectionFromPoint(lastOffset);
+					Optional<Clue> clue = cell.getClue(direction);
+					if (clue.isPresent()) {
+						Clue trueClue = clue.get();
+						Verse verse = (Verse) verseList.getSelectedValue();
+						trueClue.setClueText((trueClue.getClueText() + " " + verse).trim());
+						for (ClueModel clueModel : clueModels) {
+							clueModel.updateClue(trueClue);
+						}
+					}
+				}
+
+			}
+		});
+		addRefButton.setEnabled(false);
+		addVerseButton.setEnabled(false);
+		addVerseButton.addActionListener(new ActionListener() {
+
+			/*
+			 * (non-Javadoc)
+			 * 
+			 * @see
+			 * java.awt.event.ActionListener#actionPerformed(java.awt.event.
+			 * ActionEvent)
+			 */
+			@Override
+			public void actionPerformed(final ActionEvent e) {
+				List<Cell> currentCells = crosswordGrid.getFirstIndirectSelection();
+				for (Cell cell : currentCells) {
+					int direction = puzzle.getDirectionFromPoint(lastOffset);
+					Optional<Clue> clue = cell.getClue(direction);
+					if (clue.isPresent()) {
+						Clue trueClue = clue.get();
+						trueClue.setClueText((trueClue.getClueText() + " " + verseText.getText()).trim());
+						for (ClueModel clueModel : clueModels) {
+							clueModel.updateClue(trueClue);
+						}
+					}
+				}
+			}
+		});
+		buttonPanel.add(addRefButton);
+		buttonPanel.add(addVerseButton);
+		JPanel textPanel = new JPanel(new BorderLayout(MARGIN, MARGIN));
+		textPanel.add(new JScrollPane(verseText));
+		textPanel.add(buttonPanel, BorderLayout.SOUTH);
+		versePanel.add(textPanel);
+		SpringUtilities.makeCompactGrid(versePanel, 1, 2, MARGIN, MARGIN, MARGIN, MARGIN);
+		wordTabs.addTab("Words", wordPanel);
+	}
+
+	/**
+	 * Set up dialog menu.
+	 */
+	private void setupMenu() {
 		JMenuBar menu = new JMenuBar();
 		JMenu fileMenu = new JMenu("File");
 		menu.add(fileMenu);
@@ -166,6 +324,13 @@ public class GridDialog extends JFrame implements CellUpdateListener, CellSelect
 		fileMenu.add(properties);
 		properties.addActionListener(new ActionListener() {
 
+			/*
+			 * (non-Javadoc)
+			 * 
+			 * @see
+			 * java.awt.event.ActionListener#actionPerformed(java.awt.event.
+			 * ActionEvent)
+			 */
 			@Override
 			public void actionPerformed(final ActionEvent e) {
 				propertyDialog.setVisible(true);
@@ -173,35 +338,6 @@ public class GridDialog extends JFrame implements CellUpdateListener, CellSelect
 		});
 
 		setJMenuBar(menu);
-
-		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-		addWindowListener(new WindowAdapter() {
-			/*
-			 * (non-Javadoc)
-			 * 
-			 * @see java.awt.event.WindowAdapter#windowClosing(java.awt.event.
-			 * WindowEvent)
-			 */
-			@Override
-			public void windowClosing(final WindowEvent e) {
-				if (dirtyCheck()) {
-					System.exit(0);
-				}
-			}
-		});
-
-		Container pane = getContentPane();
-		pane.setLayout(new SpringLayout());
-		crosswordViewer = new JScrollPane(crosswordGrid);
-		pane.add(crosswordViewer);
-
-		pane.add(wordTabs);
-		JList<Word> wordList = new JList<>(wordlListModel);
-		wordList.addMouseListener(new WordListMouseAdapter(this));
-		wordList.addKeyListener(new WordListKeyListener(this));
-		wordList.setFont(new Font("Courier New", Font.BOLD, wordList.getFont().getSize()));
-		wordTabs.addTab("Words", new JScrollPane(wordList));
-
 	}
 
 	/**
@@ -265,10 +401,26 @@ public class GridDialog extends JFrame implements CellUpdateListener, CellSelect
 	@Override
 	public final void selectCell(final Cell cell, final Point2D offset) {
 		lastOffset = offset;
+		lastSelected = cell;
 		crosswordGrid.setDirectSelection(cell);
 		List<Cell> indirectSelection = puzzle.getIndirectSelection(cell, offset);
 		crosswordGrid.setIndirectSelection(indirectSelection);
-		updateWordList();
+		int direction = puzzle.getDirectionFromPoint(offset);
+		addRefButton.setEnabled(false);
+		for (ClueModel clueModel : clueModels) {
+			if (clueModel.selectClue(cell, direction)) {
+				Optional<Clue> clue = cell.getClue(direction);
+				if (clue.isPresent()) {
+					int index = clueModel.getClueItemIndex(clue.get());
+					addRefButton.setEnabled(clueModel.isClueEditable(index));
+					break;
+				}
+			}
+		}
+		addVerseButton.setEnabled(addRefButton.isEnabled() && (verseText.getText().length() > 0));
+		if (updateWordList()) {
+			dirty = true;
+		}
 	}
 
 	/*
@@ -281,14 +433,17 @@ public class GridDialog extends JFrame implements CellUpdateListener, CellSelect
 	@Override
 	public final void addCellContent(final Cell cell, final String content) {
 		puzzle.addCellContent(cell, content);
-		dirty = true;
-		updateWordList();
+		if (updateWordList()) {
+			dirty = true;
+		}
 	}
 
 	/**
 	 * Updates word list.
+	 * 
+	 * @return true if list updated.
 	 */
-	private void updateWordList() {
+	private boolean updateWordList() {
 		String word = "";
 		for (Cell indirectCell : crosswordGrid.getFirstIndirectSelection()) {
 			if (indirectCell.isEmpty()) {
@@ -297,7 +452,17 @@ public class GridDialog extends JFrame implements CellUpdateListener, CellSelect
 				word += indirectCell.getDisplayContents();
 			}
 		}
-		wordlListModel.setWordList(word);
+		if (wordListModel.setWordList(word)) {
+			verseModel.clear();
+			verseText.setText("");
+			if (wordListModel.getSize() > 0) {
+				wordList.clearSelection();
+				wordList.setSelectedValue(wordListModel.getElementAt(0), true);
+				setVersesWithWord(wordList.getSelectedValue());
+			}
+			return true;
+		}
+		return false;
 	}
 
 	/*
@@ -310,8 +475,9 @@ public class GridDialog extends JFrame implements CellUpdateListener, CellSelect
 	@Override
 	public final void clearCellContent(final Cell cell) {
 		puzzle.clearCellContent(cell);
-		dirty = true;
-		updateWordList();
+		if (updateWordList()) {
+			dirty = true;
+		}
 	}
 
 	/*
@@ -445,8 +611,9 @@ public class GridDialog extends JFrame implements CellUpdateListener, CellSelect
 	@Override
 	public final void setWord(final Word word) {
 		puzzle.addWordContent(crosswordGrid.getFirstIndirectSelection(), word);
-		updateWordList();
-		crosswordGrid.repaint();
+		if (updateWordList()) {
+			crosswordGrid.repaint();
+		}
 	}
 
 	/*
@@ -457,7 +624,7 @@ public class GridDialog extends JFrame implements CellUpdateListener, CellSelect
 	 */
 	@Override
 	public final void increaseSortLetter() {
-		wordlListModel.increaseSortLetter();
+		wordListModel.increaseSortLetter();
 	}
 
 	/*
@@ -468,7 +635,7 @@ public class GridDialog extends JFrame implements CellUpdateListener, CellSelect
 	 */
 	@Override
 	public final void decreaseSortLetter() {
-		wordlListModel.decreaseSortLetter();
+		wordListModel.decreaseSortLetter();
 	}
 
 	/*
@@ -482,5 +649,23 @@ public class GridDialog extends JFrame implements CellUpdateListener, CellSelect
 		lastOffset = puzzle.getPointFromDirection(direction);
 		selectCell(cell, lastOffset);
 
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * biz.computerkraft.crossword.gui.CellUpdateListener#setVersesWithWord(biz.
+	 * computerkraft.crossword.db.Word)
+	 */
+	@Override
+	public final void setVersesWithWord(final Word word) {
+		verseModel.clear();
+		addRefButton.setEnabled(false);
+		addVerseButton.setEnabled(false);
+		verseText.setText("");
+		for (Verse verse : connection.getVersesWithWord(word)) {
+			verseModel.addElement(verse);
+		}
 	}
 }

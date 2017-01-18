@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 import biz.computerkraft.crossword.db.Word;
 import biz.computerkraft.crossword.grid.Cell;
@@ -33,17 +32,6 @@ public class Wordsearch extends MultiDirectionGrid {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see biz.computerkraft.crossword.gui.Puzzle#getProperties()
-	 */
-	@Override
-	@XmlTransient
-	public final Map<String, Object> getProperties() {
-		return getBaseProperties();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
 	 * @see biz.computerkraft.crossword.grid.Grid#getClues()
 	 */
 	@Override
@@ -61,11 +49,11 @@ public class Wordsearch extends MultiDirectionGrid {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see biz.computerkraft.crossword.gui.Puzzle#setProperties(java.util.Map)
+	 * @see biz.computerkraft.crossword.grid.crossword.MultiDirectionGrid#
+	 * setMultiDirectionGridProperties(java.util.Map)
 	 */
 	@Override
-	public final void setProperties(final Map<String, Object> properties) {
-		setMultiDirectionGridProperties(properties);
+	public final void setMultiDirectionGridProperties(final Map<String, Object> properties) {
 		setClueModels();
 	}
 
@@ -93,37 +81,13 @@ public class Wordsearch extends MultiDirectionGrid {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * biz.computerkraft.crossword.gui.Puzzle#addWordContent(java.util.List,
+	 * @see biz.computerkraft.crossword.grid.crossword.RectangleGrid#
+	 * rectangleGridAddWordContent(java.util.List,
 	 * biz.computerkraft.crossword.db.Word)
 	 */
 	@Override
-	public final void addWordContent(final List<Cell> cells, final Word word) {
+	public final void rectangleGridAddWordContent(final List<Cell> cells, final Word word) {
 		addCluedWordContent(cells, word);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * biz.computerkraft.crossword.gui.Puzzle#addCellContent(biz.computerkraft.
-	 * crossword.grid.Cell, java.lang.String)
-	 */
-	@Override
-	public final void addCellContent(final Cell cell, final String content) {
-		baseAddCellContent(cell, content);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * biz.computerkraft.crossword.gui.Puzzle#clearCellContent(biz.computerkraft
-	 * .crossword.grid.Cell)
-	 */
-	@Override
-	public final void clearCellContent(final Cell cell) {
-		clearCellContent(cell, true);
 	}
 
 	/*
@@ -148,12 +112,23 @@ public class Wordsearch extends MultiDirectionGrid {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see biz.computerkraft.crossword.gui.Puzzle#postLoadTidyup()
+	 * @see biz.computerkraft.crossword.grid.crossword.MultiDirectionGrid#
+	 * multiDirectionGridPostLoadTidyup()
 	 */
 	@Override
-	public final void postLoadTidyup() {
-		multiDirectionGridPostLoadTidyup();
+	public final void multiDirectionGridPostLoadTidyup() {
 		updateClues();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see biz.computerkraft.crossword.grid.crossword.RectangleGrid#
+	 * getRectangleGridProperties(java.util.Map)
+	 */
+	@Override
+	protected final Map<String, Object> getRectangleGridProperties(final Map<String, Object> currentProperties) {
+		return currentProperties;
 	}
 
 }

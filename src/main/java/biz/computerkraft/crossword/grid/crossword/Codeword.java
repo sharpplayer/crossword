@@ -7,7 +7,6 @@ import java.util.Random;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 import biz.computerkraft.crossword.db.Word;
 import biz.computerkraft.crossword.grid.Cell;
@@ -148,37 +147,34 @@ public class Codeword extends AbstractFillCrossword {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * biz.computerkraft.crossword.gui.Puzzle#addCellContent(biz.computerkraft.
-	 * crossword.grid.Cell, java.lang.String)
+	 * @see biz.computerkraft.crossword.grid.crossword.RectangleGrid#
+	 * rectangleGridAddCellContent(biz.computerkraft.crossword.grid.Cell,
+	 * java.lang.String)
 	 */
 	@Override
-	public final void addCellContent(final Cell cell, final String content) {
-		baseAddCellContent(cell, content);
+	public final void rectangleGridAddCellContent(final Cell cell, final String content) {
 		setMarkers();
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * biz.computerkraft.crossword.gui.Puzzle#clearCellContent(biz.computerkraft
-	 * .crossword.grid.Cell)
+	 * @see biz.computerkraft.crossword.grid.crossword.RectangleGrid#
+	 * rectangleGridClearCellContent(biz.computerkraft.crossword.grid.Cell)
 	 */
 	@Override
-	public final void clearCellContent(final Cell cell) {
-		baseClearCellContent(cell);
+	public final void rectangleGridClearCellContent(final Cell cell) {
 		setMarkers();
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see biz.computerkraft.crossword.gui.Puzzle#postLoadTidyup()
+	 * @see biz.computerkraft.crossword.grid.crossword.AbstractCrossword#
+	 * abstractCrosswordPostLoadTidyup()
 	 */
 	@Override
-	public final void postLoadTidyup() {
-		abstractCrosswordPostLoadTidyup();
+	public final void abstractCrosswordPostLoadTidyup() {
 		setMarkers();
 		updateClues();
 	}
@@ -186,11 +182,11 @@ public class Codeword extends AbstractFillCrossword {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see biz.computerkraft.crossword.gui.Puzzle#setProperties(java.util.Map)
+	 * @see biz.computerkraft.crossword.grid.crossword.AbstractCrossword#
+	 * setAbstractCrosswordProperties(java.util.Map)
 	 */
 	@Override
-	public final void setProperties(final Map<String, Object> properties) {
-		setAbstractCrosswordProperties(properties);
+	public final void setAbstractCrosswordProperties(final Map<String, Object> properties) {
 		encoding = (Encoding) properties.get(PROPERTY_ENCODING);
 		if (encoding == Encoding.NEWSEED) {
 			encoding = Encoding.RANDOM;
@@ -214,12 +210,11 @@ public class Codeword extends AbstractFillCrossword {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see biz.computerkraft.crossword.gui.Puzzle#getProperties()
+	 * @see biz.computerkraft.crossword.grid.crossword.AbstractCrossword#
+	 * getAbstractCrosswordProperties(java.util.Map)
 	 */
-	@XmlTransient
 	@Override
-	public final Map<String, Object> getProperties() {
-		Map<String, Object> properties = getAbstractCrosswordProperties();
+	public final Map<String, Object> getAbstractCrosswordProperties(final Map<String, Object> properties) {
 		properties.put(PROPERTY_ENCODING, encoding);
 		return properties;
 	}
@@ -227,13 +222,12 @@ public class Codeword extends AbstractFillCrossword {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * biz.computerkraft.crossword.gui.Puzzle#addWordContent(java.util.List,
+	 * @see biz.computerkraft.crossword.grid.crossword.RectangleGrid#
+	 * rectangleGridAddWordContent(java.util.List,
 	 * biz.computerkraft.crossword.db.Word)
 	 */
 	@Override
-	public final void addWordContent(final List<Cell> cells, final Word word) {
-		baseAddWordContent(cells, word);
+	public final void rectangleGridAddWordContent(final List<Cell> cells, final Word word) {
 		setMarkers();
 	}
 

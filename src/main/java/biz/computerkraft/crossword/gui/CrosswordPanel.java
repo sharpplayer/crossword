@@ -336,7 +336,7 @@ public class CrosswordPanel extends JPanel implements InputListener {
 	public final void moveLeft() {
 		List<Cell> currentSelection = new ArrayList<>();
 		currentSelection.addAll(directSelections);
-		// indirectSelections.clear();
+		indirectSelections.clear();
 		for (Cell cell : currentSelection) {
 			listener.selectCellLeft(cell);
 		}

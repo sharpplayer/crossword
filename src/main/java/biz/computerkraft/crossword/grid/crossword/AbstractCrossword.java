@@ -9,7 +9,6 @@ import java.util.Optional;
 
 import javax.xml.bind.annotation.XmlElement;
 
-import biz.computerkraft.crossword.db.Word;
 import biz.computerkraft.crossword.grid.Cell;
 import biz.computerkraft.crossword.grid.Clue;
 import biz.computerkraft.crossword.grid.crossword.enumeration.Symmetry;
@@ -37,19 +36,29 @@ public abstract class AbstractCrossword extends RectangleGrid {
 	/** Actual symmetry. */
 	private Symmetry symmetry = Symmetry.EIGHTWAY;
 
-	/**
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * Sets the abstract crossword properties.
-	 * 
-	 * @param properties
-	 *            property container
+	 * @see biz.computerkraft.crossword.grid.crossword.RectangleGrid#
+	 * setRectangleGridProperties(java.util.Map)
 	 */
-	protected final void setAbstractCrosswordProperties(final Map<String, Object> properties) {
-		setBaseProperties(properties);
+	@Override
+	protected final void setRectangleGridProperties(final Map<String, Object> properties) {
 		symmetry = (Symmetry) properties.get(PROPERTY_SYMMETRY);
 		setCellGroups();
 		setMarkers();
 		setClueModels();
+		setAbstractCrosswordProperties(properties);
+	}
+
+	/**
+	 * 
+	 * Sets abstract crossword properties.
+	 * 
+	 * @param properties
+	 *            property map
+	 */
+	protected void setAbstractCrosswordProperties(final Map<String, Object> properties) {
 	}
 
 	/*
@@ -79,6 +88,22 @@ public abstract class AbstractCrossword extends RectangleGrid {
 		if (adjacent.isPresent()) {
 			cell.setBlock(direction, isCellFilled(adjacent.get()));
 		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * biz.computerkraft.crossword.gui.Puzzle#getDirectionFromPoint(java.awt.
+	 * geom.Point2D)
+	 */
+	@Override
+	public final int getDirectionFromPoint(final Point2D point) {
+		int forward = DIRECTION_E;
+		if (Math.abs(point.getX() - CELL_CENTRE) < Math.abs(point.getY() - CELL_CENTRE)) {
+			forward = DIRECTION_S;
+		}
+		return forward;
 	}
 
 	/**
@@ -169,29 +194,48 @@ public abstract class AbstractCrossword extends RectangleGrid {
 		symmetry = newSymmetry;
 	}
 
-	/**
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * Gets the abstract crossword properties.
-	 * 
-	 * @return property map
+	 * @see biz.computerkraft.crossword.grid.crossword.RectangleGrid#
+	 * getRectangleGridProperties(java.util.Map)
 	 */
-	protected final Map<String, Object> getAbstractCrosswordProperties() {
-		Map<String, Object> properties = getBaseProperties();
+	@Override
+	protected final Map<String, Object> getRectangleGridProperties(final Map<String, Object> properties) {
 		if (!properties.containsKey(PROPERTY_SYMMETRY)) {
 			properties.put(PROPERTY_SYMMETRY, symmetry);
 		}
-		return properties;
+		return getAbstractCrosswordProperties(properties);
 	}
 
 	/**
-	 * Post tidy up for abstract crossword.
+	 * 
+	 * Gets property map.
+	 * 
+	 * @param properties
+	 *            properties so far
+	 * @return property map
 	 */
-	protected final void abstractCrosswordPostLoadTidyup() {
-		basePostLoadTidyup();
-		getBaseProperties().put(PROPERTY_SYMMETRY, getSymmetry());
+	protected abstract Map<String, Object> getAbstractCrosswordProperties(Map<String, Object> properties);
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see biz.computerkraft.crossword.grid.crossword.RectangleGrid#
+	 * rectangleGridPostLoadTidyup()
+	 */
+	@Override
+	protected final void rectangleGridPostLoadTidyup() {
+		getProperties().put(PROPERTY_SYMMETRY, getSymmetry());
 		setCellGroups();
 		setClueModels();
+		abstractCrosswordPostLoadTidyup();
 	}
+
+	/**
+	 * Post load tidyup for abstract crosswords.
+	 */
+	protected abstract void abstractCrosswordPostLoadTidyup();
 
 	/**
 	 * Sets up cell symmetry and adjacency.

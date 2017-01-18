@@ -72,12 +72,13 @@ public class WordListModel extends AbstractListModel<Word> {
 	 * 
 	 * @param word
 	 *            new tempate for populating word list
+	 * @return true if list change
 	 */
-	public final void setWordList(final String word) {
+	public final boolean setWordList(final String word) {
 		if (word.length() != lastWord.length()) {
-			updateList(word, 1);
+			return updateList(word, 1);
 		} else {
-			updateList(word, sortLetterIndex);
+			return updateList(word, sortLetterIndex);
 		}
 	}
 
@@ -88,35 +89,45 @@ public class WordListModel extends AbstractListModel<Word> {
 	 *            wildcarded word to search for.
 	 * @param sortIndex
 	 *            sort on index.
+	 * @return true if change of word
 	 */
-	private void updateList(final String word, final int sortIndex) {
-		sortLetterIndex = sortIndex;
-		lastWord = word;
-		wordList = connection.getWords(word, sortLetterIndex);
-		fireContentsChanged(this, 0, wordList.size());
-
+	private boolean updateList(final String word, final int sortIndex) {
+		boolean returnValue = !lastWord.equals(word) || (sortLetterIndex != sortIndex);
+		if (returnValue) {
+			sortLetterIndex = sortIndex;
+			wordList = connection.getWords(word, sortLetterIndex);
+			lastWord = word;
+			fireContentsChanged(this, 0, wordList.size());
+		}
+		return returnValue;
 	}
 
 	/**
 	 * 
 	 * Increases sort letter.
 	 * 
+	 * @return true if list changes
+	 * 
 	 */
-	public final void increaseSortLetter() {
+	public final boolean increaseSortLetter() {
 		if (sortLetterIndex < lastWord.length()) {
-			updateList(lastWord, sortLetterIndex + 1);
+			return updateList(lastWord, sortLetterIndex + 1);
 		}
+		return false;
 	}
 
 	/**
 	 * 
 	 * Decreases sort letter.
 	 * 
+	 * @return true if list changed.
+	 * 
 	 */
-	public final void decreaseSortLetter() {
+	public final boolean decreaseSortLetter() {
 		if (sortLetterIndex > 1) {
-			updateList(lastWord, sortLetterIndex - 1);
+			return updateList(lastWord, sortLetterIndex - 1);
 		}
+		return false;
 	}
 
 }

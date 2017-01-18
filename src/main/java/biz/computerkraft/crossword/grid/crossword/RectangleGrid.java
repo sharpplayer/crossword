@@ -55,33 +55,33 @@ public abstract class RectangleGrid extends Grid {
 	/** Actual height set. */
 	private int cellHeight = DEFAULT_SIZE;
 
-	/**
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * Get base properties.
-	 * 
-	 * @return base properties map
+	 * @see biz.computerkraft.crossword.gui.Puzzle#getProperties()
 	 */
 	@XmlTransient
-	protected final Map<String, Object> getBaseProperties() {
+	@Override
+	public final Map<String, Object> getProperties() {
 		if (properties.size() == 0) {
 			properties.put(PROPERTY_HEIGHT, new Integer(cellWidth));
 			properties.put(PROPERTY_WIDTH, new Integer(cellHeight));
 		}
-		return properties;
+		return getRectangleGridProperties(properties);
 	}
 
-	/**
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * Sets base properties.
-	 * 
-	 * @param newProperties
-	 *            properties to set.
+	 * @see biz.computerkraft.crossword.gui.Puzzle#setProperties(java.util.Map)
 	 */
-	protected final void setBaseProperties(final Map<String, Object> newProperties) {
+	@Override
+	public final void setProperties(final Map<String, Object> newProperties) {
 		int width = (Integer) newProperties.get(PROPERTY_WIDTH);
 		int height = (Integer) newProperties.get(PROPERTY_HEIGHT);
 
 		initialiseCells(width, height);
+		setRectangleGridProperties(newProperties);
 	}
 
 	/**
@@ -190,29 +190,53 @@ public abstract class RectangleGrid extends Grid {
 		cellHeight = newHeight;
 	}
 
-	/**
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * Adds content to cell.
-	 * 
-	 * @param cell
-	 *            cell to add content to
-	 * @param content
-	 *            content to add
+	 * @see
+	 * biz.computerkraft.crossword.gui.Puzzle#addCellContent(biz.computerkraft.
+	 * crossword.grid.Cell, java.lang.String)
 	 */
-	public final void baseAddCellContent(final Cell cell, final String content) {
+	@Override
+	public final void addCellContent(final Cell cell, final String content) {
 		cell.setContents(content.toUpperCase());
 		updateClues();
+		rectangleGridAddCellContent(cell, content);
 	}
 
 	/**
 	 * 
-	 * Clears the content of a cell.
+	 * Adds content to a cell.
+	 * 
+	 * @param cell
+	 *            cell to alter
+	 * @param content
+	 *            content to add
+	 */
+	protected void rectangleGridAddCellContent(final Cell cell, final String content) {
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * biz.computerkraft.crossword.gui.Puzzle#clearCellContent(biz.computerkraft
+	 * .crossword.grid.Cell)
+	 */
+	@Override
+	public final void clearCellContent(final Cell cell) {
+		cell.setContents("");
+		rectangleGridClearCellContent(cell);
+	}
+
+	/**
+	 * 
+	 * Clears a cell for rectangle grid.
 	 * 
 	 * @param cell
 	 *            cell to clear
 	 */
-	protected final void baseClearCellContent(final Cell cell) {
-		cell.setContents("");
+	protected void rectangleGridClearCellContent(final Cell cell) {
 	}
 
 	/*
@@ -281,12 +305,16 @@ public abstract class RectangleGrid extends Grid {
 		return wordString;
 	}
 
-	/**
-	 * Processes post load of global variables.
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see biz.computerkraft.crossword.gui.Puzzle#postLoadTidyup()
 	 */
-	protected final void basePostLoadTidyup() {
+	@Override
+	public final void postLoadTidyup() {
 		properties.put(PROPERTY_HEIGHT, getCellHeight());
 		properties.put(PROPERTY_WIDTH, getCellWidth());
+		rectangleGridPostLoadTidyup();
 	}
 
 	/*
@@ -313,20 +341,32 @@ public abstract class RectangleGrid extends Grid {
 		return new Point2D.Double(x, y);
 	}
 
-	/**
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * Basic addition of word content to grid.
-	 * 
-	 * @param cells
-	 *            cells to put word into
-	 * @param word
-	 *            word to put
+	 * @see
+	 * biz.computerkraft.crossword.gui.Puzzle#addWordContent(java.util.List,
+	 * biz.computerkraft.crossword.db.Word)
 	 */
-	protected final void baseAddWordContent(final List<Cell> cells, final Word word) {
+	@Override
+	public final void addWordContent(final List<Cell> cells, final Word word) {
 		String wordString = word.getWord();
 		for (int letter = 0; letter < wordString.length(); letter++) {
 			cells.get(letter).setContents(wordString.substring(letter, letter + 1));
 		}
+		rectangleGridAddWordContent(cells, word);
+	}
+
+	/**
+	 * 
+	 * Adds word to cell.
+	 * 
+	 * @param cells
+	 *            cells to add content to
+	 * @param word
+	 *            word to add
+	 */
+	protected void rectangleGridAddWordContent(final List<Cell> cells, final Word word) {
 	}
 
 	/**
@@ -362,11 +402,7 @@ public abstract class RectangleGrid extends Grid {
 		if (isCellFilled(cell)) {
 			selection = new ArrayList<>();
 		} else {
-			int forward = DIRECTION_E;
-
-			if (Math.abs(selectionSpot.getX() - CELL_CENTRE) < Math.abs(selectionSpot.getY() - CELL_CENTRE)) {
-				forward = DIRECTION_S;
-			}
+			int forward = getDirectionFromPoint(selectionSpot);
 			int backward = 0;
 			if (!fromCell) {
 				backward = getReverseDirection(forward);
@@ -384,7 +420,7 @@ public abstract class RectangleGrid extends Grid {
 		}
 		return selection;
 	}
-
+	
 	/**
 	 * 
 	 * Gets full blocked status of cell.
@@ -398,5 +434,32 @@ public abstract class RectangleGrid extends Grid {
 		return cell.isBlocked(DIRECTION_E) && cell.isBlocked(DIRECTION_N) && cell.isBlocked(DIRECTION_S)
 				&& cell.isBlocked(DIRECTION_W);
 	}
+
+	/**
+	 * 
+	 * Sets the extra properties.
+	 * 
+	 * @param extraProperties
+	 *            property container
+	 */
+	protected void setRectangleGridProperties(final Map<String, Object> extraProperties) {
+	}
+
+	/**
+	 * 
+	 * Gets extra properties.
+	 * 
+	 * @param currentProperties
+	 *            properties so far
+	 * @return extra properties
+	 */
+	protected abstract Map<String, Object> getRectangleGridProperties(Map<String, Object> currentProperties);
+
+	/**
+	 * 
+	 * Additional postLoadTidyup.
+	 * 
+	 */
+	protected abstract void rectangleGridPostLoadTidyup();
 
 }

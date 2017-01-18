@@ -66,6 +66,15 @@ public interface CellUpdateListener {
 	void setWord(Word word);
 
 	/**
+	 * 
+	 * Sets verse list to one with word.
+	 * 
+	 * @param word
+	 *            word to use as filter.
+	 */
+	void setVersesWithWord(Word word);
+
+	/**
 	 * Increases word list sort letter.
 	 */
 	void increaseSortLetter();

@@ -25,14 +25,13 @@ targetCompatibility = 1.8
 repositories { mavenCentral() }
 
 dependencies {
-	compile(
-			'mysql:mysql-connector-java:5.1.13'
-			)
-
+	compile('mysql:mysql-connector-java:5.1.13')
+	compile group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.3'
 
 	testCompile(
 			[
-				'org.mockito:mockito-all:1.10.19'
+				'org.mockito:mockito-all:1.10.19',
+				'org.apache.pdfbox:pdfbox:2.0.4'
 			],
 			['junit:junit:4.12'])
 }

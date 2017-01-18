@@ -7,6 +7,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
 import biz.computerkraft.crossword.db.DBConnection;
+import biz.computerkraft.crossword.grid.Cell;
 import biz.computerkraft.crossword.gui.CellSelectListener;
 import biz.computerkraft.crossword.gui.ClueItem;
 import biz.computerkraft.crossword.gui.ClueModel;
@@ -35,6 +36,9 @@ public class CodewordClueModel extends ClueModel {
 
 	/** Visual component to display model. */
 	private JComponent component;
+
+	/** Table showing clues. */
+	private JTable table;
 
 	/**
 	 * Codeword constructor.
@@ -100,10 +104,40 @@ public class CodewordClueModel extends ClueModel {
 	@Override
 	public final Component getVisualComponent(final DBConnection connection, final CellSelectListener listener) {
 		if (component == null) {
-			JTable table = new JHighDPITable(this);
+			table = new JHighDPITable(this);
 			component = new JScrollPane(table);
 		}
 		return component;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * biz.computerkraft.crossword.gui.ClueModel#selectClue(biz.computerkraft.
+	 * crossword.grid.Cell, int)
+	 */
+	@Override
+	public final boolean selectClue(final Cell cell, final int direction) {
+		String content = cell.getContents();
+		for (int clue = 0; clue < getRowCount(); clue++) {
+			ClueItem clueItem = getClueItemAt(clue);
+			if (clueItem.getClue().getClueText().equals(content)) {
+				table.setRowSelectionInterval(clue, clue);
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see biz.computerkraft.crossword.gui.ClueModel#isClueEditable(int)
+	 */
+	@Override
+	public final boolean isClueEditable(final int index) {
+		return false;
 	}
 
 }

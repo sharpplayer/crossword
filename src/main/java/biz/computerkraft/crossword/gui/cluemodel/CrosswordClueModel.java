@@ -1,12 +1,14 @@
 package biz.computerkraft.crossword.gui.cluemodel;
 
 import java.awt.Component;
+import java.util.Optional;
 
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.TableColumn;
 
 import biz.computerkraft.crossword.db.DBConnection;
+import biz.computerkraft.crossword.grid.Cell;
 import biz.computerkraft.crossword.grid.Clue;
 import biz.computerkraft.crossword.gui.CellSelectListener;
 import biz.computerkraft.crossword.gui.ClueModel;
@@ -42,6 +44,9 @@ public class CrosswordClueModel extends ClueModel {
 
 	/** Component to render. */
 	private Component component;
+
+	/** Clue table. */
+	private JTable table;
 
 	/*
 	 * (non-Javadoc)
@@ -81,6 +86,20 @@ public class CrosswordClueModel extends ClueModel {
 			return !getClueItemAt(rowIndex).getWord().isEmpty();
 		}
 		return false;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see biz.computerkraft.crossword.gui.ClueModel#isClueEditable(int)
+	 */
+	@Override
+	public final boolean isClueEditable(final int index) {
+		if (index >= 0 && index < getRowCount()) {
+			return isCellEditable(index, COLUMN_CLUE);
+		} else {
+			return false;
+		}
 	}
 
 	/*
@@ -127,7 +146,7 @@ public class CrosswordClueModel extends ClueModel {
 	 */
 	public final Component getVisualComponent(final DBConnection connection, final CellSelectListener listener) {
 		if (component == null) {
-			JTable table = new JHighDPITable(this);
+			table = new JHighDPITable(this);
 			TableColumn clueColumn = table.getColumnModel().getColumn(COLUMN_MARKER);
 			clueColumn.setMaxWidth(WIDTH_MARKER);
 			clueColumn = table.getColumnModel().getColumn(COLUMN_CLUE);
@@ -148,6 +167,30 @@ public class CrosswordClueModel extends ClueModel {
 	 */
 	public CrosswordClueModel(final String newCategory) {
 		super(newCategory);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * biz.computerkraft.crossword.gui.ClueModel#selectClue(biz.computerkraft.
+	 * crossword.grid.Cell, int)
+	 */
+	@Override
+	public final boolean selectClue(final Cell cell, final int direction) {
+		Optional<Clue> clue = cell.getClue(direction);
+		if (clue.isPresent()) {
+			int index = getClueItemIndex(clue.get());
+			if (index == -1) {
+				table.clearSelection();
+			} else {
+				table.setRowSelectionInterval(index, index);
+				return isCellEditable(index, COLUMN_CLUE);
+			}
+		} else {
+			table.clearSelection();
+		}
+		return false;
 	}
 
 }

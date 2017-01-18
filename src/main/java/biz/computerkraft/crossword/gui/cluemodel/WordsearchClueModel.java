@@ -1,11 +1,14 @@
 package biz.computerkraft.crossword.gui.cluemodel;
 
 import java.awt.Component;
+import java.util.Optional;
 
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
 import biz.computerkraft.crossword.db.DBConnection;
+import biz.computerkraft.crossword.grid.Cell;
+import biz.computerkraft.crossword.grid.Clue;
 import biz.computerkraft.crossword.gui.CellSelectListener;
 import biz.computerkraft.crossword.gui.ClueModel;
 import biz.computerkraft.crossword.gui.JHighDPITable;
@@ -24,9 +27,12 @@ public class WordsearchClueModel extends ClueModel {
 
 	/** Clue column. */
 	private static final int COLUMN_CLUE = 0;
-	
+
 	/** Component to render. */
 	private Component component;
+
+	/** Table for clues. */
+	private JTable table;
 
 	/*
 	 * (non-Javadoc)
@@ -87,7 +93,7 @@ public class WordsearchClueModel extends ClueModel {
 	 */
 	public final Component getVisualComponent(final DBConnection connection, final CellSelectListener listener) {
 		if (component == null) {
-			JTable table = new JHighDPITable(this);
+			table = new JHighDPITable(this);
 			component = new JScrollPane(table);
 		}
 		return component;
@@ -101,6 +107,39 @@ public class WordsearchClueModel extends ClueModel {
 	 */
 	public WordsearchClueModel(final String newCategory) {
 		super(newCategory);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * biz.computerkraft.crossword.gui.ClueModel#selectClue(biz.computerkraft.
+	 * crossword.grid.Cell, int)
+	 */
+	@Override
+	public final boolean selectClue(final Cell cell, final int direction) {
+		Optional<Clue> clue = cell.getClue(direction);
+		if (clue.isPresent()) {
+			int index = getClueItemIndex(clue.get());
+			if (index == -1) {
+				table.clearSelection();
+			} else {
+				table.setRowSelectionInterval(index, index);
+			}
+		} else {
+			table.clearSelection();
+		}
+		return false;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see biz.computerkraft.crossword.gui.ClueModel#isClueEditable(int)
+	 */
+	@Override
+	public final boolean isClueEditable(final int index) {
+		return false;
 	}
 
 }

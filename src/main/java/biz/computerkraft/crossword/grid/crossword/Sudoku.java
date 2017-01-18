@@ -10,7 +10,6 @@ import java.util.Optional;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 import biz.computerkraft.crossword.db.Word;
 import biz.computerkraft.crossword.grid.Cell;
@@ -69,12 +68,11 @@ public class Sudoku extends MultiDirectionGrid {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see biz.computerkraft.crossword.gui.Puzzle#getProperties()
+	 * @see biz.computerkraft.crossword.grid.crossword.RectangleGrid#
+	 * getRectangleGridProperties(java.util.Map)
 	 */
-	@XmlTransient
 	@Override
-	public final Map<String, Object> getProperties() {
-		Map<String, Object> properties = getBaseProperties();
+	protected final Map<String, Object> getRectangleGridProperties(final Map<String, Object> properties) {
 		if (!properties.containsKey(PROPERTY_CELL_GROUP_WIDTH)) {
 			properties.remove(RectangleGrid.PROPERTY_WIDTH);
 			properties.remove(RectangleGrid.PROPERTY_HEIGHT);
@@ -104,10 +102,11 @@ public class Sudoku extends MultiDirectionGrid {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see biz.computerkraft.crossword.gui.Puzzle#setProperties(java.util.Map)
+	 * @see biz.computerkraft.crossword.grid.crossword.MultiDirectionGrid#
+	 * setMultiDirectionGridProperties(java.util.Map)
 	 */
 	@Override
-	public final void setProperties(final Map<String, Object> properties) {
+	public final void setMultiDirectionGridProperties(final Map<String, Object> properties) {
 		cellGroupWidth = (int) properties.get(PROPERTY_CELL_GROUP_HEIGHT);
 		cellGroupHeight = (int) properties.get(PROPERTY_CELL_GROUP_WIDTH);
 		properties.put(PROPERTY_WIDTH, cellGroupWidth * cellGroupHeight);
@@ -149,11 +148,11 @@ public class Sudoku extends MultiDirectionGrid {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see biz.computerkraft.crossword.gui.Puzzle#postLoadTidyup()
+	 * @see biz.computerkraft.crossword.grid.crossword.MultiDirectionGrid#
+	 * multiDirectionGridPostLoadTidyup()
 	 */
 	@Override
-	public final void postLoadTidyup() {
-		multiDirectionGridPostLoadTidyup();
+	public final void multiDirectionGridPostLoadTidyup() {
 		setSudokuCellGroups();
 		setMarkers();
 		updateClues();
@@ -214,12 +213,12 @@ public class Sudoku extends MultiDirectionGrid {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * biz.computerkraft.crossword.gui.Puzzle#addWordContent(java.util.List,
+	 * @see biz.computerkraft.crossword.grid.crossword.RectangleGrid#
+	 * rectangleGridAddWordContent(java.util.List,
 	 * biz.computerkraft.crossword.db.Word)
 	 */
 	@Override
-	public final void addWordContent(final List<Cell> cells, final Word word) {
+	public final void rectangleGridAddWordContent(final List<Cell> cells, final Word word) {
 		addCluedWordContent(cells, word);
 		setMarkers();
 	}
@@ -432,15 +431,15 @@ public class Sudoku extends MultiDirectionGrid {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * biz.computerkraft.crossword.gui.Puzzle#addCellContent(biz.computerkraft.
-	 * crossword.grid.Cell, java.lang.String)
+	 * @see biz.computerkraft.crossword.grid.crossword.RectangleGrid#
+	 * rectangleGridAddCellContent(biz.computerkraft.crossword.grid.Cell,
+	 * java.lang.String)
 	 */
 	@Override
-	public final void addCellContent(final Cell cell, final String content) {
+	public final void rectangleGridAddCellContent(final Cell cell, final String content) {
 		String markers = cell.getMarker();
 		if (markers.contains(content.toUpperCase())) {
-			baseAddCellContent(cell, content.toUpperCase());
+			addCellContent(cell, content.toUpperCase());
 			setMarkers();
 		}
 	}
@@ -448,12 +447,11 @@ public class Sudoku extends MultiDirectionGrid {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * biz.computerkraft.crossword.gui.Puzzle#clearCellContent(biz.computerkraft
-	 * .crossword.grid.Cell)
+	 * @see biz.computerkraft.crossword.grid.crossword.RectangleGrid#
+	 * rectangleGridClearCellContent(biz.computerkraft.crossword.grid.Cell)
 	 */
 	@Override
-	public final void clearCellContent(final Cell cell) {
+	public final void rectangleGridClearCellContent(final Cell cell) {
 		clearCellContent(cell, true);
 		setMarkers();
 	}

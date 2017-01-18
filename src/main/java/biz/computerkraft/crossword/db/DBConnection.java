@@ -6,7 +6,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import biz.computerkraft.crossword.grid.Clue;
 
@@ -25,8 +27,44 @@ public class DBConnection {
 	/** Clue id column. */
 	private static final int COLUMN_CLUE_ID = 1;
 
+	/** Word column. */
+	private static final int COLUMN_WORD = 2;
+
+	/** Word id column. */
+	private static final int COLUMN_WORD_ID = 1;
+
+	/** Verse id column. */
+	private static final int COLUMN_VERSE_ID = 1;
+
+	/** Book id column. */
+	private static final int COLUMN_BOOK = 2;
+
+	/** Chapter column. */
+	private static final int COLUMN_CHAPTER = 3;
+
+	/** Verse column. */
+	private static final int COLUMN_VERSE = 4;
+
+	/** Book id column. */
+	private static final int COLUMN_BOOK_ID = 1;
+
+	/** Book name column. */
+	private static final int COLUMN_BOOK_NAME = 2;
+
+	/** Book short name column. */
+	private static final int COLUMN_BOOK_SHORTNAME = 2;
+
+	/** Text column. */
+	private static final int COLUMN_TEXT = 1;
+
 	/** Live connection. */
-	private Connection connection = null;
+	private static Connection connection = null;
+
+	/** Short book names. */
+	private static Map<Integer, String> shortNames = null;
+
+	/** Long book names. */
+	private static Map<Integer, String> fullNames = null;
 
 	/**
 	 * Gets a connection to database.
@@ -35,7 +73,7 @@ public class DBConnection {
 	 * @throws SQLException
 	 *             on MySQL error
 	 */
-	private Connection getConnection() throws SQLException {
+	private static Connection getConnection() throws SQLException {
 		if (connection == null) {
 			connection = DriverManager.getConnection("jdbc:mysql:///bible", "root", "weasel");
 		}
@@ -61,7 +99,7 @@ public class DBConnection {
 		try {
 			ResultSet result = executeQuery(sql);
 			while (result.next()) {
-				returnList.add(new Word(result.getInt(1), result.getString(2)));
+				returnList.add(new Word(result.getInt(COLUMN_WORD_ID), result.getString(COLUMN_WORD)));
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -85,7 +123,7 @@ public class DBConnection {
 		try {
 			ResultSet result = executeQuery(sql);
 			while (result.next()) {
-				returnList.add(new Clue(result.getInt(1), result.getString(COLUMN_CLUE)));
+				returnList.add(new Clue(result.getInt(COLUMN_CLUE_ID), result.getString(COLUMN_CLUE)));
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -106,7 +144,7 @@ public class DBConnection {
 	 * @throws SQLException
 	 *             any sql errors
 	 */
-	private ResultSet executeQuery(final String sql) throws SQLException {
+	private static ResultSet executeQuery(final String sql) throws SQLException {
 		Statement query = getConnection().createStatement();
 		if (sql.startsWith("SELECT")) {
 			return query.executeQuery(sql);
@@ -142,5 +180,101 @@ public class DBConnection {
 		} catch (SQLException ex) {
 			ex.printStackTrace();
 		}
+	}
+
+	/**
+	 * 
+	 * Gets verses containing given word.
+	 * 
+	 * @param word
+	 *            word to search for.
+	 * @return list of words
+	 */
+	public final List<Verse> getVersesWithWord(final Word word) {
+		List<Verse> list = new ArrayList<>();
+		String sql = "SELECT * FROM tblverse WHERE VerseId IN (Select VerseId FROM tbltext WHERE WordId="
+				+ word.getIdentifier() + ")";
+		try {
+			ResultSet result = executeQuery(sql);
+			while (result.next()) {
+				list.add(new Verse(result.getInt(COLUMN_VERSE_ID), result.getInt(COLUMN_BOOK),
+						result.getInt(COLUMN_CHAPTER), result.getInt(COLUMN_VERSE)));
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return list;
+	}
+
+	/**
+	 * 
+	 * Gets long book names.
+	 * 
+	 * @return map of long booknames.
+	 */
+	public static final Map<Integer, String> getFullBookNames() {
+		getBooks();
+		return fullNames;
+	}
+
+	/**
+	 * 
+	 * Gets short book names.
+	 * 
+	 * @return map of short booknames.
+	 */
+	public static final Map<Integer, String> getShortBookNames() {
+		getBooks();
+		return shortNames;
+
+	}
+
+	/**
+	 * Gets the book names.
+	 */
+	private static void getBooks() {
+		if (fullNames == null) {
+			fullNames = new HashMap<>();
+			shortNames = new HashMap<>();
+			String sql = "SELECT * FROM tblbook";
+			try {
+				ResultSet result = executeQuery(sql);
+				while (result.next()) {
+					fullNames.put(result.getInt(COLUMN_BOOK_ID), result.getString(COLUMN_BOOK_NAME));
+					shortNames.put(result.getInt(COLUMN_BOOK_ID), result.getString(COLUMN_BOOK_SHORTNAME));
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+
+	/**
+	 * Gets verse text.
+	 * 
+	 * @param verseId
+	 *            verse to get text for
+	 * 
+	 * @return text of given verse
+	 */
+	public final String getVerse(final int verseId) {
+		String sql = "SELECT Word FROM tbltext t LEFT JOIN tblword w ON t.WordId = w.WordId WHERE VerseId = " + verseId
+				+ " ORDER BY WordNumber";
+		String text = "";
+		String conjunction = "";
+		try {
+			ResultSet result = executeQuery(sql);
+			while (result.next()) {
+				text = text + conjunction + result.getString(COLUMN_TEXT);
+				conjunction = " ";
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return text;
+
 	}
 }

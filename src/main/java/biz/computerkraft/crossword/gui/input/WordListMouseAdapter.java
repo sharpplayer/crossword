@@ -40,11 +40,14 @@ public class WordListMouseAdapter extends MouseAdapter {
 	@Override
 	public final void mouseClicked(final MouseEvent event) {
 		JList<?> list = (JList<?>) event.getSource();
-		if (event.getClickCount() == 2) {
-			Rectangle bounds = list.getCellBounds(0, list.getLastVisibleIndex());
-			if (bounds != null && bounds.contains(event.getPoint())) {
-				int index = list.locationToIndex(event.getPoint());
+		Rectangle bounds = list.getCellBounds(0, list.getLastVisibleIndex());
+		if (bounds != null && bounds.contains(event.getPoint())) {
+			int index = list.locationToIndex(event.getPoint());
+			if (event.getClickCount() == 2) {
 				listener.setWord((Word) list.getModel().getElementAt(index));
+			} else if (event.getClickCount() == 1) {
+				listener.setVersesWithWord((Word) list.getModel().getElementAt(index));
+				list.setSelectedIndex(index);
 			}
 		}
 	}

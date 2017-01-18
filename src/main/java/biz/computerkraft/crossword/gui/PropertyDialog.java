@@ -156,7 +156,6 @@ public class PropertyDialog extends JDialog {
 		button = new JButton("OK");
 		panel.add(button);
 		button.addActionListener(new ActionListener() {
-
 			/*
 			 * (non-Javadoc)
 			 * 
@@ -211,7 +210,6 @@ public class PropertyDialog extends JDialog {
 				}
 			}
 		});
-
 		SpringUtilities.makeCompactGrid(container, ROWS, COLUMNS, MARGIN, MARGIN, MARGIN, MARGIN);
 		pack();
 		setModal(true);

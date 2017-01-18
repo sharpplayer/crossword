@@ -24,17 +24,26 @@ public abstract class MultiDirectionGrid extends RectangleGrid {
 	/** Search index not known. */
 	private static final int START_NOT_KNOWN = -1;
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see biz.computerkraft.crossword.grid.crossword.RectangleGrid#
+	 * setRectangleGridProperties(java.util.Map)
+	 */
+	@Override
+	protected final void setRectangleGridProperties(final Map<String, Object> properties) {
+		setCellGroups();
+		setMultiDirectionGridProperties(properties);
+	}
+
 	/**
 	 * 
-	 * Sets properties for multi directional grid.
+	 * Sets properties.
 	 * 
 	 * @param properties
-	 *            properties to set on multi direction grid properties
+	 *            properties to set
 	 */
-	protected final void setMultiDirectionGridProperties(final Map<String, Object> properties) {
-		setBaseProperties(properties);
-		setCellGroups();
-	}
+	protected abstract void setMultiDirectionGridProperties(Map<String, Object> properties);
 
 	/**
 	 * 
@@ -47,10 +56,22 @@ public abstract class MultiDirectionGrid extends RectangleGrid {
 	 * @return indirect selection
 	 */
 	protected final List<Cell> getFreeIndirectSelection(final Cell cell, final Point2D selectionSpot) {
+		int forward = getDirectionFromPoint(selectionSpot);
+		return getWordWithCell(cell, 0, forward);
+	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * biz.computerkraft.crossword.gui.Puzzle#getDirectionFromPoint(java.awt.
+	 * geom.Point2D)
+	 */
+	@Override
+	public final int getDirectionFromPoint(final Point2D point) {
 		int forward = 0;
-		int dx = (int) Math.round((selectionSpot.getX() - CELL_CENTRE) * 2);
-		int dy = (int) Math.round((selectionSpot.getY() - CELL_CENTRE) * 2);
+		int dx = (int) Math.round((point.getX() - CELL_CENTRE) * 2);
+		int dy = (int) Math.round((point.getY() - CELL_CENTRE) * 2);
 		if (dx < 0) {
 			forward = DIRECTION_W;
 		} else if (dx > 0) {
@@ -64,8 +85,7 @@ public abstract class MultiDirectionGrid extends RectangleGrid {
 		if (forward == 0) {
 			forward = DIRECTION_E;
 		}
-
-		return getWordWithCell(cell, 0, forward);
+		return forward;
 	}
 
 	/*
@@ -94,10 +114,17 @@ public abstract class MultiDirectionGrid extends RectangleGrid {
 	/**
 	 * Post load tidyup.
 	 */
-	public final void multiDirectionGridPostLoadTidyup() {
-		basePostLoadTidyup();
+	@Override
+	protected final void rectangleGridPostLoadTidyup() {
 		setCellGroups();
 		setClueModels();
+		multiDirectionGridPostLoadTidyup();
+	}
+
+	/**
+	 * Multi direction grid tidy up.
+	 */
+	protected void multiDirectionGridPostLoadTidyup() {
 	}
 
 	/**
@@ -110,7 +137,7 @@ public abstract class MultiDirectionGrid extends RectangleGrid {
 	 *            word to assign clue to
 	 */
 	public final void addCluedWordContent(final List<Cell> cells, final Word word) {
-		baseAddWordContent(cells, word);
+		rectangleGridAddWordContent(cells, word);
 		int direction = DIRECTION_E;
 		if (cells.size() > 1) {
 			direction = cells.get(0).getDirection(cells.get(1), DIRECTION_E);
