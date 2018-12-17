@@ -108,11 +108,25 @@ public class BasicPdf {
 
 	}
 
-	private float getX(float x) {
+	/**
+	 * Gets absolute x.
+	 * 
+	 * @param x
+	 *            relative x
+	 * @return absolute x
+	 */
+	private float getX(final float x) {
 		return pageDimensions.getLowerLeftX() + x;
 	}
 
-	private float getY(float y) {
+	/**
+	 * Gets absolute y.
+	 * 
+	 * @param y
+	 *            relative y
+	 * @return absolute y
+	 */
+	private float getY(final float y) {
 		return pageDimensions.getUpperRightY() - y;
 	}
 
