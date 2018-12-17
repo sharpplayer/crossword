@@ -76,7 +76,7 @@ public abstract class ClueModel extends AbstractTableModel {
 	 * 
 	 * @return a visual component for the model.
 	 */
-	public abstract Component getVisualComponent(final DBConnection connection, final CellSelectListener listener);
+	public abstract Component getVisualComponent(DBConnection connection, CellSelectListener listener);
 
 	/**
 	 * 

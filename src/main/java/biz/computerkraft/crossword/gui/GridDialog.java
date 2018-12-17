@@ -318,6 +318,23 @@ public class GridDialog extends JFrame implements CellUpdateListener, CellSelect
 			}
 		});
 
+		JMenuItem publish = new JMenuItem("Publish");
+		fileMenu.add(publish);
+		publish.addActionListener(new ActionListener() {
+
+			/*
+			 * (non-Javadoc)
+			 * 
+			 * @see
+			 * java.awt.event.ActionListener#actionPerformed(java.awt.event.
+			 * ActionEvent)
+			 */
+			@Override
+			public void actionPerformed(final ActionEvent e) {
+				createPdf();
+			}
+		});
+
 		fileMenu.addSeparator();
 
 		JMenuItem properties = new JMenuItem("Properties...");
@@ -600,6 +617,24 @@ public class GridDialog extends JFrame implements CellUpdateListener, CellSelect
 		}
 		return false;
 
+	}
+
+	/**
+	 * Function to save crossword as pdf.
+	 * 
+	 * @return true if successful
+	 */
+	private boolean createPdf() {
+		JFileChooser chooser = new JFileChooser();
+		File pdfFile = null;
+
+		if (chooser.showSaveDialog(GridDialog.this) == JFileChooser.APPROVE_OPTION) {
+			pdfFile = chooser.getSelectedFile();
+		}
+		if (pdfFile != null) {
+			puzzle.exportPdf(pdfFile);
+		}
+		return false;
 	}
 
 	/*

@@ -1,5 +1,6 @@
 package biz.computerkraft.crossword.grid;
 
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -11,6 +12,8 @@ import java.util.Optional;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+
+import biz.computerkraft.crossword.grid.crossword.RectangleGrid;
 
 /**
  * 
@@ -434,6 +437,7 @@ public class Cell {
 	 * 
 	 * @return true if cell is empty
 	 */
+	@XmlTransient
 	public final boolean isEmpty() {
 		return transientContents.isEmpty() && contents.isEmpty();
 	}
@@ -444,11 +448,70 @@ public class Cell {
 	 * 
 	 * @return contents for display
 	 */
+	@XmlTransient
 	public final String getDisplayContents() {
 		if (contents.isEmpty()) {
 			return transientContents;
 		} else {
 			return contents;
 		}
+	}
+
+	/**
+	 * Gets the cell rectangle based on a grid.
+	 * 
+	 * @param width
+	 *            full width of grid
+	 * @param height
+	 *            full height of grid
+	 * @param border
+	 *            width of cell border
+	 * @param adjustSEOnly
+	 *            only adjust the SE border
+	 * @return shape that forms cell
+	 */
+	public final Rectangle getRectangleGridShape(final double width, final double height, final double border,
+			final boolean adjustSEOnly) {
+		double widthPc = 1 - anchorX;
+		double heightPc = 1 - anchorY;
+		if (getAdjacent(RectangleGrid.DIRECTION_E).isPresent()) {
+			widthPc = getAdjacent(RectangleGrid.DIRECTION_E).get().getAnchorX() - anchorX;
+		}
+		if (getAdjacent(RectangleGrid.DIRECTION_S).isPresent()) {
+			heightPc = getAdjacent(RectangleGrid.DIRECTION_S).get().getAnchorY() - anchorY;
+		}
+
+		int adjustNW = 0;
+		int adjustSE = 0;
+		if (border != 0.0) {
+			adjustSE = 1;
+			if (!adjustSEOnly) {
+				adjustNW = 1;
+			}
+		}
+		return new Rectangle((int) (Math.round(anchorX * width) + border) + adjustNW,
+				(int) (Math.round(anchorY * height) + border) + adjustNW,
+				(int) (Math.round(widthPc * width) - 2 * border) - adjustSE,
+				(int) (Math.round(heightPc * height) - 2 * border) - adjustSE);
+	}
+
+	/**
+	 * Gets edges bitwise pattern.
+	 * 
+	 * @param allEdges
+	 *            if true, requires all edges to be set otherwise 0 returned.
+	 * @return bitwise map of edges pattern
+	 */
+	public final int getFill(final boolean allEdges) {
+		int fill = 0;
+		for (Entry<Integer, Boolean> block : blocks.entrySet()) {
+			if (block.getValue()) {
+				fill |= block.getKey();
+			} else if (allEdges) {
+				fill = 0;
+				break;
+			}
+		}
+		return fill;
 	}
 }

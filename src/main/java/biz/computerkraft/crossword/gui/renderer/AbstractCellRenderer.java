@@ -11,7 +11,6 @@ import java.awt.geom.Rectangle2D;
 
 import biz.computerkraft.crossword.grid.Cell;
 import biz.computerkraft.crossword.grid.crossword.AbstractCrossword;
-import biz.computerkraft.crossword.grid.crossword.RectangleGrid;
 import biz.computerkraft.crossword.gui.CellRenderer;
 import biz.computerkraft.crossword.gui.Selection;
 
@@ -91,19 +90,8 @@ public abstract class AbstractCellRenderer implements CellRenderer {
 	 */
 	protected final void baseRenderCell(final Graphics2D graphics, final double width, final double height,
 			final Selection selection, final int fill) {
-		double x = cell.getAnchorX();
-		double y = cell.getAnchorY();
-		double widthPc = 1 - x;
-		double heightPc = 1 - y;
-		if (cell.getAdjacent(RectangleGrid.DIRECTION_E).isPresent()) {
-			widthPc = cell.getAdjacent(RectangleGrid.DIRECTION_E).get().getAnchorX() - x;
-		}
-		if (cell.getAdjacent(RectangleGrid.DIRECTION_S).isPresent()) {
-			heightPc = cell.getAdjacent(RectangleGrid.DIRECTION_S).get().getAnchorY() - y;
-		}
 
-		cellShape = new Rectangle((int) Math.round(x * width), (int) Math.round(y * height),
-				(int) Math.round(widthPc * width), (int) Math.round(heightPc * height));
+		cellShape = cell.getRectangleGridShape(width, height, 0, false);
 
 		boolean fullFill = fill == (AbstractCrossword.DIRECTION_E | AbstractCrossword.DIRECTION_N
 				| AbstractCrossword.DIRECTION_W | AbstractCrossword.DIRECTION_S);
@@ -138,17 +126,12 @@ public abstract class AbstractCellRenderer implements CellRenderer {
 
 		graphics.fill(cellShape);
 
-		int newX = (int) Math.round(x * width + CELL_BORDER / 2 + 1);
-		int newY = (int) Math.round(y * height + CELL_BORDER / 2 + 1);
-		int newWidth = (int) Math.round(widthPc * width) - 1 - CELL_BORDER;
-		int newHeight = (int) Math.round(heightPc * height) - 1 - CELL_BORDER;
-
 		Shape borderShape = cellShape;
 		if (!fullFill) {
 			graphics.setStroke(new BasicStroke(1));
 			graphics.setColor(Color.BLACK);
 		} else {
-			borderShape = new Rectangle(newX, newY, newWidth, newHeight);
+			borderShape = cell.getRectangleGridShape(width, height, CELL_BORDER / 2, false);
 			graphics.setStroke(new BasicStroke(CELL_BORDER));
 			if (selection == Selection.NONE) {
 				graphics.setColor(Color.BLACK);
@@ -162,24 +145,25 @@ public abstract class AbstractCellRenderer implements CellRenderer {
 		graphics.draw(borderShape);
 
 		if (!fullFill) {
-			newX = (int) Math.round(x * width + BAR_BORDER / 2);
-			newY = (int) Math.round(y * height + BAR_BORDER / 2);
-			newWidth = (int) Math.round(widthPc * width) + 1 - BAR_BORDER;
-			newHeight = (int) Math.round(heightPc * height) + 1 - BAR_BORDER;
+			Rectangle cellRect = cell.getRectangleGridShape(width, height, BAR_BORDER / 2, true);
 
 			graphics.setStroke(new BasicStroke(BAR_BORDER / 2));
 
 			if ((fill & AbstractCrossword.DIRECTION_E) != 0) {
-				graphics.drawLine(newX + newWidth, newY, newX + newWidth, newY + newHeight);
+				graphics.drawLine((int) cellRect.getMaxX(), (int) cellRect.getMinY(), (int) cellRect.getMaxX(),
+						(int) cellRect.getMaxY());
 			}
 			if ((fill & AbstractCrossword.DIRECTION_W) != 0) {
-				graphics.drawLine(newX, newY, newX, newY + newHeight);
+				graphics.drawLine((int) cellRect.getMinX(), (int) cellRect.getMinY(), (int) cellRect.getMinX(),
+						(int) cellRect.getMaxY());
 			}
 			if ((fill & AbstractCrossword.DIRECTION_N) != 0) {
-				graphics.drawLine(newX, newY, newX + newWidth, newY);
+				graphics.drawLine((int) cellRect.getMinX(), (int) cellRect.getMaxY(), (int) cellRect.getMaxX(),
+						(int) cellRect.getMaxY());
 			}
 			if ((fill & AbstractCrossword.DIRECTION_S) != 0) {
-				graphics.drawLine(newX, newY + newHeight, newX + newWidth, newY + newHeight);
+				graphics.drawLine((int) cellRect.getMinX(), (int) cellRect.getMinY(), (int) cellRect.getMaxX(),
+						(int) cellRect.getMinY());
 			}
 		}
 

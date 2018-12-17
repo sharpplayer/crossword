@@ -1,5 +1,7 @@
 package biz.computerkraft.crossword.grid.crossword;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +14,7 @@ import biz.computerkraft.crossword.grid.crossword.enumeration.Symmetry;
 import biz.computerkraft.crossword.gui.CellRenderer;
 import biz.computerkraft.crossword.gui.ClueItem;
 import biz.computerkraft.crossword.gui.renderer.BarwordCellRenderer;
+import biz.computerkraft.crossword.pdf.BasicPdf;
 
 /**
  * 
@@ -205,6 +208,24 @@ public class Barword extends AbstractCrossword {
 	@Override
 	protected final Map<String, Object> getAbstractCrosswordProperties(final Map<String, Object> properties) {
 		return properties;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see biz.computerkraft.crossword.gui.Puzzle#exportPdf(java.io.File)
+	 */
+	@Override
+	public final void exportPdf(final File file) {
+		try {
+			BasicPdf pdf = new BasicPdf(file, getName());
+			for (Cell cell : getCells()) {
+				pdf.renderRectangleCell(getCellWidth(), getCellHeight(), cell, cell.getContents(), false);
+			}
+			pdf.export();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 }
