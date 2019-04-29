@@ -82,7 +82,24 @@ public class BasicPdf {
 		writeText(title, PDType1Font.HELVETICA, TITLE_FONT_SIZE, TITLE_X, TITLE_Y);
 	}
 
-	private void writeText(String text, PDFont font, float size, float x, float y) throws IOException {
+	/**
+	 * Writes PDF text at a given location.
+	 * 
+	 * @param text
+	 *            text
+	 * @param font
+	 *            font
+	 * @param size
+	 *            size
+	 * @param x
+	 *            x
+	 * @param y
+	 *            y
+	 * @throws IOException
+	 *             thrown on error
+	 */
+	private void writeText(final String text, final PDFont font, final float size, final float x, final float y)
+			throws IOException {
 		content.beginText();
 		content.setFont(font, size);
 		content.newLineAtOffset(getX(x), getY(y));
@@ -91,11 +108,25 @@ public class BasicPdf {
 
 	}
 
-	private float getX(float x) {
+	/**
+	 * Gets absolute x.
+	 * 
+	 * @param x
+	 *            relative x
+	 * @return absolute x
+	 */
+	private float getX(final float x) {
 		return pageDimensions.getLowerLeftX() + x;
 	}
 
-	private float getY(float y) {
+	/**
+	 * Gets absolute y.
+	 * 
+	 * @param y
+	 *            relative y
+	 * @return absolute y
+	 */
+	private float getY(final float y) {
 		return pageDimensions.getUpperRightY() - y;
 	}
 

@@ -25,15 +25,8 @@ targetCompatibility = 1.8
 repositories { mavenCentral() }
 
 dependencies {
-	compile('mysql:mysql-connector-java:5.1.13')
-	compile group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.3'
-
-	testCompile(
-			[
-				'org.mockito:mockito-all:1.10.19',
-				'org.apache.pdfbox:pdfbox:2.0.4'
-			],
-			['junit:junit:4.12'])
+	implementation('mysql:mysql-connector-java:8.0.13')
+	implementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.13'
 }
 
 
@@ -43,23 +36,9 @@ checkstyle {
 	// When we have prefectly styled code we can add the following line
 	// to prevent builds occuring with badly styled code
 	// ignoreFailures = true
-	configProperties['config_loc'] = "${projectDir}/configuration/checkstyle/"
-	configFile file("${projectDir}/configuration/checkstyle/checkstyle.xml")
-	toolVersion = '6.7'
+	configDir file("${projectDir}/configuration/checkstyle/")
+//	configFile file("${projectDir}/configuration/checkstyle/checkstyle.xml")
+	toolVersion = '8.12'
 }
-
-// Original gradle tasks by Christos
-task showEnvironmentalVariables{
-	description 'Displays all the required evironmental variables.'
-	println "JAVA_HOME: $System.env.JAVA_HOME"
-	println "ECLIPSE_HOME: " + eclipseHome
-}
-
-// See http://www.gradle.org/docs/current/userguide/gradle_wrapper.html
-task wrapper(type: Wrapper) {
-	description = 'Install Gradle wrapper'
-	gradleVersion = '2.11'
-}
-
 
 mainClassName = "biz.computerkraft.crossword.Main"
