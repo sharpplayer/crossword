@@ -5,7 +5,6 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
-import java.util.Map.Entry;
 
 import biz.computerkraft.crossword.grid.Cell;
 import biz.computerkraft.crossword.gui.Selection;
@@ -48,25 +47,15 @@ public abstract class RectangleGridCellRenderer extends AbstractCellRenderer {
 	protected final void renderCell(final Graphics2D graphics, final double width, final double height,
 			final Selection selection, final boolean bars, final boolean defaultMarkers) {
 		Cell cell = getCell();
-		int fill = 0;
-		for (Entry<Integer, Boolean> block : cell.getBlocks().entrySet()) {
-			if (block.getValue()) {
-				fill |= block.getKey();
-			} else if (!bars) {
-				fill = 0;
-				break;
-			}
-		}
 
-		baseRenderCell(graphics, width, height, selection, fill);
+		baseRenderCell(graphics, width, height, selection, cell.getFill(!bars));
 
 		if (!cell.getMarker().isEmpty() && defaultMarkers) {
 			Rectangle2D bounds = getCellShape().getBounds2D();
 			graphics.setColor(Color.BLACK);
 			graphics.setFont(MARKER_FONT);
 			FontMetrics metrics = graphics.getFontMetrics(MARKER_FONT);
-			
-			
+
 			graphics.drawString(cell.getMarker(), (int) (bounds.getX() + MARKER_BORDER),
 					(int) (bounds.getY() + MARKER_BORDER + metrics.getAscent()));
 		}

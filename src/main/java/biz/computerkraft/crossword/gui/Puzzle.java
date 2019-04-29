@@ -1,6 +1,7 @@
 package biz.computerkraft.crossword.gui;
 
 import java.awt.geom.Point2D;
+import java.io.File;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -213,4 +214,12 @@ public interface Puzzle {
 	 * Call made after loading to tidy up.
 	 */
 	void postLoadTidyup();
+
+	/**
+	 * Exports a PDF file.
+	 * 
+	 * @param file
+	 *            file to export to
+	 */
+	void exportPdf(File file);
 }

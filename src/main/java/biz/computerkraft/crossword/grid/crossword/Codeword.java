@@ -1,5 +1,7 @@
 package biz.computerkraft.crossword.grid.crossword;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +16,7 @@ import biz.computerkraft.crossword.grid.Clue;
 import biz.computerkraft.crossword.grid.crossword.enumeration.Encoding;
 import biz.computerkraft.crossword.gui.ClueItem;
 import biz.computerkraft.crossword.gui.cluemodel.CodewordClueModel;
+import biz.computerkraft.crossword.pdf.BasicPdf;
 
 /**
  * 
@@ -250,6 +253,24 @@ public class Codeword extends AbstractFillCrossword {
 	 */
 	public final void setEncoding(final Encoding newEncoding) {
 		this.encoding = newEncoding;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see biz.computerkraft.crossword.gui.Puzzle#exportPdf(java.io.File)
+	 */
+	@Override
+	public final void exportPdf(final File file) {
+		try {
+			BasicPdf pdf = new BasicPdf(file, getName());
+			for (Cell cell : getCells()) {
+				pdf.renderRectangleCell(getCellWidth(), getCellHeight(), cell, cell.getContents(), true);
+			}
+			pdf.export();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 }

@@ -3,7 +3,7 @@
 
 <!-- This configuration file was written by the eclipse-cs plugin configuration 
 	editor -->
-<!-- Checkstyle-Configuration: CAV development Sun Checks (Eclipse) Description: 
+<!-- Checkstyle-Configuration: LaSSiE development Sun Checks (Eclipse) Description: 
 	Slightly modified version of Sun Checks that better matches the default code 
 	formatter setting of Eclipse. -->
 <module name="Checker">

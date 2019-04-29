@@ -1,6 +1,8 @@
 package biz.computerkraft.crossword.grid.crossword;
 
 import java.awt.geom.Point2D;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +17,7 @@ import biz.computerkraft.crossword.gui.CellRenderer;
 import biz.computerkraft.crossword.gui.ClueItem;
 import biz.computerkraft.crossword.gui.cluemodel.WordsearchClueModel;
 import biz.computerkraft.crossword.gui.renderer.WordsearchCellRenderer;
+import biz.computerkraft.crossword.pdf.BasicPdf;
 
 /**
  * 
@@ -129,6 +132,24 @@ public class Wordsearch extends MultiDirectionGrid {
 	@Override
 	protected final Map<String, Object> getRectangleGridProperties(final Map<String, Object> currentProperties) {
 		return currentProperties;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see biz.computerkraft.crossword.gui.Puzzle#exportPdf(java.io.File)
+	 */
+	@Override
+	public final void exportPdf(final File file) {
+		try {
+			BasicPdf pdf = new BasicPdf(file, getName());
+			for (Cell cell : getCells()) {
+				pdf.renderRectangleCell(getCellWidth(), getCellHeight(), cell, cell.getContents(), false);
+			}
+			pdf.export();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 }
