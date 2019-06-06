@@ -69,5 +69,6 @@ public class CrosswordKeyListener implements KeyListener {
 	 */
 	@Override
 	public final void keyReleased(final KeyEvent e) {
+	    // Nothing to do on key released.
 	}
 }

@@ -22,7 +22,7 @@ public abstract class ClueModel extends AbstractTableModel {
 	private static final long serialVersionUID = 676551072067562953L;
 
 	/** Clues to display. */
-	private List<ClueItem> clueItems = new ArrayList<>();
+	private transient List<ClueItem> clueItems = new ArrayList<>();
 
 	/** Category of clues. */
 	private String category;

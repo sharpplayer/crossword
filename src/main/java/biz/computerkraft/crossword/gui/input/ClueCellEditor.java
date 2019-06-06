@@ -31,10 +31,10 @@ public class ClueCellEditor extends AbstractCellEditor implements TableCellEdito
 	private ClueEditor editor = new ClueEditor(this);
 
 	/** Database connection. */
-	private DBConnection connection;
+	private transient DBConnection connection;
 
 	/** Call back listener for cell selection. */
-	private CellSelectListener listener;
+	private transient CellSelectListener listener;
 
 	/** Current word. */
 	private String word;

@@ -21,10 +21,10 @@ public class CrosswordCellAction extends AbstractAction {
 	private static final long serialVersionUID = -7466523885187579024L;
 
 	/** Cell to action. */
-	private final Cell actionCell;
+	private final transient Cell actionCell;
 
 	/** Callback. */
-	private final CellUpdateListener updateListener;
+	private final transient CellUpdateListener updateListener;
 
 	/** Component to repaint on completed action. */
 	private final JComponent component;
